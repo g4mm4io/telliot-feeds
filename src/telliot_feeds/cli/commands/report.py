@@ -446,7 +446,7 @@ async def report(
             "transaction_type": tx_type,
             "min_native_token_balance": int(min_native_token_balance * 10**18),
             "check_rewards": check_rewards,
-            "use_random_feeds": use_random_feeds,
+            #"use_random_feeds": use_random_feeds, #TODO: Error if this line is uncommented
             "gas_multiplier": gas_multiplier,
         }
 
