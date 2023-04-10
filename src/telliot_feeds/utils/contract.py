@@ -1,4 +1,4 @@
-"""Helper functions for TellorX contracts."""
+"""Helper functions for FetchX contracts."""
 import logging
 from typing import Any
 from typing import Optional

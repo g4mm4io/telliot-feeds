@@ -10,7 +10,7 @@ import datetime
 
 import pytest
 
-from telliot_feeds.integrations.diva_protocol import DIVA_TELLOR_MIDDLEWARE_ADDRESS
+from telliot_feeds.integrations.diva_protocol import DIVA_FETCH_MIDDLEWARE_ADDRESS
 from telliot_feeds.integrations.diva_protocol.pool import fetch_from_subgraph
 from telliot_feeds.integrations.diva_protocol.pool import query_valid_pools
 
@@ -25,7 +25,7 @@ sep_20_2022 = int(datetime.datetime(2022, 9, 20).timestamp())
 async def test_get_pools_from_subgraph():
     query = query_valid_pools(
         last_id=0,
-        data_provider=DIVA_TELLOR_MIDDLEWARE_ADDRESS,
+        data_provider=DIVA_FETCH_MIDDLEWARE_ADDRESS,
         expiry_since=sep_20_2022,
     )
     pools = await fetch_from_subgraph(

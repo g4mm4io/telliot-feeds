@@ -18,15 +18,15 @@ from web3.exceptions import TransactionNotFound
 
 from telliot_feeds.flashbots import flashbot  # type: ignore
 from telliot_feeds.flashbots.provider import get_default_endpoint  # type: ignore
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 from telliot_feeds.utils.log import get_logger
 
 
 logger = get_logger(__name__)
 
 
-class FlashbotsReporter(Tellor360Reporter):
-    """Reports values from given datafeeds to a TellorX Oracle
+class FlashbotsReporter(Fetch360Reporter):
+    """Reports values from given datafeeds to a FetchX Oracle
     every 10 seconds."""
 
     def __init__(self, signature_account: ChainedAccount, *args: Any, **kwargs: Any) -> None:
@@ -48,7 +48,7 @@ class FlashbotsReporter(Tellor360Reporter):
         """Report query value once
 
         This method checks to see if a user is able to submit
-        values to the TellorX oracle, given their staker status
+        values to the FetchX oracle, given their staker status
         and last submission time. Also, this method does not
         submit values if doing so won't make a profit."""
         staked, status = await self.ensure_staked()

@@ -5,7 +5,7 @@ import pytest
 from telliot_feeds.feeds.eth_usd_feed import eth_usd_median_feed
 from telliot_feeds.feeds.snapshot_feed import snapshot_manual_feed
 from telliot_feeds.reporters.rewards.time_based_rewards import get_time_based_rewards
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 
 
 txn_kwargs = {"gas_limit": 3500000, "legacy_gas_price": 1}
@@ -13,13 +13,13 @@ CHAIN_ID = 80001
 
 
 @pytest.mark.asyncio
-async def test_report(tellor_360, caplog, guaranteed_price_source):
+async def test_report(fetch_360, caplog, guaranteed_price_source):
     """Test 360 reporter deposit and balance changes when stakeAmount changes"""
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
-    r = Tellor360Reporter(
+    r = Fetch360Reporter(
         oracle=contracts.oracle,
         token=contracts.token,
         autopay=contracts.autopay,
@@ -62,13 +62,13 @@ async def test_report(tellor_360, caplog, guaranteed_price_source):
 
 
 @pytest.mark.asyncio
-async def test_fail_get_account_nonce(tellor_360, caplog, guaranteed_price_source, monkeypatch):
+async def test_fail_get_account_nonce(fetch_360, caplog, guaranteed_price_source, monkeypatch):
     """Test 360 reporter fails to retrieve account nonce"""
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
-    r = Tellor360Reporter(
+    r = Fetch360Reporter(
         oracle=contracts.oracle,
         token=contracts.token,
         autopay=contracts.autopay,
@@ -103,9 +103,9 @@ async def test_fail_get_account_nonce(tellor_360, caplog, guaranteed_price_sourc
 
 
 @pytest.mark.asyncio
-async def test_get_time_based_rewards(tellor_360, caplog):
+async def test_get_time_based_rewards(fetch_360, caplog):
 
-    contracts, _ = tellor_360
+    contracts, _ = fetch_360
     tbr = await get_time_based_rewards(contracts.oracle)
 
     assert tbr >= 0
@@ -114,13 +114,13 @@ async def test_get_time_based_rewards(tellor_360, caplog):
 
 
 @pytest.mark.asyncio
-async def test_360_reporter_rewards(tellor_360, guaranteed_price_source):
+async def test_360_reporter_rewards(fetch_360, guaranteed_price_source):
 
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
-    r = Tellor360Reporter(
+    r = Fetch360Reporter(
         oracle=contracts.oracle,
         token=contracts.token,
         autopay=contracts.autopay,
@@ -136,9 +136,9 @@ async def test_360_reporter_rewards(tellor_360, guaranteed_price_source):
 
 
 @pytest.mark.asyncio
-async def test_adding_stake(tellor_360, guaranteed_price_source):
+async def test_adding_stake(fetch_360, guaranteed_price_source):
     """Test 360 reporter depositing more stake"""
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
@@ -153,7 +153,7 @@ async def test_adding_stake(tellor_360, guaranteed_price_source):
         "min_native_token_balance": 0,
         "datafeed": feed,
     }
-    reporter = Tellor360Reporter(**reporter_kwargs)
+    reporter = Fetch360Reporter(**reporter_kwargs)
 
     # check stake amount
     stake_amount, status = await reporter.oracle.read("getStakeAmount")
@@ -170,16 +170,16 @@ async def test_adding_stake(tellor_360, guaranteed_price_source):
 
     # stake more by by changing stake from default similar to how a stake amount chosen in cli
     # high stake to bypass reporter lock
-    reporter = Tellor360Reporter(**reporter_kwargs, stake=90000)
+    reporter = Fetch360Reporter(**reporter_kwargs, stake=90000)
     _, status = await reporter.report_once()
     assert status.ok
     assert reporter.staker_info.stake_balance == pytest.approx(90000e18), "Staker balance should be 90000e18"
 
 
 @pytest.mark.asyncio
-async def test_no_native_token(tellor_360, caplog, guaranteed_price_source):
+async def test_no_native_token(fetch_360, caplog, guaranteed_price_source):
     """Test reporter quits if no native token"""
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
@@ -195,7 +195,7 @@ async def test_no_native_token(tellor_360, caplog, guaranteed_price_source):
         "min_native_token_balance": 100 * 10**18,
         "datafeed": feed,
     }
-    reporter = Tellor360Reporter(**reporter_kwargs)
+    reporter = Fetch360Reporter(**reporter_kwargs)
 
     await reporter.report(report_count=1)
 
@@ -203,9 +203,9 @@ async def test_no_native_token(tellor_360, caplog, guaranteed_price_source):
 
 
 @pytest.mark.asyncio
-async def test_checks_reporter_lock_when_manual_source(tellor_360, monkeypatch, caplog, guaranteed_price_source):
+async def test_checks_reporter_lock_when_manual_source(fetch_360, monkeypatch, caplog, guaranteed_price_source):
     """Test reporter lock check when reporting for a tip that requires a manaul data source"""
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
@@ -222,12 +222,12 @@ async def test_checks_reporter_lock_when_manual_source(tellor_360, monkeypatch, 
         "datafeed": feed,
     }
 
-    # mock get_feed_and_tip, which is called in the Tellor360Reporter.fetch_datafeed method
+    # mock get_feed_and_tip, which is called in the Fetch360Reporter.fetch_datafeed method
     async def mock_get_feed_and_tip(*args, **kwargs):
         return [snapshot_manual_feed, int(1e18)]
 
-    monkeypatch.setattr("telliot_feeds.reporters.tellor_360.get_feed_and_tip", mock_get_feed_and_tip)
-    reporter = Tellor360Reporter(**reporter_kwargs)
+    monkeypatch.setattr("telliot_feeds.reporters.fetch_360.get_feed_and_tip", mock_get_feed_and_tip)
+    reporter = Fetch360Reporter(**reporter_kwargs)
 
     # report once to trigger reporter lock next time
     reporter.datafeed = eth_usd_median_feed
@@ -241,9 +241,9 @@ async def test_checks_reporter_lock_when_manual_source(tellor_360, monkeypatch, 
 
 
 @pytest.mark.asyncio
-async def test_fail_gen_query_id(tellor_360, monkeypatch, caplog, guaranteed_price_source):
+async def test_fail_gen_query_id(fetch_360, monkeypatch, caplog, guaranteed_price_source):
     """Test failure to generate query id when calling rewards() method."""
-    contracts, account = tellor_360
+    contracts, account = fetch_360
     feed = eth_usd_median_feed
     feed.source = guaranteed_price_source
 
@@ -264,7 +264,7 @@ async def test_fail_gen_query_id(tellor_360, monkeypatch, caplog, guaranteed_pri
     # trying to generate the query data for the query id.
     eth_usd_median_feed.query.asset = None
 
-    reporter = Tellor360Reporter(**reporter_kwargs)
+    reporter = Fetch360Reporter(**reporter_kwargs)
     _ = await reporter.rewards()
 
     assert "Unable to generate data/id for query" in caplog.text

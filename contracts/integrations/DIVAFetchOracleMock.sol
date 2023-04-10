@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "../../interfaces/ITellor.sol";
+import "../../interfaces/IFetch.sol";
 import "./interfaces/IDIVADiamond.sol";
 
-contract DIVATellorOracleMock {
+contract DIVAFetchOracleMock {
     enum Status {
         Open,
         Submitted,
@@ -37,39 +37,43 @@ contract DIVATellorOracleMock {
 
     uint256 public minPeriodUndisputed;
     uint256 public currentChainId;
-    ITellor public tellorOracle;
+    IFetch public fetchOracle;
     IDIVADiamond public divaDiamond;
     bool public setFinalReferenceValueCalled = false;
 
-    constructor(
-        uint256 _minPeriodUndisputed,
-        address _tellorOracle
-    ) {
+    constructor(uint256 _minPeriodUndisputed, address _fetchOracle) {
         minPeriodUndisputed = _minPeriodUndisputed;
-        tellorOracle = ITellor(_tellorOracle);
+        fetchOracle = IFetch(_fetchOracle);
     }
 
     function getMinPeriodUndisputed() public view returns (uint256) {
         return minPeriodUndisputed;
     }
 
-    function updateMinPeriodUndisputed(uint256 _minPeriodUndisputed) external returns (uint256) {
+    function updateMinPeriodUndisputed(
+        uint256 _minPeriodUndisputed
+    ) external returns (uint256) {
         minPeriodUndisputed = _minPeriodUndisputed;
         return minPeriodUndisputed;
     }
 
-    function updateCurrentChainId(uint256 _currentChainId) external returns (uint256) {
+    function updateCurrentChainId(
+        uint256 _currentChainId
+    ) external returns (uint256) {
         currentChainId = _currentChainId;
         return currentChainId;
     }
 
-    function setFinalReferenceValue(uint256 _poolId, address _divaDiamond) public {
+    function setFinalReferenceValue(
+        uint256 _poolId,
+        address _divaDiamond
+    ) public {
         // bytes32 queryId = keccak256(abi.encode(_poolId, _divaDiamond, currentChainId)); // goerli chain id is 5
-        // uint256 reportTime = tellorOracle.getTimestampbyQueryIdandIndex(queryId, 0); // get timestamp of first value
+        // uint256 reportTime = fetchOracle.getTimestampbyQueryIdandIndex(queryId, 0); // get timestamp of first value
         // uint256 poolExpiry = divaDiamond.getPoolParameters(_poolId).expiryTime;
         // require(reportTime > poolExpiry, "Report time must be after pool expiry time");
         // require(block.timestamp > reportTime + minPeriodUndisputed, "minPeriodUndisputed has not elapsed since report time");
-        // address reporter = tellorOracle.getReporterByTimestamp(queryId, reportTime);
+        // address reporter = fetchOracle.getReporterByTimestamp(queryId, reportTime);
         // require(reporter == msg.sender, "Only the reporter can set the final reference value");
         // uint256 status = uint256(divaDiamond.updatePoolStatus(_poolId, 1)); // 1 = Submitted
         // return status;

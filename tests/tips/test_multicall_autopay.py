@@ -9,7 +9,7 @@ from telliot_feeds.reporters.tips.multicall_functions.multicall_autopay import M
 async def setattr_autopay(mumbai_test_cfg):
     async with TelliotCore(config=mumbai_test_cfg) as core:
 
-        flex = core.get_tellor360_contracts()
+        flex = core.get_fetch360_contracts()
         call = MulticallAutopay()
         call.autopay = flex.autopay
         return call

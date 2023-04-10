@@ -7,7 +7,7 @@ is already installed on the system.*
 
 Clone telliot repositories to a local working directory:
 
-    git clone https://github.com/tellor-io/telliot-feeds.git
+    git clone https://github.com/fetch-oracle/telliot-feeds.git
 
 Change directories:
 

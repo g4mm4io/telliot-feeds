@@ -1,4 +1,4 @@
-# Copyright (c) 2021-, Tellor Development Community
+# Copyright (c) 2021-, Fetch Development Community
 # Copyright (c) 2020, Nucleic Development Team.
 import os
 

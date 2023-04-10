@@ -15,12 +15,12 @@ logger = get_logger(__name__)
 
 
 @dataclass
-class TellorRNGManualInputSource(DataSource[bytes]):
-    """Manual input source for query type TellorRNG's value response"""
+class FetchRNGManualInputSource(DataSource[bytes]):
+    """Manual input source for query type FetchRNG's value response"""
 
     def parse_user_input(self) -> bytes:
         """Handle user input"""
-        print("Type in your TellorRNG response as a hex string (example: 0x2b563420722cbcfc84857129bef775e0dc5f1401):")
+        print("Type in your FetchRNG response as a hex string (example: 0x2b563420722cbcfc84857129bef775e0dc5f1401):")
         response = None
 
         while response is None:
@@ -42,7 +42,7 @@ class TellorRNGManualInputSource(DataSource[bytes]):
             except ValueError:
                 print("Invalid input! Enter hex string value (32 byte size).")
                 continue
-            print(f"\nTellorRNG value to be submitted on chain: {user_input}")
+            print(f"\nFetchRNG value to be submitted on chain: {user_input}")
             print("Press [ENTER] to continue")
             _ = input_timeout()
             response = val
@@ -64,6 +64,6 @@ class TellorRNGManualInputSource(DataSource[bytes]):
         datapoint = (response, datetime_now_utc())
         self.store_datapoint(datapoint)
 
-        logger.info(f"TellorRNG value {datapoint[0]!r} submitted at time {datapoint[1]}")
+        logger.info(f"FetchRNG value {datapoint[0]!r} submitted at time {datapoint[1]}")
 
         return datapoint

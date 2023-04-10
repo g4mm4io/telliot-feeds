@@ -1,6 +1,6 @@
 services:
   telliot:
-    image: tellorofficial/telliot
+    image: fetchofficial/telliot
     container_name: telliot_container
     build: .
     tty: true

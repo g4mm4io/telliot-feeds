@@ -2,7 +2,7 @@
 from typing import Callable
 from typing import Optional
 
-from telliot_core.tellor.tellorflex.autopay import TellorFlexAutopayContract
+from telliot_core.fetch.fetchflex.autopay import FetchFlexAutopayContract
 
 from telliot_feeds.utils.log import get_logger
 
@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 
 
 async def get_funded_one_time_tips(
-    autopay: TellorFlexAutopayContract, listener_filter: Callable[[bytes], bool]
+    autopay: FetchFlexAutopayContract, listener_filter: Callable[[bytes], bool]
 ) -> Optional[dict[bytes, int]]:
     """Trigger autopay call and filter response data
 

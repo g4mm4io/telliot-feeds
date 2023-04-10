@@ -1,17 +1,17 @@
-""" Unit tests for Tellor RNG Query
+""" Unit tests for Fetch RNG Query
 
-Copyright (c) 2022-, Tellor Development Community
+Copyright (c) 2022-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 from eth_abi import decode_abi
 from eth_abi import decode_single
 
-from telliot_feeds.queries.tellor_rng import TellorRNG
+from telliot_feeds.queries.fetch_rng import FetchRNG
 
 
-def test_tellor_rng_query():
-    """Validate tellor rng query"""
-    q = TellorRNG(
+def test_fetch_rng_query():
+    """Validate fetch rng query"""
+    q = FetchRNG(
         timestamp=1000000,
     )
     assert q.value_type.abi_type == "bytes32"
@@ -36,7 +36,7 @@ def test_tellor_rng_query():
     assert q.query_data == exp_abi
 
     query_type, encoded_param_vals = decode_abi(["string", "bytes"], q.query_data)
-    assert query_type == "TellorRNG"
+    assert query_type == "FetchRNG"
 
     timestamp = decode_single("uint256", encoded_param_vals)
 

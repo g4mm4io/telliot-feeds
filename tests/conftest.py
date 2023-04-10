@@ -10,10 +10,10 @@ from brownie import chain
 from brownie import multicall as brownie_multicall
 from brownie import QueryDataStorage
 from brownie import StakingToken
-from brownie import TellorFlex
-from brownie import TellorFlex360
-from brownie import TellorXMasterMock
-from brownie import TellorXOracleMock
+from brownie import FetchFlex
+from brownie import FetchFlex360
+from brownie import FetchXMasterMock
+from brownie import FetchXOracleMock
 from chained_accounts import ChainedAccount
 from chained_accounts import find_accounts
 from multicall import multicall
@@ -25,7 +25,7 @@ from telliot_core.apps.telliot_config import TelliotConfig
 from telliot_feeds.datasource import DataSource
 from telliot_feeds.dtypes.datapoint import datetime_now_utc
 from telliot_feeds.dtypes.datapoint import OptionalDataPoint
-from telliot_feeds.reporters.tellor_flex import TellorFlexReporter
+from telliot_feeds.reporters.fetch_flex import FetchFlexReporter
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -103,13 +103,13 @@ def guaranteed_price_source():
 
 
 def local_node_cfg(chain_id: int):
-    """Return a test telliot configuration for use of tellorFlex contracts. Overrides
+    """Return a test telliot configuration for use of fetchFlex contracts. Overrides
     the default Web3 provider with a local Ganache endpoint.
     """
 
     cfg = TelliotConfig()
 
-    # Use a chain_id with TellorFlex contracts deployed
+    # Use a chain_id with FetchFlex contracts deployed
     cfg.main.chain_id = chain_id
 
     endpt = cfg.get_endpoint()
@@ -127,7 +127,7 @@ def local_node_cfg(chain_id: int):
         key = os.getenv("PRIVATE_KEY", None)
         if key:
             ChainedAccount.add(
-                "git-tellorflex-test-key",
+                "git-fetchflex-test-key",
                 chains=chain_id,
                 key=os.environ["PRIVATE_KEY"],
                 password="",
@@ -166,8 +166,8 @@ def mock_token_contract():
 
 @pytest.fixture(scope="function", autouse=True)
 def mock_flex_contract(mock_token_contract):
-    """mock oracle(TellorFlex) contract to stake in"""
-    return accounts[0].deploy(TellorFlex, mock_token_contract.address, accounts[0], 10e18, 60)
+    """mock oracle(FetchFlex) contract to stake in"""
+    return accounts[0].deploy(FetchFlex, mock_token_contract.address, accounts[0], 10e18, 60)
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -191,13 +191,13 @@ def query_data_storage_contract():
 
 
 @pytest.fixture
-def tellorx_oracle_mock_contract():
-    return accounts[0].deploy(TellorXOracleMock)
+def fetchx_oracle_mock_contract():
+    return accounts[0].deploy(FetchXOracleMock)
 
 
 @pytest.fixture
-def tellorx_master_mock_contract():
-    return accounts[0].deploy(TellorXMasterMock)
+def fetchx_master_mock_contract():
+    return accounts[0].deploy(FetchXMasterMock)
 
 
 @pytest.fixture(autouse=True)
@@ -211,10 +211,10 @@ def multicall_contract():
 
 
 @pytest.fixture(scope="function")
-def tellorflex_360_contract(mock_token_contract):
+def fetchflex_360_contract(mock_token_contract):
     account_fake = accounts.add("023861e2ceee1ea600e43cbd203e9e01ea2ed059ee3326155453a1ed3b1113a9")
     return account_fake.deploy(
-        TellorFlex360,
+        FetchFlex360,
         mock_token_contract.address,
         1,
         1,
@@ -224,21 +224,21 @@ def tellorflex_360_contract(mock_token_contract):
 
 
 @pytest_asyncio.fixture(scope="function")
-async def tellor_360(mumbai_test_cfg, tellorflex_360_contract, mock_autopay_contract, mock_token_contract):
+async def fetch_360(mumbai_test_cfg, fetchflex_360_contract, mock_autopay_contract, mock_token_contract):
     async with TelliotCore(config=mumbai_test_cfg) as core:
         txn_kwargs = {"gas_limit": 3500000, "legacy_gas_price": 1}
         account = core.get_account()
 
-        tellor360 = core.get_tellor360_contracts()
-        tellor360.oracle.address = tellorflex_360_contract.address
-        tellor360.oracle.abi = tellorflex_360_contract.abi
-        tellor360.autopay.address = mock_autopay_contract.address
-        tellor360.autopay.abi = mock_autopay_contract.abi
-        tellor360.token.address = mock_token_contract.address
+        fetch360 = core.get_fetch360_contracts()
+        fetch360.oracle.address = fetchflex_360_contract.address
+        fetch360.oracle.abi = fetchflex_360_contract.abi
+        fetch360.autopay.address = mock_autopay_contract.address
+        fetch360.autopay.abi = mock_autopay_contract.abi
+        fetch360.token.address = mock_token_contract.address
 
-        tellor360.oracle.connect()
-        tellor360.token.connect()
-        tellor360.autopay.connect()
+        fetch360.oracle.connect()
+        fetch360.token.connect()
+        fetch360.autopay.connect()
 
         # mint token and send to reporter address
         mock_token_contract.mint(account.address, 100000e18)
@@ -250,18 +250,18 @@ async def tellor_360(mumbai_test_cfg, tellorflex_360_contract, mock_autopay_cont
         accounts[1].transfer(account.address, "1 ether")
 
         # init governance address
-        await tellor360.oracle.write("init", _governanceAddress=accounts[0].address, **txn_kwargs)
+        await fetch360.oracle.write("init", _governanceAddress=accounts[0].address, **txn_kwargs)
 
-        return tellor360, account
+        return fetch360, account
 
 
 @pytest_asyncio.fixture(scope="function")
-async def tellor_flex_reporter(mumbai_test_cfg, mock_flex_contract, mock_autopay_contract, mock_token_contract):
+async def fetch_flex_reporter(mumbai_test_cfg, mock_flex_contract, mock_autopay_contract, mock_token_contract):
     async with TelliotCore(config=mumbai_test_cfg) as core:
 
         account = core.get_account()
 
-        flex = core.get_tellorflex_contracts()
+        flex = core.get_fetchflex_contracts()
         flex.oracle.address = mock_flex_contract.address
         flex.autopay.address = mock_autopay_contract.address
         flex.token.address = mock_token_contract.address
@@ -269,9 +269,9 @@ async def tellor_flex_reporter(mumbai_test_cfg, mock_flex_contract, mock_autopay
         flex.oracle.connect()
         flex.token.connect()
         flex.autopay.connect()
-        flex = core.get_tellorflex_contracts()
+        flex = core.get_fetchflex_contracts()
 
-        r = TellorFlexReporter(
+        r = FetchFlexReporter(
             oracle=flex.oracle,
             token=flex.token,
             autopay=flex.autopay,

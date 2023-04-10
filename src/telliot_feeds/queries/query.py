@@ -19,12 +19,12 @@ class OracleQuery(Serializable):
     """Oracle Query
 
     An OracleQuery specifies how to pose a question to the
-    Tellor Oracle and how to format/interpret the response.
+    Fetch Oracle and how to format/interpret the response.
 
     The OracleQuery class serves
     as the base class for all Queries, and implements default behaviors.
     Each subclass corresponds to a unique Query Type supported
-    by the TellorX network.
+    by the FetchX network.
 
     All public attributes of an OracleQuery represent a parameter that can
     be used to customize the query.
@@ -36,13 +36,13 @@ class OracleQuery(Serializable):
     way to identify a query.
 
     - Calculation of the `id` field from `query_data`.  This value is used for the
-      `TellorX.Oracle.tipQuery()` and `TellorX.Oracle.submitValue()`
+      `FetchX.Oracle.tipQuery()` and `FetchX.Oracle.submitValue()`
       contract calls.
 
     Subclasses must provide:
 
     - Encoding of the `descriptor` string to compute the `query_data` attribute,
-    which is used for the `data` field of a `TellorX.Oracle.tipQuery()` contract call.
+    which is used for the `data` field of a `FetchX.Oracle.tipQuery()` contract call.
 
     """
 
@@ -52,7 +52,7 @@ class OracleQuery(Serializable):
 
         The value type defines required data type/structure of the
         ``value`` submitted to the contract through
-        ``TellorX.Oracle.submitValue()``
+        ``FetchX.Oracle.submitValue()``
 
         This method *must* be implemented by subclasses
         """
@@ -73,7 +73,7 @@ class OracleQuery(Serializable):
     @property
     def query_id(self) -> bytes:
         """Returns the query ``id`` for use with the
-        ``TellorX.Oracle.tipQuery()`` and ``TellorX.Oracle.submitValue()``
+        ``FetchX.Oracle.tipQuery()`` and ``FetchX.Oracle.submitValue()``
         contract calls.
         """
         return bytes(Web3.keccak(self.query_data))
@@ -81,7 +81,7 @@ class OracleQuery(Serializable):
     @property
     def query_data(self) -> bytes:
         """Encode the query `descriptor` to create the query `data` field for
-        use in the ``TellorX.Oracle.tipQuery()`` contract call.
+        use in the ``FetchX.Oracle.tipQuery()`` contract call.
 
         This method *must* be implemented by subclasses
         """

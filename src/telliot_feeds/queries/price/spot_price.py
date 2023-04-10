@@ -17,7 +17,7 @@ CURRENCIES = ["usd", "jpy", "eth", "btc"]
 SPOT_PRICE_PAIRS = [
     "ETH/USD",
     "BTC/USD",
-    "TRB/USD",
+    "FETCH/USD",
     "OHM/ETH",
     "VSQ/USD",
     "BCT/USD",

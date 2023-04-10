@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "../../interfaces/ITellor.sol";
+import "../../interfaces/IFetch.sol";
 
 /**
  * @title UserContract
- * This contract allows for easy integration with the Tellor System
- * by helping smart contracts to read data from Tellor
+ * This contract allows for easy integration with the Fetch System
+ * by helping smart contracts to read data from Fetch
  */
-contract UsingTellor {
-    ITellor public tellor;
+contract UsingFetch {
+    IFetch public fetch;
 
     /*Constructor*/
     /**
-     * @dev the constructor sets the tellor address in storage
-     * @param _tellor is the TellorMaster address
+     * @dev the constructor sets the fetch address in storage
+     * @param _fetch is the FetchMaster address
      */
-    constructor(address payable _tellor) {
-        tellor = ITellor(_tellor);
+    constructor(address payable _fetch) {
+        fetch = IFetch(_fetch);
     }
 
     /*Getters*/
@@ -28,11 +28,10 @@ contract UsingTellor {
      * @return _value the value retrieved
      * @return _timestampRetrieved the value's timestamp
      */
-    function getDataAfter(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bytes memory _value, uint256 _timestampRetrieved)
-    {
+    function getDataAfter(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bytes memory _value, uint256 _timestampRetrieved) {
         (bool _found, uint256 _index) = getIndexForDataAfter(
             _queryId,
             _timestamp
@@ -52,23 +51,18 @@ contract UsingTellor {
      * @return _value the value retrieved
      * @return _timestampRetrieved the value's timestamp
      */
-    function getDataBefore(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (
-            bytes memory _value,
-            uint256 _timestampRetrieved
-        )
-    {
+    function getDataBefore(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bytes memory _value, uint256 _timestampRetrieved) {
         (bool _found, uint256 _index) = getIndexForDataBefore(
             _queryId,
             _timestamp
         );
         if (!_found) return (bytes(""), 0);
-        uint256 _time = tellor.getTimestampbyQueryIdandIndex(_queryId, _index);
-        _value = tellor.retrieveData(_queryId, _time);
-        if (keccak256(_value) != keccak256(bytes("")))
-            return (_value, _time);
+        uint256 _time = fetch.getTimestampbyQueryIdandIndex(_queryId, _index);
+        _value = fetch.retrieveData(_queryId, _time);
+        if (keccak256(_value) != keccak256(bytes(""))) return (_value, _time);
         return (bytes(""), 0);
     }
 
@@ -79,21 +73,20 @@ contract UsingTellor {
      * @return _found whether the index was found
      * @return _index the next index found after the specified timestamp
      */
-    function getIndexForDataAfter(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bool _found, uint256 _index)
-    {
-        (_found, _index) = tellor.getIndexForDataBefore(_queryId, _timestamp);
+    function getIndexForDataAfter(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bool _found, uint256 _index) {
+        (_found, _index) = fetch.getIndexForDataBefore(_queryId, _timestamp);
         if (_found) {
             _index++;
         }
-        uint256 _valCount = tellor.getNewValueCountbyQueryId(_queryId);
+        uint256 _valCount = fetch.getNewValueCountbyQueryId(_queryId);
         // no value after timestamp
         if (_valCount <= _index) {
             return (false, 0);
         }
-        uint256 _timestampRetrieved = tellor.getTimestampbyQueryIdandIndex(
+        uint256 _timestampRetrieved = fetch.getTimestampbyQueryIdandIndex(
             _queryId,
             _index
         );
@@ -106,7 +99,7 @@ contract UsingTellor {
         if (_valCount <= _index) {
             return (false, 0);
         }
-        _timestampRetrieved = tellor.getTimestampbyQueryIdandIndex(
+        _timestampRetrieved = fetch.getTimestampbyQueryIdandIndex(
             _queryId,
             _index
         );
@@ -121,12 +114,11 @@ contract UsingTellor {
      * @return _index the latest index found before the specified timestamp
      */
     // slither-disable-next-line calls-loop
-    function getIndexForDataBefore(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bool _found, uint256 _index)
-    {
-        return tellor.getIndexForDataBefore(_queryId, _timestamp);
+    function getIndexForDataBefore(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bool _found, uint256 _index) {
+        return fetch.getIndexForDataBefore(_queryId, _timestamp);
     }
 
     /**
@@ -187,12 +179,10 @@ contract UsingTellor {
      * @param _queryId the id to look up
      * @return uint256 count of the number of values received for the queryId
      */
-    function getNewValueCountbyQueryId(bytes32 _queryId)
-        public
-        view
-        returns (uint256)
-    {
-        return tellor.getNewValueCountbyQueryId(_queryId);
+    function getNewValueCountbyQueryId(
+        bytes32 _queryId
+    ) public view returns (uint256) {
+        return fetch.getNewValueCountbyQueryId(_queryId);
     }
 
     /**
@@ -201,12 +191,11 @@ contract UsingTellor {
      * @param _timestamp is the timestamp to find a corresponding reporter for
      * @return address of the reporter who reported the value for the data ID at the given timestamp
      */
-    function getReporterByTimestamp(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (address)
-    {
-        return tellor.getReporterByTimestamp(_queryId, _timestamp);
+    function getReporterByTimestamp(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (address) {
+        return fetch.getReporterByTimestamp(_queryId, _timestamp);
     }
 
     /**
@@ -215,15 +204,12 @@ contract UsingTellor {
      * @param _index is the value index to look up
      * @return uint256 timestamp
      */
-    function getTimestampbyQueryIdandIndex(bytes32 _queryId, uint256 _index)
-        public
-        view
-        returns (uint256)
-    {
-        return tellor.getTimestampbyQueryIdandIndex(_queryId, _index);
+    function getTimestampbyQueryIdandIndex(
+        bytes32 _queryId,
+        uint256 _index
+    ) public view returns (uint256) {
+        return fetch.getTimestampbyQueryIdandIndex(_queryId, _index);
     }
-
-
 
     /**
      * @dev Retrieve value from oracle based on queryId/timestamp
@@ -231,12 +217,11 @@ contract UsingTellor {
      * @param _timestamp to retrieve data/value from
      * @return bytes value for query/timestamp submitted
      */
-    function retrieveData(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bytes memory)
-    {
-        return tellor.retrieveData(_queryId, _timestamp);
+    function retrieveData(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bytes memory) {
+        return fetch.retrieveData(_queryId, _timestamp);
     }
 
     /**
@@ -246,7 +231,9 @@ contract UsingTellor {
      * @return _value the value retrieved
      * @return _timestampRetrieved the retrieved value's timestamp
      */
-    function getCurrentValue(bytes32 _queryId)
+    function getCurrentValue(
+        bytes32 _queryId
+    )
         public
         view
         returns (
@@ -255,15 +242,15 @@ contract UsingTellor {
             uint256 _timestampRetrieved
         )
     {
-        uint256 _count = tellor.getNewValueCountbyQueryId(_queryId);
+        uint256 _count = fetch.getNewValueCountbyQueryId(_queryId);
         if (_count == 0) {
-          return (false, bytes(""), 0);
+            return (false, bytes(""), 0);
         }
-        uint256 _time = tellor.getTimestampbyQueryIdandIndex(
+        uint256 _time = fetch.getTimestampbyQueryIdandIndex(
             _queryId,
             _count - 1
         );
-        _value = tellor.retrieveData(_queryId, _time);
+        _value = fetch.retrieveData(_queryId, _time);
         if (keccak256(_value) != keccak256(bytes("")))
             return (true, _value, _time);
         return (false, bytes(""), _time);

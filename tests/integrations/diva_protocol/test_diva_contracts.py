@@ -1,10 +1,10 @@
 import pytest
 from brownie import accounts
 from brownie import DIVAProtocolMock
-from brownie import DIVATellorOracleMock
+from brownie import DIVAFetchOracleMock
 from telliot_core.apps.core import TelliotCore
 
-from telliot_feeds.integrations.diva_protocol.contract import DivaOracleTellorContract
+from telliot_feeds.integrations.diva_protocol.contract import DivaOracleFetchContract
 from telliot_feeds.integrations.diva_protocol.contract import DivaProtocolContract
 from telliot_feeds.integrations.diva_protocol.contract import PoolParameters
 
@@ -20,7 +20,7 @@ def diva_mock_contract():
 @pytest.fixture
 def diva_oracle_mock_contract():
     """Mock the DIVAOracle contract"""
-    return accounts[0].deploy(DIVATellorOracleMock, 3600, "0x0000000000000000000000000000000000001234")
+    return accounts[0].deploy(DIVAFetchOracleMock, 3600, "0x0000000000000000000000000000000000001234")
 
 
 @pytest.mark.skip("don't use this contract currently")
@@ -84,11 +84,11 @@ async def test_diva_protocol_contract(ropsten_test_cfg, diva_mock_contract):
 
 
 @pytest.mark.asyncio
-async def test_diva_tellor_oracle_contract(ropsten_test_cfg, diva_oracle_mock_contract):
-    """Test the DIVAOracleTellor contract"""
+async def test_diva_fetch_oracle_contract(ropsten_test_cfg, diva_oracle_mock_contract):
+    """Test the DIVAOracleFetch contract"""
     async with TelliotCore(config=ropsten_test_cfg) as core:
         account = core.get_account()
-        oracle = DivaOracleTellorContract(core.endpoint, account)
+        oracle = DivaOracleFetchContract(core.endpoint, account)
         oracle.address = diva_oracle_mock_contract.address  # Override with locally-deployed mock contract address
         oracle.connect()
 

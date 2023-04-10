@@ -1,11 +1,11 @@
 # Usage
 
-Prerequisites: [Getting Started](https://tellor-io.github.io/telliot-feeds/getting-started/)
+Prerequisites: [Getting Started](https://fetch-oracle.github.io/telliot-feeds/getting-started/)
 
-To report data to Tellor oracles, or access any other functionality, use the `telliot` CLI. A basic example:
+To report data to Fetch oracles, or access any other functionality, use the `telliot` CLI. A basic example:
 
 ```
-$ telliot report -a acct1 -ncr -qt trb-usd-spot
+$ telliot report -a acct1 -ncr -qt fetch-usd-spot
 ```
 
 **Be sure to always confirm the correct settings when prompted and read chain-specific usage sections before setting up your reporter!**
@@ -18,7 +18,7 @@ $ telliot report -a acct1 -ncr -qt trb-usd-spot
 
 # Reporting Basics
 
-**Note: When using the `report` command, `telliot` will automatically attempt to stake the minimum required to report. To see the current stake amount, find the oracle contract on your desired chain [here](https://docs.tellor.io/tellor/the-basics/contracts-reference), then call `getStakeAmount` in the contract's read functions section on the block explorer. The returned value is denominated in wei.**
+**Note: When using the `report` command, `telliot` will automatically attempt to stake the minimum required to report. To see the current stake amount, find the oracle contract on your desired chain [here](https://docs.fetch.io/fetch/the-basics/contracts-reference), then call `getStakeAmount` in the contract's read functions section on the block explorer. The returned value is denominated in wei.**
 
 ## Help flag
 
@@ -34,12 +34,12 @@ The help flag shows subcommand options as well:
 $ telliot report --help
 Usage: telliot report [OPTIONS]
 
-  Report values to Tellor oracle
+  Report values to Fetch oracle
 
 Options:
   -b, --build-feed                build a datafeed from a query type and query
                                   parameters
-  -qt, --query-tag [trb-usd-spot|ohm-eth-spot|vsq-usd-spot|bct-usd-spot|dai-usd-spot|ric-usd-spot|idle-usd-spot|mkr-usd-spot|sushi-usd-spot|matic-usd-spot|usdc-usd-spot|gas-price-oracle-example|eur-usd-spot|snapshot-proposal-example|eth-usd-30day_volatility|numeric-api-response-example|diva-protocol-example|string-query-example|pls-usd-spot|eth-usd-spot|btc-usd-spot|tellor-rng-example|twap-eth-usd-example|ampleforth-uspce|ampleforth-custom|albt-usd-spot|rai-usd-spot]
+  -qt, --query-tag [fetch-usd-spot|ohm-eth-spot|vsq-usd-spot|bct-usd-spot|dai-usd-spot|ric-usd-spot|idle-usd-spot|mkr-usd-spot|sushi-usd-spot|matic-usd-spot|usdc-usd-spot|gas-price-oracle-example|eur-usd-spot|snapshot-proposal-example|eth-usd-30day_volatility|numeric-api-response-example|diva-protocol-example|string-query-example|pls-usd-spot|eth-usd-spot|btc-usd-spot|fetch-rng-example|twap-eth-usd-example|ampleforth-uspce|ampleforth-custom|albt-usd-spot|rai-usd-spot]
                                   select datafeed using query tag
   -gl, --gas-limit INTEGER        use custom gas limit
   -mf, --max-fee INTEGER          use custom maxFeePerGas (gwei)
@@ -53,7 +53,7 @@ Options:
                                   gas price speed for eth gas station API
   -wp, --wait-period INTEGER      wait period between feed suggestion calls
   -rngts, --rng-timestamp INTEGER
-                                  timestamp for Tellor RNG
+                                  timestamp for Fetch RNG
   -dpt, --diva-protocol BOOLEAN   Report & settle DIVA Protocol derivative
                                   pools
   -dda, --diva-diamond-address TEXT
@@ -66,15 +66,15 @@ Options:
                                   Address of custom oracle contract
   -custom-autopay, --custom-autopay-contract TEXT
                                   Address of custom autopay contract
-  -360, --tellor-360 / -flex, --tellor-flex
-                                  Choose between Tellor 360 or Flex contracts
-  -s, --stake FLOAT               ❗Telliot will automatically stake more TRB
+  -360, --fetch-360 / -flex, --fetch-flex
+                                  Choose between Fetch 360 or Flex contracts
+  -s, --stake FLOAT               ❗Telliot will automatically stake more FETCH
                                   if your stake is below or falls below the
                                   stake amount required to report. If you
                                   would like to stake more than required,
                                   enter the TOTAL stake amount you wish to be
                                   staked. For example, if you wish to stake
-                                  1000 TRB, enter 1000.
+                                  1000 FETCH, enter 1000.
   -mnb, --min-native-token-balance FLOAT
                                   Minimum native token balance required to
                                   report. Denominated in ether.
@@ -104,7 +104,7 @@ telliot --account acct1 report
 
 ## Report Command
 
-Use the `report` command to submit data to Tellor oracles. Example `report` command usage:
+Use the `report` command to submit data to Fetch oracles. Example `report` command usage:
 
 ```
 telliot report -a acct2
@@ -160,7 +160,7 @@ Normal profit flag usage:
 telliot report -a acct4 -p 2
 ```
 
-**Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/tellor-io/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
+**Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/fetch-oracle/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
 
 ## Gas, Fee, & Transaction Type Flags
 
@@ -196,7 +196,7 @@ Reporting with Flashbots on testnet is not supported.
 
 ### Create Signatory Account
 
-In order to submit transactions through the [Flashbots](https://docs.flashbots.net/flashbots-auction/searchers/quick-start/) relay, you need an additional Ethereum acccount. The Flashbots organization uses this signatory account's address to identify you and build your historical reputation as a MEV ["searcher"](https://docs.flashbots.net/flashbots-auction/searchers/quick-start). This signatory account doesn't need any funds in it. Store it it as a `ChainedAccount` in the same way you would any other (see [Getting Started](https://tellor-io.github.io/telliot-feeds/getting-started/)).
+In order to submit transactions through the [Flashbots](https://docs.flashbots.net/flashbots-auction/searchers/quick-start/) relay, you need an additional Ethereum acccount. The Flashbots organization uses this signatory account's address to identify you and build your historical reputation as a MEV ["searcher"](https://docs.flashbots.net/flashbots-auction/searchers/quick-start). This signatory account doesn't need any funds in it. Store it it as a `ChainedAccount` in the same way you would any other (see [Getting Started](https://fetch-oracle.github.io/telliot-feeds/getting-started/)).
 
 When reporting, select your signatory account by tag as well as your staked mainnet account. Use the `--account/-a` and `--signature-tag/-sgt` flags.
 
@@ -208,7 +208,7 @@ telliot report -a acct2 -sgt sigacct
 
 ## Staking
 
-If reporting to Tellor360 oracles, reporters can stake multiple times. Each stake is 10 TRB, so if you stake 140 TRB, you've staked 14 times.
+If reporting to Fetch360 oracles, reporters can stake multiple times. Each stake is 10 FETCH, so if you stake 140 FETCH, you've staked 14 times.
 
 The reporter will automatically attempt to stake the required amount, but if you'd like to stake more than the current minimum, use the `--stake/-s` flag.
 
@@ -216,18 +216,18 @@ The reporter will automatically attempt to stake the required amount, but if you
 telliot report -a acct1 -s 2000 -ncr -rf
 ```
 
-If the reporter account's actual stake is reduced after a dispute, the reporter will attempt to stake the difference in TRB to return to the original desired stake amount.
+If the reporter account's actual stake is reduced after a dispute, the reporter will attempt to stake the difference in FETCH to return to the original desired stake amount.
 
 ### Withdraw Stake
 
-To withdraw your stake, there isn't a command available. Instead, you'll have to connect your wallet to the token address on your chain's explorer (e.g. [TRB on etherscan](https://etherscan.io/token/0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0#writeProxyContract)), run `requestStakingWithdraw`, wait seven days, then run `withdrawStake`.
+To withdraw your stake, there isn't a command available. Instead, you'll have to connect your wallet to the token address on your chain's explorer (e.g. [FETCH on etherscan](https://etherscan.io/token/0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0#writeProxyContract)), run `requestStakingWithdraw`, wait seven days, then run `withdrawStake`.
 
 ## Reporter Lock
 
-The amount of times a reporter can submit data to a Tellor oracles is determined by the number of stakes per 12 hours.:
+The amount of times a reporter can submit data to a Fetch oracles is determined by the number of stakes per 12 hours.:
 
 ```
 reporter_lock = 12 hours / number_of_stakes
 ```
 
-So if the current min stake amount is 10 TRB, and you have 120 TRB staked, you can report every hour. But if the min stake abount is updated to 20 TRB, you can only report every two hours.
+So if the current min stake amount is 10 FETCH, and you have 120 FETCH staked, you can report every hour. But if the min stake abount is updated to 20 FETCH, you can only report every two hours.

@@ -16,7 +16,7 @@ def test_all_query_types_in_catalog():
             "FakeQueryType",
             "MimicryCollectionStat",
             "AutopayAddresses",
-            "TellorOracleAddress",
+            "FetchOracleAddress",
         ):
             continue
         assert q.__name__ in q_types

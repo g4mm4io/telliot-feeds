@@ -13,7 +13,7 @@ from telliot_core.utils.response import ResponseStatus
 
 from telliot_feeds.feeds import DataFeed
 from telliot_feeds.reporters.rewards.time_based_rewards import get_time_based_rewards
-from telliot_feeds.reporters.tellor_flex import TellorFlexReporter
+from telliot_feeds.reporters.fetch_flex import FetchFlexReporter
 from telliot_feeds.reporters.tips.suggest_datafeed import get_feed_and_tip
 from telliot_feeds.reporters.tips.tip_amount import fetch_feed_tip
 from telliot_feeds.utils.log import get_logger
@@ -47,7 +47,7 @@ class StakerInfo:
     in_total_stakers: bool
 
 
-class Tellor360Reporter(TellorFlexReporter):
+class Fetch360Reporter(FetchFlexReporter):
     def __init__(self, stake: float = 0, use_random_feeds: bool = False, *args: Any, **kwargs: Any) -> None:
         self.stake_amount: Optional[int] = None
         self.staker_info: Optional[StakerInfo] = None
@@ -116,9 +116,9 @@ class Tellor360Reporter(TellorFlexReporter):
         # after the first loop, logs if stakeAmount has increased or decreased
         if self.stake_amount is not None:
             if self.stake_amount < stake_amount:
-                logger.info("Stake amount has increased possibly due to TRB price change.")
+                logger.info("Stake amount has increased possibly due to FETCH price change.")
             elif self.stake_amount > stake_amount:
-                logger.info("Stake amount has decreased possibly due to TRB price change.")
+                logger.info("Stake amount has decreased possibly due to FETCH price change.")
 
         self.stake_amount = stake_amount
 
@@ -130,17 +130,17 @@ class Tellor360Reporter(TellorFlexReporter):
             # amount to deposit whichever largest difference either chosen stake or stakeAmount to keep reporting
             stake_diff = max(int(self.stake_amount - account_staked_bal), int((self.stake * 1e18) - account_staked_bal))
 
-            # check TRB wallet balance!
+            # check FETCH wallet balance!
             wallet_balance, wallet_balance_status = await self.token.read("balanceOf", account=self.acct_addr)
 
             if not wallet_balance_status.ok:
-                msg = "unable to read account TRB balance"
+                msg = "unable to read account FETCH balance"
                 return False, error_status(msg, log=logger.info)
 
-            logger.info(f"Current wallet TRB balance: {wallet_balance / 1e18!r}")
+            logger.info(f"Current wallet FETCH balance: {wallet_balance / 1e18!r}")
 
             if stake_diff > wallet_balance:
-                msg = "Not enough TRB in the account to cover the stake"
+                msg = "Not enough FETCH in the account to cover the stake"
                 return False, error_status(msg, log=logger.warning)
             # approve token spending
             if self.transaction_type == 2:
@@ -207,7 +207,7 @@ class Tellor360Reporter(TellorFlexReporter):
                         "Unable to stake deposit: "
                         + deposit_status.error
                         + f"Make sure {self.acct_addr} has enough of the current chain's "
-                        + "currency and the oracle's currency (TRB)"
+                        + "currency and the oracle's currency (FETCH)"
                     )
                     return False, error_status(msg, log=logger.error)
             # add staked balance after successful stake deposit
@@ -228,7 +228,7 @@ class Tellor360Reporter(TellorFlexReporter):
         # 12hrs in seconds is 43200
         try:
             reporter_lock = 43200 / math.floor(self.staker_info.stake_balance / self.stake_amount)
-        except ZeroDivisionError:  # Tellor Playground contract's stakeAmount is 0
+        except ZeroDivisionError:  # Fetch Playground contract's stakeAmount is 0
             reporter_lock = 0
         time_remaining = round(self.staker_info.last_report + reporter_lock - time.time())
         if time_remaining > 0:

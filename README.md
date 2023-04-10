@@ -1,12 +1,12 @@
 # Telliot Feeds
 
-This package contains reporting tools and datafeeds for Tellor oracles.
+This package contains reporting tools and datafeeds for Fetch oracles.
 
-## [Documentation](https://tellor-io.github.io/telliot-feeds/)
+## [Documentation](https://fetch-oracle.github.io/telliot-feeds/)
 
-## [Installation and Configuration](https://tellor-io.github.io/telliot-feeds/getting-started/)
+## [Installation and Configuration](https://fetch-oracle.github.io/telliot-feeds/getting-started/)
 
-## [Usage](https://tellor-io.github.io/telliot-feeds/usage/)
+## [Usage](https://fetch-oracle.github.io/telliot-feeds/usage/)
 
 ## Example
 

@@ -1,5 +1,5 @@
-"""TellorRNG auto submitter.
-submits TellorRNG values at a fixed time interval
+"""FetchRNG auto submitter.
+submits FetchRNG values at a fixed time interval
 """
 import calendar
 import time
@@ -10,10 +10,10 @@ from telliot_core.utils.response import error_status
 from telliot_core.utils.response import ResponseStatus
 
 from telliot_feeds.datafeed import DataFeed
-from telliot_feeds.feeds.tellor_rng_feed import assemble_rng_datafeed
-from telliot_feeds.queries.tellor_rng import TellorRNG
+from telliot_feeds.feeds.fetch_rng_feed import assemble_rng_datafeed
+from telliot_feeds.queries.fetch_rng import FetchRNG
 from telliot_feeds.reporters.reporter_autopay_utils import get_feed_tip
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 from telliot_feeds.utils.log import get_logger
 
 
@@ -30,15 +30,15 @@ def get_next_timestamp() -> int:
     return target_ts
 
 
-class RNGReporter(Tellor360Reporter):
-    """Reports TellorRNG values at a fixed interval to TellorFlex
+class RNGReporter(Fetch360Reporter):
+    """Reports FetchRNG values at a fixed interval to FetchFlex
     on Polygon."""
 
     async def fetch_datafeed(self) -> Optional[DataFeed[Any]]:
         status = ResponseStatus()
 
         rng_timestamp = get_next_timestamp()
-        query = TellorRNG(rng_timestamp)
+        query = FetchRNG(rng_timestamp)
         report_count, read_status = await self.get_num_reports_by_id(query.query_id)
 
         if not read_status.ok:

@@ -14,7 +14,7 @@ from web3.datastructures import AttributeDict
 
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.feeds.eth_usd_feed import eth_usd_median_feed
-from telliot_feeds.feeds.trb_usd_feed import trb_usd_median_feed
+from telliot_feeds.feeds.fetch_usd_feed import fetch_usd_median_feed
 from telliot_feeds.reporters.interval import IntervalReporter
 from telliot_feeds.utils.log import get_logger
 
@@ -59,7 +59,7 @@ class CustomXReporter(IntervalReporter):
         self.max_fee = max_fee
         self.priority_fee = priority_fee
         self.legacy_gas_price = legacy_gas_price
-        self.trb_usd_median_feed = trb_usd_median_feed
+        self.fetch_usd_median_feed = fetch_usd_median_feed
         self.eth_usd_median_feed = eth_usd_median_feed
         self.custom_contract = custom_contract
         self.gas_info: dict[str, Union[float, int]] = {}
@@ -106,7 +106,7 @@ class CustomXReporter(IntervalReporter):
                 msg = (
                     "Unable to stake deposit: "
                     + write_status.error
-                    + f"Make sure {self.acct_addr} has enough ETH & TRB (100)"
+                    + f"Make sure {self.acct_addr} has enough ETH & FETCH (100)"
                 )  # error won't be none # noqa: E501
                 return False, error_status(msg, log=logger.info)
 
@@ -125,7 +125,7 @@ class CustomXReporter(IntervalReporter):
     ) -> Tuple[Optional[AttributeDict[Any, Any]], ResponseStatus]:
         """Report query value once
         This method checks to see if a user is able to submit
-        values to the TellorX oracle, given their staker status
+        values to the FetchX oracle, given their staker status
         and last submission time. Also, this method does not
         submit values if doing so won't make a profit."""
         # Check staker status

@@ -13,8 +13,8 @@ from eth_typing import ChecksumAddress
 from telliot_core.contract.contract import Contract
 from telliot_core.directory import ContractInfo
 from telliot_core.model.endpoints import RPCEndpoint
-from telliot_core.tellor.tellorflex.oracle import TellorFlexOracleContract
-from telliot_core.tellor.tellorx.oracle import TellorxOracleContract
+from telliot_core.fetch.fetchflex.oracle import FetchFlexOracleContract
+from telliot_core.fetch.fetchx.oracle import FetchxOracleContract
 from web3 import Web3
 
 from telliot_feeds.constants import ETHEREUM_CHAINS
@@ -34,8 +34,8 @@ logger = get_logger(__name__)
 reporter_sync_schedule: List[str] = [qt for qt in query_catalog._entries.keys() if "spot" in qt]
 
 
-async def tellor_suggested_report(
-    oracle: Union[TellorxOracleContract, TellorFlexOracleContract],
+async def fetch_suggested_report(
+    oracle: Union[FetchxOracleContract, FetchFlexOracleContract],
 ) -> Optional[str]:
     """Returns the currently suggested query to report against.
 

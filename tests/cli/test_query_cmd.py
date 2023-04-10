@@ -25,7 +25,7 @@ def test_decode_query_data():
     runner = CliRunner()
     result = runner.invoke(cli_main, ["query", "decode", "-qd", query_data])
 
-    assert "TellorRNG(timestamp=1659618000)" in result.output
+    assert "FetchRNG(timestamp=1659618000)" in result.output
 
 
 def test_decode_query_data_fail():

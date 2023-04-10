@@ -2,7 +2,7 @@
 
 ## Prerequisites
 - An account with your chain's native token for gas fees. Testnets often have a faucet. For example, [here is Polygon's](https://faucet.polygon.technology/) for Mumbai testnet.
-- [Test TRB](https://docs.tellor.io/tellor/the-basics/readme#need-testnet-tokens-trb) for staking.
+- [Test FETCH](https://docs.fetch.io/fetch/the-basics/readme#need-testnet-tokens-fetch) for staking.
 - [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use`telliot-feeds`. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
 
 
@@ -60,13 +60,13 @@ Use the following commands to create and run a container with the correct Python
 
 1. Pull image from docker hub:
 ```
-sudo docker pull tellorofficial/telliot
+sudo docker pull fetchofficial/telliot
 ```
 2. Create the following `docker-compose.yml` file using the command:
 ```
 echo "services:
   telliot:
-    image: tellorofficial/telliot
+    image: fetchofficial/telliot
     container_name: telliot_container
     build: .
     tty: true
@@ -101,7 +101,7 @@ To view your current configuration at any time:
 The reporter (telliot) needs to know which accounts (wallet addresses) are available for submitting values to the oracle.
 Use the command line to add necessary reporting accounts/private keys.
 
-For example, to add an account called `myacct1` for reporting on Polygon mainnet (chain ID 137). You'll need to replace the private key in this example with the private key that holds your TRB for reporting:
+For example, to add an account called `myacct1` for reporting on Polygon mainnet (chain ID 137). You'll need to replace the private key in this example with the private key that holds your FETCH for reporting:
 
     >> telliot account add myacct1 0x57fe7105302229455bcfd58a8b531b532d7a2bb3b50e1026afa455cd332bf706 137
     Enter encryption password for myacct1: 
@@ -149,7 +149,7 @@ If you don't have your own node URL, a free one can be obtained at [Infura.io](h
 
 Note that endpoints should use the websocket (wss) protocol because HTTPS endpoints do not support event listeners. (If reporting on Polygon, websockets are not supported, so the HTTPS endpoint is fine.)
 
-**Once you've added an endpoint, you can read the [Usage](https://tellor-io.github.io/telliot-feeds/usage/) section,
+**Once you've added an endpoint, you can read the [Usage](https://fetch-oracle.github.io/telliot-feeds/usage/) section,
 then you'll be set to report.**
 
 ## Other possible configs

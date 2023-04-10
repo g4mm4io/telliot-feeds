@@ -28,7 +28,7 @@ def fake_call(calls: AutopayCalls):
 async def setup_autopay_call(mumbai_test_cfg, mock_autopay_contract) -> AutopayCalls:
     async with TelliotCore(config=mumbai_test_cfg) as core:
 
-        flex = core.get_tellorflex_contracts()
+        flex = core.get_fetchflex_contracts()
         flex.autopay.address = mock_autopay_contract.address
         flex.autopay.connect()
         calls = AutopayCalls(flex.autopay)

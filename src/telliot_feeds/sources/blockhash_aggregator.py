@@ -162,8 +162,8 @@ async def get_btc_hash(timestamp: int) -> Tuple[Optional[str], Optional[int]]:
 
 
 @dataclass
-class TellorRNGManualSource(DataSource[Any]):
-    """DataSource for TellorRNG manually-entered timestamp."""
+class FetchRNGManualSource(DataSource[Any]):
+    """DataSource for FetchRNG manually-entered timestamp."""
 
     timestamp = 0
 
@@ -248,6 +248,6 @@ class TellorRNGManualSource(DataSource[Any]):
 
 
 if __name__ == "__main__":
-    s = TellorRNGManualSource()
+    s = FetchRNGManualSource()
     v, t = asyncio.run(s.fetch_new_datapoint())
     print("datapoint:", v, t)

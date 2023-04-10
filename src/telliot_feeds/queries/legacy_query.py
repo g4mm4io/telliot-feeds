@@ -12,7 +12,7 @@ from telliot_feeds.queries.abi_query import AbiQuery
 class LegacyRequest(AbiQuery):
     """Legacy Price/Value request
 
-    Legacy request are queries that existed prior to TellorX
+    Legacy request are queries that existed prior to FetchX
     A legacy query uses arbitrary query ``data`` and a static query ``id``.
     The query ``id`` is always set to the legacy request ID, which is
     a static integer less than 100.
@@ -20,7 +20,7 @@ class LegacyRequest(AbiQuery):
     The LegacyQuery class is deprecated and should not be used by
     new projects.
 
-    Refer to [tellor documentation](https://docs.tellor.io/tellor/integration/data-ids)
+    Refer to [fetch documentation](https://docs.fetch.io/fetch/integration/data-ids)
     for a description of each ``id``
 
     """

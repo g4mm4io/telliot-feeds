@@ -4,7 +4,7 @@ Make calls forward and fill in FullFeedQueryDetails
 from typing import Callable
 from typing import Optional
 
-from telliot_core.tellor.tellorflex.autopay import TellorFlexAutopayContract
+from telliot_core.fetch.fetchflex.autopay import FetchFlexAutopayContract
 from telliot_core.utils.response import error_status
 from telliot_core.utils.response import ResponseStatus
 from telliot_core.utils.timestamp import TimeStamp
@@ -23,7 +23,7 @@ class FundedFeeds(FundedFeedFilter):
     """Fetch Feeds from autopay and filter"""
 
     def __init__(
-        self, autopay: TellorFlexAutopayContract, multi_call: MulticallAutopay, listener_filter: Callable[[bytes], bool]
+        self, autopay: FetchFlexAutopayContract, multi_call: MulticallAutopay, listener_filter: Callable[[bytes], bool]
     ) -> None:
         self.multi_call = multi_call
         self.listener_filter = listener_filter

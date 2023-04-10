@@ -2,7 +2,7 @@ from typing import Any
 from typing import Optional
 from typing import Tuple
 
-from telliot_core.tellor.tellorflex.autopay import TellorFlexAutopayContract
+from telliot_core.fetch.fetchflex.autopay import FetchFlexAutopayContract
 from telliot_core.utils.timestamp import TimeStamp
 
 from telliot_feeds.datafeed import DataFeed
@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 # suggest a feed here not a query tag, because build feed portion
 # or check both mappings for type
 async def get_feed_and_tip(
-    autopay: TellorFlexAutopayContract, current_timestamp: Optional[TimeStamp] = None
+    autopay: FetchFlexAutopayContract, current_timestamp: Optional[TimeStamp] = None
 ) -> Optional[Tuple[Optional[DataFeed[Any]], Optional[int]]]:
     """Fetch feeds with their tip and filter to get a feed suggestion with the max tip
 

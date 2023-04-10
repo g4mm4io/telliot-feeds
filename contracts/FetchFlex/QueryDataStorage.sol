@@ -2,7 +2,7 @@
 pragma solidity 0.8.3;
 
 /**
- @author Tellor Inc.
+ @author Fetch Inc.
  @title QueryDataStorage
  @dev This contract is used for storing query data
 */
@@ -28,11 +28,9 @@ contract QueryDataStorage {
      * @param _queryId Unique identifier for the query
      * @return _queryData Stored query data
      */
-    function getQueryData(bytes32 _queryId)
-        public
-        view
-        returns (bytes memory _queryData)
-    {
+    function getQueryData(
+        bytes32 _queryId
+    ) public view returns (bytes memory _queryData) {
         return queryData[_queryId];
     }
 }

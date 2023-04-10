@@ -44,18 +44,18 @@ async def test_one_time_tips_only(setup_one_time_tips, caplog):
 @pytest.mark.asyncio
 async def test_fetching_tips(tip_feeds_and_one_time_tips):
     """Test fetching tips when there are both feed tips and single tips
-    A one time tip of 24 TRB exists autopay and plus 1 TRB in a feed
+    A one time tip of 24 FETCH exists autopay and plus 1 FETCH in a feed
     its the highest so it should be the suggested query"""
     flex = await tip_feeds_and_one_time_tips
     datafeed, tip = await get_feed_and_tip(flex.autopay)
     assert isinstance(datafeed, DataFeed)
     assert isinstance(tip, int)
     # remove rng query id since it's being bypassed due to no api support
-    TellorRNG_qid = "48142be0c53a531d048ba74c27bd5927b871d3f5de11a909c9e2b829c646e8fd"
+    FetchRNG_qid = "48142be0c53a531d048ba74c27bd5927b871d3f5de11a909c9e2b829c646e8fd"
     # give me length of catalog query ids - 1 if rng query id in list
     length = (
         (len(CATALOG_QUERY_IDS) - 1)
-        if CATALOG_QUERY_IDS.__contains__(to_bytes(hexstr=TellorRNG_qid))
+        if CATALOG_QUERY_IDS.__contains__(to_bytes(hexstr=FetchRNG_qid))
         else len(CATALOG_QUERY_IDS)
     )
     assert tip == length * int(1e18)

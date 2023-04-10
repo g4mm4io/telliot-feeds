@@ -4,14 +4,14 @@ pragma solidity 0.8.3;
 import "../../interfaces/IERC20.sol";
 
 /**
- @author Tellor Inc.
- @title TellorFlex
- @dev This is a streamlined Tellor oracle system which handles staking, reporting,
+ @author Fetch Inc.
+ @title FetchFlex
+ @dev This is a streamlined Fetch oracle system which handles staking, reporting,
  * slashing, and user data getters in one contract. This contract is controlled
  * by a single address known as 'governance', which could be an externally owned
  * account or a contract, allowing for a flexible, modular design.
 */
-contract TellorFlex {
+contract FetchFlex {
     IERC20 public token;
     address public governance;
     uint256 public stakeAmount; //amount required to be a staker
@@ -197,10 +197,10 @@ contract TellorFlex {
      * @param _recipient is the address receiving the reporter's stake
      * @return uint256 amount of token slashed and sent to recipient address
      */
-    function slashReporter(address _reporter, address _recipient)
-        external
-        returns (uint256)
-    {
+    function slashReporter(
+        address _reporter,
+        address _recipient
+    ) external returns (uint256) {
         require(msg.sender == governance, "only governance can slash reporter");
         StakeInfo storage _staker = stakerDetails[_reporter];
         require(
@@ -308,11 +308,10 @@ contract TellorFlex {
      * @param _timestamp is the timestamp to find the corresponding block number for
      * @return uint256 block number of the timestamp for the given data ID
      */
-    function getBlockNumberByTimestamp(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (uint256)
-    {
+    function getBlockNumberByTimestamp(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (uint256) {
         return reports[_queryId].timestampToBlockNum[_timestamp];
     }
 
@@ -321,11 +320,9 @@ contract TellorFlex {
      * @param _queryId is the ID of the specific data feed
      * @return bytes memory of the current value of data
      */
-    function getCurrentValue(bytes32 _queryId)
-        external
-        view
-        returns (bytes memory)
-    {
+    function getCurrentValue(
+        bytes32 _queryId
+    ) external view returns (bytes memory) {
         return
             reports[_queryId].valueByTimestamp[
                 reports[_queryId].timestamps[
@@ -347,11 +344,9 @@ contract TellorFlex {
      * @param _queryId the id to look up
      * @return uint256 count of the number of values received for the id
      */
-    function getNewValueCountbyQueryId(bytes32 _queryId)
-        external
-        view
-        returns (uint256)
-    {
+    function getNewValueCountbyQueryId(
+        bytes32 _queryId
+    ) external view returns (uint256) {
         return reports[_queryId].timestamps.length;
     }
 
@@ -362,11 +357,10 @@ contract TellorFlex {
      * @return address reporter who submitted the value
      * @return bool true if the value was removed
      */
-    function getReportDetails(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (address, bool)
-    {
+    function getReportDetails(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (address, bool) {
         bool _wasRemoved = reports[_queryId].timestampIndex[_timestamp] == 0 &&
             keccak256(reports[_queryId].valueByTimestamp[_timestamp]) ==
             keccak256(bytes("")) &&
@@ -380,11 +374,10 @@ contract TellorFlex {
      * @param _timestamp is the timestamp to find a corresponding reporter for
      * @return address of the reporter who reported the value for the data ID at the given timestamp
      */
-    function getReporterByTimestamp(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (address)
-    {
+    function getReporterByTimestamp(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (address) {
         return reports[_queryId].reporterByTimestamp[_timestamp];
     }
 
@@ -393,11 +386,9 @@ contract TellorFlex {
      * @param _reporter is address of the reporter
      * @return uint256 timestamp of the reporter's last submission
      */
-    function getReporterLastTimestamp(address _reporter)
-        external
-        view
-        returns (uint256)
-    {
+    function getReporterLastTimestamp(
+        address _reporter
+    ) external view returns (uint256) {
         return stakerDetails[_reporter].reporterLastTimestamp;
     }
 
@@ -414,11 +405,9 @@ contract TellorFlex {
      * @param _reporter is the address of a reporter
      * @return uint256 of the number of values submitted by the given reporter
      */
-    function getReportsSubmittedByAddress(address _reporter)
-        external
-        view
-        returns (uint256)
-    {
+    function getReportsSubmittedByAddress(
+        address _reporter
+    ) external view returns (uint256) {
         return stakerDetails[_reporter].reportsSubmitted;
     }
 
@@ -452,17 +441,9 @@ contract TellorFlex {
      * @return uint reporter's last reported timestamp
      * @return uint total number of reports submitted by reporter
      */
-    function getStakerInfo(address _staker)
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getStakerInfo(
+        address _staker
+    ) external view returns (uint256, uint256, uint256, uint256, uint256) {
         return (
             stakerDetails[_staker].startDate,
             stakerDetails[_staker].stakedBalance,
@@ -486,11 +467,10 @@ contract TellorFlex {
      * @param _index is the value index to look up
      * @return uint256 timestamp
      */
-    function getTimestampbyQueryIdandIndex(bytes32 _queryId, uint256 _index)
-        external
-        view
-        returns (uint256)
-    {
+    function getTimestampbyQueryIdandIndex(
+        bytes32 _queryId,
+        uint256 _index
+    ) external view returns (uint256) {
         return reports[_queryId].timestamps[_index];
     }
 
@@ -500,11 +480,10 @@ contract TellorFlex {
      * @param _timestamp is the timestamp to find in the timestamps array
      * @return uint256 of the index of the reporter timestamp in the array for specific ID
      */
-    function getTimestampIndexByTimestamp(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (uint256)
-    {
+    function getTimestampIndexByTimestamp(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (uint256) {
         return reports[_queryId].timestampIndex[_timestamp];
     }
 
@@ -530,19 +509,17 @@ contract TellorFlex {
      * @param _timestamp to retrieve data/value from
      * @return bytes value for timestamp submitted
      */
-    function retrieveData(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (bytes memory)
-    {
+    function retrieveData(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (bytes memory) {
         return reports[_queryId].valueByTimestamp[_timestamp];
     }
 
-     function getIndexForDataBefore(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bool _found, uint256 _index)
-    {
+    function getIndexForDataBefore(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bool _found, uint256 _index) {
         uint256 _count = this.getNewValueCountbyQueryId(_queryId);
         if (_count > 0) {
             uint256 _middle;
@@ -567,8 +544,7 @@ contract TellorFlex {
                         _middle + 1
                     );
                     if (_nextTime >= _timestamp) {
-                            return (true, _middle);
-
+                        return (true, _middle);
                     } else {
                         //look from middle + 1(next value) to end
                         _start = _middle + 1;
@@ -579,9 +555,8 @@ contract TellorFlex {
                         _middle - 1
                     );
                     if (_prevTime < _timestamp) {
-                            // _prevtime is correct
-                            return (true, _middle);
-
+                        // _prevtime is correct
+                        return (true, _middle);
                     } else {
                         //look from start to middle -1(prev value)
                         _end = _middle - 1;

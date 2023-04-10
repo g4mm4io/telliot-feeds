@@ -1,6 +1,6 @@
 """ Unit tests for MimicryCollectionStat queries.
 
-Copyright (c) 2021-, Tellor Development Community
+Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 from eth_abi import decode_abi
@@ -40,8 +40,8 @@ def test_encode_decode_reported_val():
     q = MimicryCollectionStat(chainId=1, collectionAddress="0x495f947276749ce646f68ac8c248420045cb7b5e", metric=0)
 
     # JSON string containing data specified and
-    # referenced in Tellor /dataSpecs:
-    # https://github.com/tellor-io/dataSpecs/blob/main/types/MimicryCollectionStat.md
+    # referenced in Fetch /dataSpecs:
+    # https://github.com/fetch-oracle/dataSpecs/blob/main/types/MimicryCollectionStat.md
 
     data = 31.7  # example reported metric
 

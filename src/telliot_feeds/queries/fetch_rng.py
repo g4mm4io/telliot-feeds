@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TellorRNG(AbiQuery):
+class FetchRNG(AbiQuery):
     """Returns a pseudorandom number generated from hashing together blockhashes from multiple chains.
 
     Attributes:
@@ -23,7 +23,7 @@ class TellorRNG(AbiQuery):
 
     @property
     def value_type(self) -> ValueType:
-        """Data type returned for a TellorRNG query.
+        """Data type returned for a FetchRNG query.
 
         - `bytes32`: 32 bytes hexadecimal value
         - `packed`: false

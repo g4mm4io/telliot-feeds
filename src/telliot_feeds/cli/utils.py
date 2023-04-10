@@ -110,7 +110,7 @@ def reporter_cli_core(ctx: click.Context) -> TelliotCore:
             key = os.getenv("PRIVATE_KEY", None)
             if key:
                 ChainedAccount.add(
-                    "git-tellorflex-test-key",
+                    "git-fetchflex-test-key",
                     chains=1337,
                     key=key,
                     password="",

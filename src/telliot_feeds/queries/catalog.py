@@ -40,7 +40,7 @@ class CatalogEntry(Base):
 class Catalog(Base):
     """Query Catalog
 
-    The query catalog contains one `CatalogEntry` object for each valid query in the Tellor network.
+    The query catalog contains one `CatalogEntry` object for each valid query in the Fetch network.
     It is stored as a mapping of query names (i.e. tags) to `CatalogEntry` objects.
     """
 
@@ -106,7 +106,7 @@ class Catalog(Base):
         return yaml.dump(clamfig.serialize(all_entries), sort_keys=False)  # type: ignore
 
     def to_markdown(self) -> str:
-        lines = ["# TellorX Query Catalog", ""]
+        lines = ["# FetchX Query Catalog", ""]
         for entry in self.find():
             lines.append(f"## {entry.title}")
             lines.append("")

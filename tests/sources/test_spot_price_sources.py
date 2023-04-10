@@ -84,7 +84,7 @@ async def test_coinbase():
     v, t = await get_price("btc", "usd", service["coinbase"])
     validate_price(v, t)
 
-    v, t = await get_price("trb", "usd", service["coinbase"])
+    v, t = await get_price("fetch", "usd", service["coinbase"])
     validate_price(v, t)
 
 
@@ -279,7 +279,7 @@ async def test_coingecko_price_service_rate_limit(caplog):
 
     coingecko.WebPriceService.get_url = mock_get_url
     ps = CoinGeckoSpotPriceService(timeout=0.5)
-    v, dt = await ps.get_price("trb", "usd")
+    v, dt = await ps.get_price("fetch", "usd")
 
     assert v is None
     assert dt is None

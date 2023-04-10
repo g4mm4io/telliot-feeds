@@ -22,7 +22,7 @@ async def test_main(
         # get PubKey and PrivKey from config files
         account = core.get_account()
 
-        flex = core.get_tellorflex_contracts()
+        flex = core.get_fetchflex_contracts()
         flex.oracle.address = mock_flex_contract.address
         flex.autopay.address = mock_autopay_contract.address
         flex.autopay.abi = mock_autopay_contract.abi
@@ -121,26 +121,26 @@ async def test_main(
         assert tip == 20e18
 
         # variables for feed setup and to get feedId
-        trb_query_id = query_catalog._entries["trb-usd-spot"].query_id
+        fetch_query_id = query_catalog._entries["fetch-usd-spot"].query_id
         reward = 30 * 10**18
         interval = 100
         window = 99
         price_threshold = 0
-        trb_query_data = "0x" + query_catalog._entries["trb-usd-spot"].query.query_data.hex()
+        fetch_query_data = "0x" + query_catalog._entries["fetch-usd-spot"].query.query_data.hex()
 
         # setup a feed on autopay
         response, status = await flex.autopay.write(
             "setupDataFeed",
             gas_limit=3500000,
             legacy_gas_price=1,
-            _queryId=trb_query_id,
+            _queryId=fetch_query_id,
             _reward=reward,
             _startTime=timestamp,
             _interval=interval,
             _window=window,
             _priceThreshold=price_threshold,
             _rewardIncreasePerSecond=0,
-            _queryData=trb_query_data,
+            _queryData=fetch_query_data,
             _amount=50 * 10**18,
         )
         assert status.ok
@@ -149,10 +149,10 @@ async def test_main(
 
         # get suggestion from telliot on query with highest tip
         suggested_qtag, tip = await autopay_suggested_report(flex.autopay)
-        assert suggested_qtag == "trb-usd-spot"
+        assert suggested_qtag == "fetch-usd-spot"
         assert tip == 30e18
 
-        tips = await get_feed_tip(query_catalog._entries["trb-usd-spot"].query.query_id, flex.autopay)
+        tips = await get_feed_tip(query_catalog._entries["fetch-usd-spot"].query.query_id, flex.autopay)
         assert tips == 30e18
 
         # submit report to oracle to get tip
@@ -160,10 +160,10 @@ async def test_main(
             "submitValue",
             gas_limit=350000,
             legacy_gas_price=1,
-            _queryId=trb_query_id,
+            _queryId=fetch_query_id,
             _value="0x" + encode_single("(uint256)", [3000]).hex(),
             _nonce=0,
-            _queryData=trb_query_data,
+            _queryData=fetch_query_data,
         )
         chain.snapshot()
 
@@ -175,8 +175,8 @@ async def test_main(
         # fast forward to avoid claiming tips buffer 12hr
         chain.sleep(43201)
 
-        # get timestamp trb's reported value
-        read_timestamp, status = await flex.autopay.read("getCurrentValue", _queryId=trb_query_id)
+        # get timestamp fetch's reported value
+        read_timestamp, status = await flex.autopay.read("getCurrentValue", _queryId=fetch_query_id)
         assert status.ok
 
         _, status = await flex.autopay.write(
@@ -184,7 +184,7 @@ async def test_main(
             gas_limit=350000,
             legacy_gas_price=1,
             _feedId=feed_id,
-            _queryId=trb_query_id,
+            _queryId=fetch_query_id,
             _timestamps=[read_timestamp[2]],
         )
         assert status.ok

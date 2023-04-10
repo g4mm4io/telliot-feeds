@@ -3,13 +3,13 @@ from brownie import chain
 from eth_utils import to_bytes
 from telliot_core.apps.core import TelliotCore
 
-from telliot_feeds.feeds.trb_usd_feed import trb_usd_median_feed
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.feeds.fetch_usd_feed import fetch_usd_median_feed
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 from telliot_feeds.reporters.tips.tip_amount import fetch_feed_tip
 
 
-query_data = trb_usd_median_feed.query.query_data
-query_id = trb_usd_median_feed.query.query_id
+query_data = fetch_usd_median_feed.query.query_data
+query_id = fetch_usd_median_feed.query.query_id
 reward = 1 * 10**18
 interval = 100
 window = 99
@@ -60,7 +60,7 @@ async def test_priceThreshold_gt_zero(autopay_contract_setup):
         **setup_datafeed_kwargs_big_window,
         _priceThreshold=price_threshold,
     )
-    get_price = await trb_usd_median_feed.source.fetch_new_datapoint()
+    get_price = await fetch_usd_median_feed.source.fetch_new_datapoint()
     price = get_price[0]
     tip_amount = await fetch_feed_tip(autopay=r.autopay, query_id=query_id)
     assert tip_amount == reward
@@ -138,7 +138,7 @@ async def test_meet_priceThreshold(autopay_contract_setup):
     )
     tip_amount = await fetch_feed_tip(autopay=r.autopay, query_id=query_id)
     assert tip_amount == reward
-    get_price = await trb_usd_median_feed.source.fetch_new_datapoint()
+    get_price = await fetch_usd_median_feed.source.fetch_new_datapoint()
     # report a price that is 1 less than the current price so that threshold is met
     price = get_price[0] - 1
     # report a price that is falls within the interval
@@ -226,7 +226,7 @@ async def test_rng(autopay_contract_setup, mumbai_test_cfg, caplog):
     flex = await autopay_contract_setup
     core = TelliotCore(config=mumbai_test_cfg)
     account = core.get_account()
-    reporter = Tellor360Reporter(
+    reporter = Fetch360Reporter(
         oracle=flex.oracle,
         token=flex.token,
         autopay=flex.autopay,
@@ -247,5 +247,5 @@ async def test_rng(autopay_contract_setup, mumbai_test_cfg, caplog):
         _amount=int(1e18),
     )
     _, status = await reporter.report_once()
-    assert '{"type":"TellorRNG","timestamp":1665592591}' in caplog.text
+    assert '{"type":"FetchRNG","timestamp":1665592591}' in caplog.text
     assert status.ok

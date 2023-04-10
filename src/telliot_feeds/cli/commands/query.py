@@ -9,7 +9,7 @@ from telliot_feeds.utils.decode import decode_submit_value_bytes
 # from telliot_core.cli.utils import cli_core
 
 # from telliot_feeds.queries.query_catalog import query_catalog
-# from telliot_feeds.utils.reporter_utils import tellor_suggested_report
+# from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 
 
 @click.group()
@@ -67,32 +67,32 @@ def new() -> None:
 #         q = catalog_entry.query
 #         queryId = f"0x{q.query_id.hex()}"
 #         if chain_id in [1, 4]:
-#             tellorx = core.get_tellorx_contracts()
+#             fetchx = core.get_fetchx_contracts()
 #         else:
 #             click.echo(f"Query status not yet supported on Chain ID {chain_id}.")
 #             return
-#         count, status = await tellorx.oracle.getTimestampCountById(queryId)
+#         count, status = await fetchx.oracle.getTimestampCountById(queryId)
 #         click.echo(f"Timestamp count: {count}")
-#         bytes_value, status = await tellorx.oracle.getCurrentValue(queryId)
+#         bytes_value, status = await fetchx.oracle.getCurrentValue(queryId)
 #         if bytes_value is not None:
 #             value = q.value_type.decode(bytes_value)
 #             click.echo(f"Current value: {value}")
 #         else:
 #             click.echo("Current value: None")
-#         tlnv, status = await tellorx.oracle.getTimeOfLastNewValue()
+#         tlnv, status = await fetchx.oracle.getTimeOfLastNewValue()
 #         click.echo(f"Time of last new value (all queryIds): {tlnv}")
-#         tips, status = await tellorx.oracle.getTipsById(queryId)
-#         click.echo(f"Tips (TRB): {tips}")
-#         (tips2, reward), status = await tellorx.oracle.getCurrentReward(queryId)
-#         click.echo(f"Tips/reward (TRB): {tips2} / {reward}")
+#         tips, status = await fetchx.oracle.getTipsById(queryId)
+#         click.echo(f"Tips (FETCH): {tips}")
+#         (tips2, reward), status = await fetchx.oracle.getCurrentReward(queryId)
+#         click.echo(f"Tips/reward (FETCH): {tips2} / {reward}")
 #         if count > 0:
 #             click.echo(f"{npoints} most recent on-chain datapoints:")
 #             for k in range(count - npoints, count):
-#                 ts, status = await tellorx.oracle.getReportTimestampByIndex(queryId, k)
-#                 blocknum, status = await tellorx.oracle.getBlockNumberByTimestamp(queryId, ts)
-#                 bytes_value, status = await tellorx.oracle.getValueByTimestamp(queryId, ts)
+#                 ts, status = await fetchx.oracle.getReportTimestampByIndex(queryId, k)
+#                 blocknum, status = await fetchx.oracle.getBlockNumberByTimestamp(queryId, ts)
+#                 bytes_value, status = await fetchx.oracle.getValueByTimestamp(queryId, ts)
 #                 value = q.value_type.decode(bytes_value)
-#                 reporter, status = await tellorx.oracle.getReporterByTimestamp(queryId, ts)
+#                 reporter, status = await fetchx.oracle.getReporterByTimestamp(queryId, ts)
 #                 click.echo(f" index: {k}, timestamp: {ts}, block: {blocknum}, value:{value}, reporter: {reporter} ")
 #         else:
 #             click.echo("No on-chain datapoints found.")
@@ -104,7 +104,7 @@ def new() -> None:
 # async def suggest(ctx: click.Context) -> None:
 #     """Get the current suggested query for reporter synchronization."""
 #     async with cli_core(ctx) as core:
-#         tellorx = core.get_tellorx_contracts()
-#         qtag = await tellor_suggested_report(tellorx.oracle)
+#         fetchx = core.get_fetchx_contracts()
+#         qtag = await fetch_suggested_report(fetchx.oracle)
 #         assert isinstance(qtag, str)
 #         click.echo(f"Suggested query: {qtag}")

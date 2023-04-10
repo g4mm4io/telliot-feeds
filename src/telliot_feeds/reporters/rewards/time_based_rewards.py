@@ -1,5 +1,5 @@
 """Utilities for calculating time-based rewards (TBR)"""
-from telliot_core.tellor.tellor360.oracle import Tellor360OracleContract
+from telliot_core.fetch.fetch360.oracle import Fetch360OracleContract
 from telliot_core.utils.timestamp import TimeStamp
 
 from telliot_feeds.utils.log import get_logger
@@ -7,7 +7,7 @@ from telliot_feeds.utils.log import get_logger
 logger = get_logger(__name__)
 
 
-async def get_time_based_rewards(oracle: Tellor360OracleContract) -> int:
+async def get_time_based_rewards(oracle: Fetch360OracleContract) -> int:
     """
     Reward that will be given if a reporter submits now:
     TBR is calculated by factoring in the time of the last value to determine when it

@@ -19,7 +19,7 @@ class Snapshot(AbiQuery):
 
     See https://snapshot.org/ for proposal results.
     See the data spec for more info about this query type:
-    https://github.com/tellor-io/dataSpecs/blob/main/types/Snapshot.md
+    https://github.com/fetch-oracle/dataSpecs/blob/main/types/Snapshot.md
     """
 
     proposalId: Optional[str]

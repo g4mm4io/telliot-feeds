@@ -22,11 +22,11 @@ from web3.datastructures import AttributeDict
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.feeds import CATALOG_FEEDS
 from telliot_feeds.feeds.eth_usd_feed import eth_usd_median_feed
-from telliot_feeds.feeds.trb_usd_feed import trb_usd_median_feed
+from telliot_feeds.feeds.fetch_usd_feed import fetch_usd_median_feed
 from telliot_feeds.utils.log import get_logger
 from telliot_feeds.utils.reporter_utils import has_native_token_funds
 from telliot_feeds.utils.reporter_utils import is_online
-from telliot_feeds.utils.reporter_utils import tellor_suggested_report
+from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 from telliot_feeds.utils.reporter_utils import tkn_symbol
 
 
@@ -34,7 +34,7 @@ logger = get_logger(__name__)
 
 
 class IntervalReporter:
-    """Reports values from given datafeeds to a TellorX Oracle
+    """Reports values from given datafeeds to a FetchX Oracle
     every 7 seconds."""
 
     def __init__(
@@ -71,7 +71,7 @@ class IntervalReporter:
         self.priority_fee = priority_fee
         self.legacy_gas_price = legacy_gas_price
         self.gas_multiplier = gas_multiplier
-        self.trb_usd_median_feed = trb_usd_median_feed
+        self.fetch_usd_median_feed = fetch_usd_median_feed
         self.eth_usd_median_feed = eth_usd_median_feed
         self.wait_period = wait_period
         self.min_native_token_balance = min_native_token_balance
@@ -84,7 +84,7 @@ class IntervalReporter:
     async def check_reporter_lock(self) -> ResponseStatus:
         """Ensure enough time has passed since last report
         Returns a bool signifying whether a given address is in a
-        reporter lock or not (TellorX oracle users cannot submit
+        reporter lock or not (FetchX oracle users cannot submit
         multiple times within 12 hours)."""
         status = ResponseStatus()
 
@@ -172,7 +172,7 @@ class IntervalReporter:
                 msg = (
                     "Unable to stake deposit: "
                     + write_status.error
-                    + f"Make sure {self.acct_addr} has enough ETH & TRB (100)"
+                    + f"Make sure {self.acct_addr} has enough ETH & FETCH (100)"
                 )  # error won't be none # noqa: E501
                 return False, error_status(msg, log=logger.info)
 
@@ -205,17 +205,17 @@ class IntervalReporter:
             return status
 
         # Fetch token prices
-        price_feeds = [self.eth_usd_median_feed, self.trb_usd_median_feed]
+        price_feeds = [self.eth_usd_median_feed, self.fetch_usd_median_feed]
         _ = await asyncio.gather(*[feed.source.fetch_new_datapoint() for feed in price_feeds])
 
         price_eth_usd = self.eth_usd_median_feed.source.latest[0]
-        price_trb_usd = self.trb_usd_median_feed.source.latest[0]
+        price_fetch_usd = self.fetch_usd_median_feed.source.latest[0]
 
         if price_eth_usd is None:
             note = "Unable to fetch ETH/USD price for profit calculation"
             return error_status(note=note, log=logger.warning)
-        if price_trb_usd is None:
-            note = "Unable to fetch TRB/USD price for profit calculation"
+        if price_fetch_usd is None:
+            note = "Unable to fetch FETCH/USD price for profit calculation"
             return error_status(note=note, log=logger.warning)
 
         tips, tb_reward = rewards
@@ -232,7 +232,7 @@ class IntervalReporter:
                 f"""
 
                 Tips: {tips / 1e18}
-                Time-based reward: {tb_reward / 1e18} TRB
+                Time-based reward: {tb_reward / 1e18} FETCH
                 Transaction fee: {self.web3.fromWei(txn_fee, 'gwei'):.09f} {tkn_symbol(self.chain_id)}
                 Gas price: {gas_info["gas_price"]} gwei
                 Gas limit: {gas_info["gas_limit"]}
@@ -245,7 +245,7 @@ class IntervalReporter:
                 f"""
 
                 Tips: {tips / 1e18}
-                Time-based reward: {tb_reward / 1e18} TRB
+                Time-based reward: {tb_reward / 1e18} FETCH
                 Max transaction fee: {self.web3.fromWei(txn_fee, 'gwei')} {tkn_symbol(self.chain_id)}
                 Max fee per gas: {gas_info["max_fee"]} gwei
                 Max priority fee per gas: {gas_info["priority_fee"]} gwei
@@ -256,7 +256,7 @@ class IntervalReporter:
 
         # Calculate profit
         revenue = tb_reward + tips
-        rev_usd = revenue / 1e18 * price_trb_usd
+        rev_usd = revenue / 1e18 * price_fetch_usd
         costs_usd = txn_fee / 1e9 * price_eth_usd
         profit_usd = rev_usd - costs_usd
         logger.info(f"Estimated profit: ${round(profit_usd, 2)}")
@@ -295,7 +295,7 @@ class IntervalReporter:
 
     async def fetch_datafeed(self) -> Optional[DataFeed[Any]]:
         if self.datafeed is None:
-            suggested_qtag = await tellor_suggested_report(self.oracle)
+            suggested_qtag = await fetch_suggested_report(self.oracle)
             if suggested_qtag is None:
                 logger.warning("Could not get suggested query")
                 return None
@@ -346,7 +346,7 @@ class IntervalReporter:
     ) -> Tuple[Optional[AttributeDict[Any, Any]], ResponseStatus]:
         """Report query value once
         This method checks to see if a user is able to submit
-        values to the TellorX oracle, given their staker status
+        values to the FetchX oracle, given their staker status
         and last submission time. Also, this method does not
         submit values if doing so won't make a profit."""
         # Check staker status
@@ -499,7 +499,7 @@ class IntervalReporter:
         return tx_receipt, status
 
     async def report(self, report_count: Optional[int] = None) -> None:
-        """Submit values to Tellor oracles on an interval."""
+        """Submit values to Fetch oracles on an interval."""
 
         while report_count is None or report_count > 0:
             online = await self.is_online()

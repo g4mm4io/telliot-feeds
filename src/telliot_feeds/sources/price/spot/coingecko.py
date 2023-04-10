@@ -25,7 +25,7 @@ coingecko_coin_id = {
     "matic": "matic-network",
     "ric": "richochet",
     "sushi": "sushi",
-    "trb": "tellor",
+    "fetch": "fetch",
     "ohm": "olympus",
     "usdc": "usd-coin",
     "vsq": "vesq",

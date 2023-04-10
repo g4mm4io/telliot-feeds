@@ -18,16 +18,16 @@ from telliot_feeds.utils.reporter_utils import has_native_token_funds
 from telliot_feeds.utils.reporter_utils import is_online
 from telliot_feeds.utils.reporter_utils import reporter_sync_schedule
 from telliot_feeds.utils.reporter_utils import suggest_random_feed
-from telliot_feeds.utils.reporter_utils import tellor_suggested_report
+from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 
 
 logger = get_logger(__name__)
 
 
 @pytest.mark.asyncio
-async def test_suggested_report(tellor_360):
-    contracts, _ = tellor_360
-    qtag = await tellor_suggested_report(contracts.oracle)
+async def test_suggested_report(fetch_360):
+    contracts, _ = fetch_360
+    qtag = await fetch_suggested_report(contracts.oracle)
 
     assert isinstance(qtag, str)
     entries = query_catalog.find(tag=qtag)

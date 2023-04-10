@@ -3,7 +3,7 @@ from typing import Optional
 
 from multicall import Call
 from multicall import Multicall
-from telliot_core.tellor.tellorflex.autopay import TellorFlexAutopayContract
+from telliot_core.fetch.fetchflex.autopay import FetchFlexAutopayContract
 from telliot_core.utils.response import error_status
 from telliot_core.utils.response import ResponseStatus
 
@@ -14,7 +14,7 @@ class AssembleCall:
     """
 
     def __init__(self) -> None:
-        self.autopay: TellorFlexAutopayContract
+        self.autopay: FetchFlexAutopayContract
 
     async def multi_call(
         self, calls: list[Call], success: bool = False

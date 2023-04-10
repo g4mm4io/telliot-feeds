@@ -7,14 +7,14 @@ import time
 import pytest
 from brownie import accounts
 from brownie import DIVAProtocolMock
-from brownie import DIVATellorOracleMock
-from brownie import TellorPlayground
+from brownie import DIVAFetchOracleMock
+from brownie import FetchPlayground
 from telliot_core.apps.core import ChainedAccount
 from telliot_core.apps.core import find_accounts
 from telliot_core.apps.core import TelliotCore
 from web3.datastructures import AttributeDict
 
-from telliot_feeds.integrations.diva_protocol.contract import DivaOracleTellorContract
+from telliot_feeds.integrations.diva_protocol.contract import DivaOracleFetchContract
 from telliot_feeds.integrations.diva_protocol.feed import assemble_diva_datafeed
 from telliot_feeds.integrations.diva_protocol.pool import DivaPool
 from telliot_feeds.integrations.diva_protocol.report import DIVAProtocolReporter
@@ -41,12 +41,12 @@ def mock_diva_contract():
 
 @pytest.fixture
 def mock_middleware_contract(mock_playground):
-    return accounts[0].deploy(DIVATellorOracleMock, 0, mock_playground.address)
+    return accounts[0].deploy(DIVAFetchOracleMock, 0, mock_playground.address)
 
 
 @pytest.fixture
 def mock_playground():
-    return accounts[0].deploy(TellorPlayground)
+    return accounts[0].deploy(FetchPlayground)
 
 
 @pytest.mark.skip("kind of redundant test since done in e2e one")
@@ -78,7 +78,7 @@ async def test_report(
         timestamp = mock_playground.getNewValueCountbyQueryId(diva_feed.query.query_id)
         assert timestamp == 0
 
-        flex = core.get_tellorflex_contracts()
+        flex = core.get_fetchflex_contracts()
         flex.oracle.address = mock_playground.address
         flex.autopay.address = mock_autopay_contract.address
         flex.token.address = mock_token_contract.address
@@ -100,7 +100,7 @@ async def test_report(
             transaction_type=0,
         )
         r.ensure_staked = passing_bool_w_status
-        r.middleware_contract = DivaOracleTellorContract(core.endpoint, account)
+        r.middleware_contract = DivaOracleFetchContract(core.endpoint, account)
         r.middleware_contract.address = mock_middleware_contract.address
         r.middleware_contract.connect()
         tx_receipt, status = await r.report_once()

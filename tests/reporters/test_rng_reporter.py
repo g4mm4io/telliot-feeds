@@ -18,9 +18,9 @@ def mock_zero_timestamp():
 
 
 @pytest_asyncio.fixture(scope="function")
-async def rng_reporter(mumbai_test_cfg, tellor_360):
+async def rng_reporter(mumbai_test_cfg, fetch_360):
     async with TelliotCore(config=mumbai_test_cfg) as core:
-        contracts, account = tellor_360
+        contracts, account = fetch_360
         r = RNGReporter(
             oracle=contracts.oracle,
             token=contracts.token,
@@ -37,7 +37,7 @@ async def rng_reporter(mumbai_test_cfg, tellor_360):
 
 @pytest.mark.asyncio
 async def test_report(rng_reporter):
-    """Test reporting Tellor RNG value."""
+    """Test reporting Fetch RNG value."""
     r = rng_reporter
     r.wait_period = 0
 
@@ -78,7 +78,7 @@ async def test_missing_blockhash(rng_reporter, monkeypatch, caplog):
         return None, None
 
     monkeypatch.setattr(
-        "telliot_feeds.sources.blockhash_aggregator.TellorRNGManualSource.fetch_new_datapoint", mock_no_val
+        "telliot_feeds.sources.blockhash_aggregator.FetchRNGManualSource.fetch_new_datapoint", mock_no_val
     )
 
     # mock functions that don't need to be tested here
@@ -114,7 +114,7 @@ async def test_missing_blockhash(rng_reporter, monkeypatch, caplog):
 
 @pytest.mark.asyncio
 async def test_invalid_timestamp(rng_reporter, monkeypatch, caplog):
-    """Test reporting Tellor RNG value."""
+    """Test reporting Fetch RNG value."""
     r = rng_reporter
 
     invalid_timestamp = 12345

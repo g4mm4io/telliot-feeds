@@ -1,6 +1,6 @@
 """ Unit tests for modern price queries
 
-Copyright (c) 2021-, Tellor Development Community
+Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 import pytest
@@ -32,8 +32,8 @@ def test_encode_decode_reported_val():
     q = TWAP(asset="btc", currency="usd", timespan=86400)
 
     # JSON string containing data specified and
-    # referenced in Tellor /dataSpecs:
-    # https://github.com/tellor-io/dataSpecs/blob/main/types/TWAP.md
+    # referenced in Fetch /dataSpecs:
+    # https://github.com/fetch-oracle/dataSpecs/blob/main/types/TWAP.md
 
     data = 12000  # example BTC/USD price
 

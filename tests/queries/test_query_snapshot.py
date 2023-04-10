@@ -1,6 +1,6 @@
 """ Unit tests for Snapshot queries
 
-Copyright (c) 2021-, Tellor Development Community
+Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 from eth_abi import decode_abi
