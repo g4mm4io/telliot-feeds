@@ -20,7 +20,7 @@ class PulsechainSupgraphService(WebPriceService):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "Pulsechain Supgraph Price Service"
-        kwargs["url"] = "https://graph.v2b.testnet.pulsechain.com"
+        kwargs["url"] = "https://graph.v3.testnet.pulsechain.com"
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
