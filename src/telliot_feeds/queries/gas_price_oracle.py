@@ -16,7 +16,7 @@ class GasPriceOracle(AbiQuery):
         version:
             A reference to GasPriceOracle data specifications found
             here:
-            https://github.com/tellor-io/dataSpecs/blob/main/types/GasPriceOracle.md
+            https://github.com/fetch-oracle/dataSpecs/blob/main/types/GasPriceOracle.md
 
             More information about gas, gas prices, and gas price oracles:
             https://ethereum.org/en/developers/docs/gas/

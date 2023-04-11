@@ -3,7 +3,7 @@ from typing import Callable
 from typing import Optional
 
 from multicall import Call
-from telliot_core.tellor.tellorflex.autopay import TellorFlexAutopayContract
+from telliot_core.fetch.fetchflex.autopay import FetchFlexAutopayContract
 
 from telliot_feeds.reporters.tips.listener.assemble_call import AssembleCall
 
@@ -19,7 +19,7 @@ class CallFunctions(AssembleCall):
     """
 
     def __init__(self) -> None:
-        self.autopay: TellorFlexAutopayContract
+        self.autopay: FetchFlexAutopayContract
 
     def get_reward_claimed_status(
         self,

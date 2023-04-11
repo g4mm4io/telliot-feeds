@@ -16,7 +16,7 @@ class MimicryCollectionStat(AbiQuery):
         version:
             A reference to MimicryCollectionStat data specifications found
             here:
-            https://github.com/tellor-io/dataSpecs/blob/main/types/MimicryCollectionStat.md
+            https://github.com/fetch-oracle/dataSpecs/blob/main/types/MimicryCollectionStat.md
 
             More information about the Mimicry Protocol, visit:
             https://www.mimicry.finance/

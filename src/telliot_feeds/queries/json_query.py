@@ -8,7 +8,7 @@ class JsonQuery(OracleQuery):
     @property
     def query_data(self) -> bytes:
         """Encode the query `descriptor` to create the query `data` field for
-        use in the ``TellorX.Oracle.tipQuery()`` contract call.
+        use in the ``FetchX.Oracle.tipQuery()`` contract call.
 
         """
         return self.descriptor.encode("utf-8")

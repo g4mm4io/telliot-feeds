@@ -11,7 +11,7 @@ from telliot_feeds.queries.price.spot_price import SpotPrice
 from telliot_feeds.queries.price.twap import TWAP
 from telliot_feeds.queries.snapshot import Snapshot
 from telliot_feeds.queries.string_query import StringQuery
-from telliot_feeds.queries.tellor_rng import TellorRNG
+from telliot_feeds.queries.fetch_rng import FetchRNG
 
 """Main instance of the Query Catalog."""
 query_catalog = Catalog()
@@ -20,7 +20,7 @@ query_catalog = Catalog()
 # Query Catalog Entries
 # --------------------------------------------------------------------------------------
 
-query_catalog.add_entry(tag="trb-usd-spot", title="TRB/USD spot price", q=SpotPrice(asset="trb", currency="usd"))
+query_catalog.add_entry(tag="fetch-usd-spot", title="FETCH/USD spot price", q=SpotPrice(asset="fetch", currency="usd"))
 
 query_catalog.add_entry(
     tag="ohm-eth-spot",
@@ -138,7 +138,7 @@ query_catalog.add_entry(
     q=SpotPrice(asset="btc", currency="usd"),
 )
 
-query_catalog.add_entry(tag="tellor-rng-example", title="Tellor RNG", q=TellorRNG(timestamp=1660567612))
+query_catalog.add_entry(tag="fetch-rng-example", title="Fetch RNG", q=FetchRNG(timestamp=1660567612))
 query_catalog.add_entry(
     tag="twap-eth-usd-example", title="Time Weighted Average Price", q=TWAP(asset="eth", currency="usd", timespan=86400)
 )

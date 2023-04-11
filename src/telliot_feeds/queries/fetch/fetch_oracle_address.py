@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class TellorOracleAddress(AbiQuery):
-    """Returns the latest Tellor oracle address.
+class FetchOracleAddress(AbiQuery):
+    """Returns the latest Fetch oracle address.
     It is used for updating the time based rewards recipient on Ethereum mainnet.
 
     Attributes:
@@ -17,14 +17,14 @@ class TellorOracleAddress(AbiQuery):
             Empty bytes, always used for query types with no arguments
 
     See the data spec for more info about this query type:
-    https://github.com/tellor-io/dataSpecs/blob/main/types/TellorOracleAddress.md
+    https://github.com/fetch-oracle/dataSpecs/blob/main/types/FetchOracleAddress.md
     """
 
     @property
     def value_type(self) -> ValueType:
-        """Data type returned for a TellorOracleAddress query.
+        """Data type returned for a FetchOracleAddress query.
 
-        - `address`: the address of the Tellor oracle
+        - `address`: the address of the Fetch oracle
         - `packed`: false
         """
 

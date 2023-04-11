@@ -4,14 +4,14 @@ pragma solidity 0.8.3;
 import "../../interfaces/IERC20.sol";
 
 /**
- @author Tellor Inc.
- @title TellorFlex
- @dev This is a streamlined Tellor oracle system which handles staking, reporting,
+ @author Fetch Inc.
+ @title FetchFlex
+ @dev This is a streamlined Fetch oracle system which handles staking, reporting,
  * slashing, and user data getters in one contract. This contract is controlled
  * by a single address known as 'governance', which could be an externally owned
  * account or a contract, allowing for a flexible, modular design.
 */
-contract TellorFlex360 {
+contract FetchFlex360 {
     // Storage
     IERC20 public token; // token used for staking and rewards
     address public governance; // address with ability to remove values and slash reporters
@@ -75,7 +75,10 @@ contract TellorFlex360 {
         require(_token != address(0), "must set token address");
         require(_stakingTokenPrice > 0, "must set staking token price");
         require(_reportingLock > 0, "must set reporting lock");
-        require(_stakingTokenPriceQueryId != bytes32(0), "must set staking token price queryId");
+        require(
+            _stakingTokenPriceQueryId != bytes32(0),
+            "must set staking token price queryId"
+        );
         token = IERC20(_token);
         owner = msg.sender;
         reportingLock = _reportingLock;
@@ -86,7 +89,7 @@ contract TellorFlex360 {
 
     /**
      * @dev Allows the owner to initialize the governance (flex addy needed for governance deployment)
-     * @param _governanceAddress address of governance contract (github.com/tellor-io/governance)
+     * @param _governanceAddress address of governance contract (github.com/fetch-oracle/governance)
      */
     function init(address _governanceAddress) external {
         // require(msg.sender == owner, "only owner can set governance address");
@@ -176,7 +179,8 @@ contract TellorFlex360 {
         _report.valueByTimestamp[block.timestamp] = _value;
         _report.reporterByTimestamp[block.timestamp] = msg.sender;
         // Disperse Time Based Reward
-        uint256 _reward = ((block.timestamp - timeOfLastNewValue) * timeBasedReward) / 300; //.5 TRB per 5 minutes
+        uint256 _reward = ((block.timestamp - timeOfLastNewValue) *
+            timeBasedReward) / 300; //.5 FETCH per 5 minutes
         timeOfLastNewValue = block.timestamp;
         _staker.reportsSubmitted++;
         _staker.reportsSubmittedByQueryId[_queryId]++;
@@ -186,9 +190,10 @@ contract TellorFlex360 {
      * @dev Updates the stake amount after retrieving the latest
      * 12+-hour-old staking token price from the oracle
      */
-    function updateStakeAmount(uint256 _amount) external{
-            stakeAmount = _amount;
-        }
+    function updateStakeAmount(uint256 _amount) external {
+        stakeAmount = _amount;
+    }
+
     // *****************************************************************************
     // *                                                                           *
     // *                               Getters                                     *
@@ -203,7 +208,10 @@ contract TellorFlex360 {
      * @return _value the value retrieved
      * @return _timestampRetrieved the value's timestamp
      */
-    function getDataBefore(bytes32 _queryId, uint256 _timestamp)
+    function getDataBefore(
+        bytes32 _queryId,
+        uint256 _timestamp
+    )
         public
         view
         returns (
@@ -227,11 +235,9 @@ contract TellorFlex360 {
      * @param _queryId the id to look up
      * @return uint256 count of the number of values received for the id
      */
-    function getNewValueCountbyQueryId(bytes32 _queryId)
-        public
-        view
-        returns (uint256)
-    {
+    function getNewValueCountbyQueryId(
+        bytes32 _queryId
+    ) public view returns (uint256) {
         return reports[_queryId].timestamps.length;
     }
 
@@ -254,12 +260,14 @@ contract TellorFlex360 {
      * @return address reporter who submitted the value
      * @return bool true if the value was removed
      */
-    function getReportDetails(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (address, bool)
-    {
-        return (reports[_queryId].reporterByTimestamp[_timestamp], reports[_queryId].isDisputed[_timestamp]);
+    function getReportDetails(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (address, bool) {
+        return (
+            reports[_queryId].reporterByTimestamp[_timestamp],
+            reports[_queryId].isDisputed[_timestamp]
+        );
     }
 
     /**
@@ -268,11 +276,10 @@ contract TellorFlex360 {
      * @param _timestamp is the timestamp to find a corresponding reporter for
      * @return address of the reporter who reported the value for the data ID at the given timestamp
      */
-    function getReporterByTimestamp(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (address)
-    {
+    function getReporterByTimestamp(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (address) {
         return reports[_queryId].reporterByTimestamp[_timestamp];
     }
 
@@ -281,11 +288,9 @@ contract TellorFlex360 {
      * @param _reporter is address of the reporter
      * @return uint256 timestamp of the reporter's last submission
      */
-    function getReporterLastTimestamp(address _reporter)
-        external
-        view
-        returns (uint256)
-    {
+    function getReporterLastTimestamp(
+        address _reporter
+    ) external view returns (uint256) {
         return stakerDetails[_reporter].reporterLastTimestamp;
     }
 
@@ -302,11 +307,9 @@ contract TellorFlex360 {
      * @param _reporter is the address of a reporter
      * @return uint256 the number of values submitted by the given reporter
      */
-    function getReportsSubmittedByAddress(address _reporter)
-        external
-        view
-        returns (uint256)
-    {
+    function getReportsSubmittedByAddress(
+        address _reporter
+    ) external view returns (uint256) {
         return stakerDetails[_reporter].reportsSubmitted;
     }
 
@@ -344,7 +347,9 @@ contract TellorFlex360 {
      * @return uint number of votes cast by staker when first staked
      * @return bool whether staker is counted in totalStakers
      */
-    function getStakerInfo(address _stakerAddress)
+    function getStakerInfo(
+        address _stakerAddress
+    )
         external
         view
         returns (
@@ -387,11 +392,10 @@ contract TellorFlex360 {
      * @param _index is the value index to look up
      * @return uint256 timestamp
      */
-    function getTimestampbyQueryIdandIndex(bytes32 _queryId, uint256 _index)
-        public
-        view
-        returns (uint256)
-    {
+    function getTimestampbyQueryIdandIndex(
+        bytes32 _queryId,
+        uint256 _index
+    ) public view returns (uint256) {
         return reports[_queryId].timestamps[_index];
     }
 
@@ -403,11 +407,10 @@ contract TellorFlex360 {
      * @return _index the latest index found before the specified timestamp
      */
     // slither-disable-next-line calls-loop
-    function getIndexForDataBefore(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bool _found, uint256 _index)
-    {
+    function getIndexForDataBefore(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bool _found, uint256 _index) {
         uint256 _count = getNewValueCountbyQueryId(_queryId);
         if (_count > 0) {
             uint256 _middle;
@@ -419,11 +422,11 @@ contract TellorFlex360 {
             if (_time >= _timestamp) return (false, 0);
             _time = getTimestampbyQueryIdandIndex(_queryId, _end);
             if (_time < _timestamp) {
-                while(isInDispute(_queryId, _time) && _end > 0) {
+                while (isInDispute(_queryId, _time) && _end > 0) {
                     _end--;
                     _time = getTimestampbyQueryIdandIndex(_queryId, _end);
                 }
-                if(_end == 0 && isInDispute(_queryId, _time)) {
+                if (_end == 0 && isInDispute(_queryId, _time)) {
                     return (false, 0);
                 }
                 return (true, _end);
@@ -439,16 +442,21 @@ contract TellorFlex360 {
                         _middle + 1
                     );
                     if (_nextTime >= _timestamp) {
-                        if(!isInDispute(_queryId, _time)) {
+                        if (!isInDispute(_queryId, _time)) {
                             // _time is correct
                             return (true, _middle);
                         } else {
                             // iterate backwards until we find a non-disputed value
-                            while(isInDispute(_queryId, _time) && _middle > 0) {
+                            while (
+                                isInDispute(_queryId, _time) && _middle > 0
+                            ) {
                                 _middle--;
-                                _time = getTimestampbyQueryIdandIndex(_queryId, _middle);
+                                _time = getTimestampbyQueryIdandIndex(
+                                    _queryId,
+                                    _middle
+                                );
                             }
-                            if(_middle == 0 && isInDispute(_queryId, _time)) {
+                            if (_middle == 0 && isInDispute(_queryId, _time)) {
                                 return (false, 0);
                             }
                             // _time is correct
@@ -464,20 +472,24 @@ contract TellorFlex360 {
                         _middle - 1
                     );
                     if (_prevTime < _timestamp) {
-                        if(!isInDispute(_queryId, _prevTime)) {
+                        if (!isInDispute(_queryId, _prevTime)) {
                             // _prevTime is correct
                             return (true, _middle - 1);
                         } else {
                             // iterate backwards until we find a non-disputed value
                             _middle--;
-                            while(isInDispute(_queryId, _prevTime) && _middle > 0) {
+                            while (
+                                isInDispute(_queryId, _prevTime) && _middle > 0
+                            ) {
                                 _middle--;
                                 _prevTime = getTimestampbyQueryIdandIndex(
                                     _queryId,
                                     _middle
                                 );
                             }
-                            if(_middle == 0 && isInDispute(_queryId, _prevTime)) {
+                            if (
+                                _middle == 0 && isInDispute(_queryId, _prevTime)
+                            ) {
                                 return (false, 0);
                             }
                             // _prevtime is correct
@@ -495,10 +507,12 @@ contract TellorFlex360 {
 
     /**
      * @dev Returns total balance of time based rewards in contract
-     * @return uint256 amount of trb
+     * @return uint256 amount of fetch
      */
     function getTotalTimeBasedRewardsBalance() external view returns (uint256) {
-        return token.balanceOf(address(this)) - (totalStakeAmount + stakingRewardsBalance);
+        return
+            token.balanceOf(address(this)) -
+            (totalStakeAmount + stakingRewardsBalance);
     }
 
     /**
@@ -507,11 +521,10 @@ contract TellorFlex360 {
      * @param _timestamp timestamp of the value
      * @return bool whether the value is disputed
      */
-    function isInDispute(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bool)
-    {
+    function isInDispute(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bool) {
         return reports[_queryId].isDisputed[_timestamp];
     }
 
@@ -521,11 +534,10 @@ contract TellorFlex360 {
      * @param _timestamp to retrieve data/value from
      * @return bytes value for timestamp submitted
      */
-    function retrieveData(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bytes memory)
-    {
+    function retrieveData(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bytes memory) {
         return reports[_queryId].valueByTimestamp[_timestamp];
     }
 

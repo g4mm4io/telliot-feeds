@@ -18,15 +18,15 @@ from telliot_feeds.cli.utils import valid_transaction_type
 from telliot_feeds.cli.utils import validate_address
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.feeds import CATALOG_FEEDS
-from telliot_feeds.feeds.tellor_rng_feed import assemble_rng_datafeed
+from telliot_feeds.feeds.fetch_rng_feed import assemble_rng_datafeed
 from telliot_feeds.integrations.diva_protocol import DIVA_DIAMOND_ADDRESS
-from telliot_feeds.integrations.diva_protocol import DIVA_TELLOR_MIDDLEWARE_ADDRESS
+from telliot_feeds.integrations.diva_protocol import DIVA_FETCH_MIDDLEWARE_ADDRESS
 from telliot_feeds.integrations.diva_protocol.report import DIVAProtocolReporter
 from telliot_feeds.queries.query_catalog import query_catalog
 from telliot_feeds.reporters.flashbot import FlashbotsReporter
 from telliot_feeds.reporters.rng_interval import RNGReporter
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
-from telliot_feeds.reporters.tellor_flex import TellorFlexReporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
+from telliot_feeds.reporters.fetch_flex import FetchFlexReporter
 from telliot_feeds.utils.cfg import check_endpoint
 from telliot_feeds.utils.cfg import setup_config
 from telliot_feeds.utils.log import get_logger
@@ -38,10 +38,10 @@ logger = get_logger(__name__)
 
 
 STAKE_MESSAGE = (
-    "\U00002757Telliot will automatically stake more TRB "
+    "\U00002757Telliot will automatically stake more FETCH "
     "if your stake is below or falls below the stake amount required to report.\n"
     "If you would like to stake more than required, enter the TOTAL stake amount you wish to be staked.\n"
-    "For example, if you wish to stake 1000 TRB, enter 1000.\n"
+    "For example, if you wish to stake 1000 FETCH, enter 1000.\n"
 )
 REWARDS_CHECK_MESSAGE = (
     "If the --no-rewards-check flag is set, the reporter will not check profitability or\n"
@@ -160,7 +160,7 @@ def reporter() -> None:
     "--rng-timestamp",
     "-rngts",
     "rng_timestamp",
-    help="timestamp for Tellor RNG",
+    help="timestamp for Fetch RNG",
     nargs=1,
     type=int,
 )
@@ -190,7 +190,7 @@ def reporter() -> None:
     nargs=1,
     type=click.UNPROCESSED,
     callback=validate_address,
-    default=DIVA_TELLOR_MIDDLEWARE_ADDRESS,
+    default=DIVA_FETCH_MIDDLEWARE_ADDRESS,
     prompt=False,
 )
 @click.option(
@@ -227,11 +227,11 @@ def reporter() -> None:
     prompt=False,
 )
 @click.option(
-    "--tellor-360/--tellor-flex",
+    "--fetch-360/--fetch-flex",
     "-360/-flex",
-    "tellor_360",
+    "fetch_360",
     default=True,
-    help="Choose between Tellor 360 or Flex contracts",
+    help="Choose between Fetch 360 or Flex contracts",
 )
 @click.option(
     "--stake",
@@ -303,7 +303,7 @@ async def report(
     custom_token_contract: Optional[ChecksumAddress],
     custom_oracle_contract: Optional[ChecksumAddress],
     custom_autopay_contract: Optional[ChecksumAddress],
-    tellor_360: bool,
+    fetch_360: bool,
     stake: float,
     account_str: str,
     signature_account: str,
@@ -311,7 +311,7 @@ async def report(
     use_random_feeds: bool,
     gas_multiplier: int,
 ) -> None:
-    """Report values to Tellor oracle"""
+    """Report values to Fetch oracle"""
     ctx.obj["ACCOUNT_NAME"] = account_str
     ctx.obj["SIGNATURE_ACCOUNT_NAME"] = signature_account
 
@@ -390,7 +390,7 @@ async def report(
 
         _ = input("Press [ENTER] to confirm settings.")
 
-        contracts = core.get_tellor360_contracts() if tellor_360 else core.get_tellorflex_contracts()
+        contracts = core.get_fetch360_contracts() if fetch_360 else core.get_fetchflex_contracts()
 
         if custom_oracle_contract:
             contracts.oracle.connect()  # set telliot_core.contract.Contract.contract attribute
@@ -446,7 +446,7 @@ async def report(
             "transaction_type": tx_type,
             "min_native_token_balance": int(min_native_token_balance * 10**18),
             "check_rewards": check_rewards,
-            "use_random_feeds": use_random_feeds,
+            #"use_random_feeds": use_random_feeds, #TODO: Error if this line is uncommented
             "gas_multiplier": gas_multiplier,
         }
 
@@ -470,12 +470,12 @@ async def report(
                 **common_reporter_kwargs,
                 **diva_reporter_kwargs,  # type: ignore
             )
-        elif tellor_360:
-            reporter = Tellor360Reporter(
+        elif fetch_360:
+            reporter = Fetch360Reporter(
                 **common_reporter_kwargs,
             )  # type: ignore
         else:
-            reporter = TellorFlexReporter(
+            reporter = FetchFlexReporter(
                 **common_reporter_kwargs,
             )  # type: ignore
 

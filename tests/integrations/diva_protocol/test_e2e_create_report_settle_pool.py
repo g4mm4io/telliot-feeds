@@ -2,7 +2,7 @@
 Settle a derivative pool in DIVA Protocol after reporting the value of
 it's reference asset and collateral token.
 
-Call `setFinalReferenceValue` on the DivaOracleTellor contract.
+Call `setFinalReferenceValue` on the DivaOracleFetch contract.
 Ensure it can't be called twice, or if there's no reported value for the pool,
 or if it's too early for the pool to be settled."""
 import os
@@ -11,14 +11,14 @@ import time
 import pytest
 from brownie import accounts
 from brownie import DIVAProtocolMock
-from brownie import DIVATellorOracleMock
-from brownie import TellorPlayground
+from brownie import DIVAFetchOracleMock
+from brownie import FetchPlayground
 from telliot_core.apps.core import ChainedAccount
 from telliot_core.apps.core import find_accounts
 from telliot_core.apps.core import TelliotCore
 from telliot_core.utils.response import ResponseStatus
 
-from telliot_feeds.integrations.diva_protocol.contract import DivaOracleTellorContract
+from telliot_feeds.integrations.diva_protocol.contract import DivaOracleFetchContract
 from telliot_feeds.integrations.diva_protocol.report import DIVAProtocolReporter
 from telliot_feeds.integrations.diva_protocol.utils import get_reported_pools
 from tests.utils.utils import passing_bool_w_status
@@ -47,12 +47,12 @@ def mock_diva_contract():
 
 @pytest.fixture
 def mock_playground():
-    return accounts[0].deploy(TellorPlayground)
+    return accounts[0].deploy(FetchPlayground)
 
 
 @pytest.fixture
 def mock_middleware_contract(mock_playground):
-    return accounts[0].deploy(DIVATellorOracleMock, 0, mock_playground.address)
+    return accounts[0].deploy(DIVAFetchOracleMock, 0, mock_playground.address)
 
 
 @pytest.mark.skip("TODO: fix pool not in reported pools pickle file")
@@ -130,7 +130,7 @@ async def test_create_report_settle_pool(
         assert params[13] == 0, "statusFinalReferenceValue status should be (Open)"
 
         # instantiate reporter w/ mock contracts & data provider and any other params
-        flex = core.get_tellorflex_contracts()
+        flex = core.get_fetchflex_contracts()
         flex.oracle.address = mock_playground.address
         flex.autopay.address = mock_autopay_contract.address
         flex.token.address = mock_token_contract.address
@@ -156,7 +156,7 @@ async def test_create_report_settle_pool(
         r.ensure_staked = passing_bool_w_status
         r.fetch_unfiltered_pools = mock_fetch_pools
         r.set_final_ref_value = mock_set_final_ref_value
-        r.middleware_contract = DivaOracleTellorContract(core.endpoint, account)
+        r.middleware_contract = DivaOracleFetchContract(core.endpoint, account)
         r.middleware_contract.address = mock_middleware_contract.address
         r.middleware_contract.connect()
 

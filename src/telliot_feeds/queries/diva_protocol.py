@@ -56,7 +56,7 @@ class DIVAProtocol(AbiQuery):
             Network identifier
 
             More about this query:
-            https://github.com/tellor-io/dataSpecs/blob/main/types/DIVAProtocol.md
+            https://github.com/fetch-oracle/dataSpecs/blob/main/types/DIVAProtocol.md
 
             More about Diva Protocol:
             https://divaprotocol.io

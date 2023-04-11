@@ -15,8 +15,8 @@ from web3.datastructures import AttributeDict
 
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.integrations.diva_protocol import DIVA_DIAMOND_ADDRESS
-from telliot_feeds.integrations.diva_protocol import DIVA_TELLOR_MIDDLEWARE_ADDRESS
-from telliot_feeds.integrations.diva_protocol.contract import DivaOracleTellorContract
+from telliot_feeds.integrations.diva_protocol import DIVA_FETCH_MIDDLEWARE_ADDRESS
+from telliot_feeds.integrations.diva_protocol.contract import DivaOracleFetchContract
 from telliot_feeds.integrations.diva_protocol.feed import assemble_diva_datafeed
 from telliot_feeds.integrations.diva_protocol.pool import DivaPool
 from telliot_feeds.integrations.diva_protocol.pool import fetch_from_subgraph
@@ -25,7 +25,7 @@ from telliot_feeds.integrations.diva_protocol.utils import filter_valid_pools
 from telliot_feeds.integrations.diva_protocol.utils import get_reported_pools
 from telliot_feeds.integrations.diva_protocol.utils import update_reported_pools
 from telliot_feeds.queries.diva_protocol import DIVAProtocol
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 from telliot_feeds.utils.log import get_logger
 from telliot_feeds.utils.reporter_utils import has_native_token_funds
 
@@ -33,14 +33,14 @@ from telliot_feeds.utils.reporter_utils import has_native_token_funds
 logger = get_logger(__name__)
 
 
-class DIVAProtocolReporter(Tellor360Reporter):
+class DIVAProtocolReporter(Fetch360Reporter):
     """
     DIVA Protocol Reporter
     """
 
     def __init__(  # type: ignore
         self,
-        middleware_address: str = DIVA_TELLOR_MIDDLEWARE_ADDRESS,
+        middleware_address: str = DIVA_FETCH_MIDDLEWARE_ADDRESS,
         diva_diamond_address: str = DIVA_DIAMOND_ADDRESS,
         network_name: str = "goerli",
         extra_undisputed_time: int = 0,
@@ -54,7 +54,7 @@ class DIVAProtocolReporter(Tellor360Reporter):
         self.settle_period: Optional[int] = None
         self.network_name = network_name
         self.diva_diamond_address = diva_diamond_address
-        self.middleware_contract = DivaOracleTellorContract(
+        self.middleware_contract = DivaOracleFetchContract(
             node=self.endpoint,
             account=self.account,
         )
@@ -79,11 +79,11 @@ class DIVAProtocolReporter(Tellor360Reporter):
             report_count, read_status = await self.get_num_reports_by_id(query.query_id)
 
             if not read_status.ok:
-                logger.error(f"Unable to read from tellor oracle: {read_status.error}")
+                logger.error(f"Unable to read from fetch oracle: {read_status.error}")
                 continue
 
             if report_count > 0:
-                logger.info(f"Pool {pool.pool_id} already reported. Checked against Tellor oracle.")
+                logger.info(f"Pool {pool.pool_id} already reported. Checked against Fetch oracle.")
                 continue
 
             unreported_pools.append(pool)
@@ -216,7 +216,7 @@ class DIVAProtocolReporter(Tellor360Reporter):
     async def report_once(
         self,
     ) -> Tuple[Optional[AttributeDict[Any, Any]], ResponseStatus]:
-        """Report query response to a TellorFlex oracle."""
+        """Report query response to a FetchFlex oracle."""
         staked, status = await self.ensure_staked()
         if not staked or not status.ok:
             logger.warning(status.error)

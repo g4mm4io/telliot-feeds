@@ -37,7 +37,7 @@ def add_multicall_support(
 
 
 add_multicall_support(
-    network="PulsechainTestnet", network_id=941, multicall2_address="0x959a437F1444DaDaC8aF997E71EAF0479c810267"
+    network="PulsechainTestnet", network_id=942, multicall3_address="0x4177eFCa61Cdb9bc2bAac31C2675C0e576E5b795"
 )
 
 add_multicall_support(

@@ -1,6 +1,6 @@
 """ Unit tests for static queries
 
-Copyright (c) 2021-, Tellor Development Community
+Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 from telliot_feeds.queries.string_query import StringQuery

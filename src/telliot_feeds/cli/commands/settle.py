@@ -7,7 +7,7 @@ from telliot_core.cli.utils import async_run
 from telliot_feeds.cli.utils import get_accounts_from_name
 from telliot_feeds.cli.utils import reporter_cli_core
 from telliot_feeds.cli.utils import valid_diva_chain
-from telliot_feeds.integrations.diva_protocol.contract import DivaOracleTellorContract
+from telliot_feeds.integrations.diva_protocol.contract import DivaOracleFetchContract
 from telliot_feeds.utils.log import get_logger
 
 logger = get_logger(__name__)
@@ -82,7 +82,7 @@ async def settle(
         if not valid_diva_chain(chain_id=cid):
             return
 
-        oracle = DivaOracleTellorContract(core.endpoint, account)
+        oracle = DivaOracleFetchContract(core.endpoint, account)
         oracle.connect()
 
         status = await oracle.set_final_reference_value(pool_id=pool_id, legacy_gas_price=legacy_gas_price)

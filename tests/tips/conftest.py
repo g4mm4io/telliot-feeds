@@ -1,7 +1,7 @@
 import pytest
 from brownie import accounts
 from brownie import Autopay
-from brownie import TellorFlex360
+from brownie import FetchFlex360
 from telliot_core.apps.core import TelliotCore
 from telliot_core.utils.timestamp import TimeStamp
 
@@ -9,29 +9,29 @@ from telliot_feeds.reporters.tips import CATALOG_QUERY_DATA
 from telliot_feeds.reporters.tips import CATALOG_QUERY_IDS
 
 
-trb_id = "0x5c13cd9c97dbb98f2429c101a2a8150e6c7a0ddaff6124ee176a3a411067ded0"
+fetch_id = "0x5c13cd9c97dbb98f2429c101a2a8150e6c7a0ddaff6124ee176a3a411067ded0"
 txn_kwargs = {"gas_limit": 3500000, "legacy_gas_price": 1}
 account_fake = accounts.add("023861e2ceee1ea600e43cbd203e9e01ea2ed059ee3326155453a1ed3b1113a9")
 
 
 @pytest.fixture(scope="function")
-def tellorflex_360_contract(mock_token_contract):
+def fetchflex_360_contract(mock_token_contract):
     return account_fake.deploy(
-        TellorFlex360,
+        FetchFlex360,
         mock_token_contract.address,
         1,
         1,
         1,
-        trb_id,
+        fetch_id,
     )
 
 
 @pytest.fixture(scope="function")
-def autopay_contract(tellorflex_360_contract, mock_token_contract, query_data_storage_contract):
+def autopay_contract(fetchflex_360_contract, mock_token_contract, query_data_storage_contract):
     """mock payments(Autopay) contract for tipping and claiming tips"""
     return accounts[0].deploy(
         Autopay,
-        tellorflex_360_contract.address,
+        fetchflex_360_contract.address,
         mock_token_contract.address,
         query_data_storage_contract.address,
         20,
@@ -40,16 +40,16 @@ def autopay_contract(tellorflex_360_contract, mock_token_contract, query_data_st
 
 @pytest.fixture(scope="function")
 async def autopay_contract_setup(
-    mumbai_test_cfg, tellorflex_360_contract, autopay_contract, mock_token_contract, multicall_contract
+    mumbai_test_cfg, fetchflex_360_contract, autopay_contract, mock_token_contract, multicall_contract
 ):
     async with TelliotCore(config=mumbai_test_cfg) as core:
 
         # get PubKey and PrivKey from config files
         account = core.get_account()
 
-        flex = core.get_tellor360_contracts()
-        flex.oracle.address = tellorflex_360_contract.address
-        flex.oracle.abi = tellorflex_360_contract.abi
+        flex = core.get_fetch360_contracts()
+        flex.oracle.address = fetchflex_360_contract.address
+        flex.oracle.abi = fetchflex_360_contract.abi
         flex.autopay.address = autopay_contract.address
         flex.autopay.abi = autopay_contract.abi
         flex.token.address = mock_token_contract.address
@@ -67,7 +67,7 @@ async def autopay_contract_setup(
         await flex.oracle.write("init", _governanceAddress=accounts[0].address, **txn_kwargs)
 
         # approve token to be spent by oracle
-        mock_token_contract.approve(tellorflex_360_contract.address, 100000e18, {"from": account.address})
+        mock_token_contract.approve(fetchflex_360_contract.address, 100000e18, {"from": account.address})
 
         _, status = await flex.oracle.write("depositStake", gas_limit=350000, legacy_gas_price=1, _amount=int(10e18))
         # check txn is successful
@@ -121,7 +121,7 @@ async def setup_one_time_tips(autopay_contract_setup):
     queries = [
         item
         for item in zip(CATALOG_QUERY_IDS, CATALOG_QUERY_DATA)
-        if CATALOG_QUERY_IDS[item[0]] != "tellor-rng-example"
+        if CATALOG_QUERY_IDS[item[0]] != "fetch-rng-example"
     ]
     for query_id, query_data in queries:
 

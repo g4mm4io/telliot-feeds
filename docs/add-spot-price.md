@@ -87,4 +87,4 @@ async def test_eth_usd_median_feed(caplog):
     # Make sure error is less than decimal tolerance
     assert (v - statistics.median(source_prices)) < 10**-6
 ```
-5. Create a pull request to merge your changes into the `main` branch [here](https://github.com/tellor-io/telliot-feeds/compare).
+5. Create a pull request to merge your changes into the `main` branch [here](https://github.com/fetch-oracle/telliot-feeds/compare).

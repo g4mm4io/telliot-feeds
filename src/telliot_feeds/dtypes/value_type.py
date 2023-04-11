@@ -15,7 +15,7 @@ class ValueType(Serializable):
     """Value Type
 
     A ValueType specifies the data structure of ``value`` included in
-    the ``TellorX.Oracle.submitValue()`` used in response to
+    the ``FetchX.Oracle.submitValue()`` used in response to
     tip request.
 
     The type is specified per eth-abi grammar, i.e.

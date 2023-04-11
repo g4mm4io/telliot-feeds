@@ -1,6 +1,6 @@
 """ Unit tests for response type
 
-Copyright (c) 2021-, Tellor Development Community
+Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 from decimal import Decimal

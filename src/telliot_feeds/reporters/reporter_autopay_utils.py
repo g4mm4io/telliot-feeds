@@ -15,7 +15,7 @@ from clamfig.base import Registry
 from eth_abi import decode_single
 from multicall import Call
 from multicall import Multicall
-from telliot_core.tellor.tellorflex.autopay import TellorFlexAutopayContract
+from telliot_core.fetch.fetchflex.autopay import FetchFlexAutopayContract
 from telliot_core.utils.response import error_status
 from telliot_core.utils.timestamp import TimeStamp
 from web3.exceptions import ContractLogicError
@@ -30,7 +30,7 @@ logger = get_logger(__name__)
 
 
 # chains where autopay contract is deployed
-AUTOPAY_CHAINS = (137, 80001, 69, 1666600000, 1666700000, 421611, 42161, 10200, 100, 10, 420, 421613)
+AUTOPAY_CHAINS = (137, 80001, 69, 1666600000, 1666700000, 421611, 42161, 10200, 100, 10, 420, 421613, 942)
 
 
 @dataclass
@@ -53,7 +53,7 @@ class FeedDetails:
 
 
 class AutopayCalls:
-    def __init__(self, autopay: TellorFlexAutopayContract, catalog: Dict[bytes, str] = CATALOG_QUERY_IDS):
+    def __init__(self, autopay: FetchFlexAutopayContract, catalog: Dict[bytes, str] = CATALOG_QUERY_IDS):
         self.autopay = autopay
         self.w3: Web3 = autopay.node._web3
         self.catalog = catalog
@@ -131,8 +131,8 @@ class AutopayCalls:
 
         # separate items from current feeds
         # multicall for multiple different functions returns different types of data at once
-        # ie the response is {"tag": (feedids, ), ('trb-usd-spot', 'current_time'): 0,
-        # ('trb-usd-spot', 'three_mos_ago'): 0,eth-jpy-spot: (),'eth-jpy-spot', 'current_time'): 0,
+        # ie the response is {"tag": (feedids, ), ('fetch-usd-spot', 'current_time'): 0,
+        # ('fetch-usd-spot', 'three_mos_ago'): 0,eth-jpy-spot: (),'eth-jpy-spot', 'current_time'): 0,
         # ('eth-jpy-spot', 'three_mos_ago'): 0}
         # here we filter out the tag key if it is string and its value is of length > 0
 
@@ -279,7 +279,7 @@ class AutopayCalls:
         return await safe_multicall(calls, self.w3, require_success)
 
 
-async def get_feed_tip(query: bytes, autopay: TellorFlexAutopayContract) -> Optional[int]:
+async def get_feed_tip(query: bytes, autopay: FetchFlexAutopayContract) -> Optional[int]:
     """
     Get total tips for a query id with funded feeds
 
@@ -327,7 +327,7 @@ async def get_feed_tip(query: bytes, autopay: TellorFlexAutopayContract) -> Opti
 
 
 async def get_one_time_tips(
-    autopay: TellorFlexAutopayContract,
+    autopay: FetchFlexAutopayContract,
 ) -> Any:
     """
     Check query ids in catalog for one-time-tips and return query id with the most tips
@@ -336,7 +336,7 @@ async def get_one_time_tips(
     return await one_time_tips.get_current_tip()
 
 
-async def get_continuous_tips(autopay: TellorFlexAutopayContract, tipping_feeds: Any = None) -> Any:
+async def get_continuous_tips(autopay: FetchFlexAutopayContract, tipping_feeds: Any = None) -> Any:
     """
     Check query ids in catalog for funded feeds, combine tips, and return query id with most tips
     """
@@ -362,7 +362,7 @@ async def get_continuous_tips(autopay: TellorFlexAutopayContract, tipping_feeds:
 
 
 async def autopay_suggested_report(
-    autopay: TellorFlexAutopayContract,
+    autopay: FetchFlexAutopayContract,
 ) -> Tuple[Optional[str], Any]:
     """
     Gets one-time tips and continuous tips then extracts query id with the most tips for a report suggestion

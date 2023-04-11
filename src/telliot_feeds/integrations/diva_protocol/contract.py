@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class PoolParameters:
-    """Source: https://github.com/tellor-io/dataSpecs/blob/main/types/DIVAProtocolPolygon.md"""
+    """Source: https://github.com/fetch-oracle/dataSpecs/blob/main/types/DIVAProtocolPolygon.md"""
 
     reference_asset: str  # (string) Reference asset string (e.g., "BTC/USD", "ETH Gas Price (Wei)", "TVL Locked in DeFi", etc.) # noqa: E501
     expiry_time: int  # (uint256) Expiration time of the pool and as of time of final value expressed as a unix timestamp in seconds # noqa: E501
@@ -84,7 +84,7 @@ class DivaProtocolContract(Contract):
         raise NotImplementedError
 
 
-class DivaOracleTellorContract(Contract):
+class DivaOracleFetchContract(Contract):
     """Diva contract used for settling derivatives pools."""
 
     def __init__(
@@ -94,11 +94,11 @@ class DivaOracleTellorContract(Contract):
     ):
         chain_id = node.chain_id
         try:
-            contract_info = contract_directory.find(chain_id=chain_id, name="diva-oracle-tellor")[0]
+            contract_info = contract_directory.find(chain_id=chain_id, name="diva-oracle-fetch")[0]
         except IndexError:
-            raise Exception(f"DIVA Tellor middleware contract not found on chain_id {chain_id}")
+            raise Exception(f"DIVA Fetch middleware contract not found on chain_id {chain_id}")
         if not contract_info:
-            raise Exception(f"diva-oracle-tellor contract info not found on chain_id {chain_id}")
+            raise Exception(f"diva-oracle-fetch contract info not found on chain_id {chain_id}")
 
         contract_abi = contract_info.get_abi(chain_id=chain_id)
 
@@ -119,7 +119,7 @@ class DivaOracleTellorContract(Contract):
             assert isinstance(seconds, int)
             return seconds
         else:
-            logger.error("Error getting min period undisputed from DivaOracleTellorContract")
+            logger.error("Error getting min period undisputed from DivaOracleFetchContract")
             logger.error(status)
             return None
 
@@ -148,6 +148,6 @@ class DivaOracleTellorContract(Contract):
         if status.ok:
             return status
         else:
-            logger.error("Error setting final reference value on DivaOracleTellorContract")
+            logger.error("Error setting final reference value on DivaOracleFetchContract")
             logger.error(status)
             return None

@@ -1,4 +1,4 @@
-"""TellorFlex compatible reporters"""
+"""FetchFlex compatible reporters"""
 import asyncio
 import time
 from datetime import timedelta
@@ -17,22 +17,22 @@ from telliot_core.utils.response import ResponseStatus
 
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.feeds import CATALOG_FEEDS
-from telliot_feeds.feeds.trb_usd_feed import trb_usd_median_feed
+from telliot_feeds.feeds.fetch_usd_feed import fetch_usd_median_feed
 from telliot_feeds.reporters.interval import IntervalReporter
 from telliot_feeds.reporters.reporter_autopay_utils import autopay_suggested_report
 from telliot_feeds.reporters.reporter_autopay_utils import CATALOG_QUERY_IDS
 from telliot_feeds.reporters.reporter_autopay_utils import get_feed_tip
 from telliot_feeds.utils.log import get_logger
 from telliot_feeds.utils.reporter_utils import get_native_token_feed
-from telliot_feeds.utils.reporter_utils import tellor_suggested_report
+from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 from telliot_feeds.utils.reporter_utils import tkn_symbol
 
 
 logger = get_logger(__name__)
 
 
-class TellorFlexReporter(IntervalReporter):
-    """Reports values from given datafeeds to a TellorFlex."""
+class FetchFlexReporter(IntervalReporter):
+    """Reports values from given datafeeds to a FetchFlex."""
 
     def __init__(
         self,
@@ -161,11 +161,11 @@ class TellorFlexReporter(IntervalReporter):
                     "Unable to stake deposit: "
                     + write_status.error
                     + f"Make sure {self.acct_addr} has enough of the current chain's "
-                    + "currency and the oracle's currency (TRB)"
+                    + "currency and the oracle's currency (FETCH)"
                 )  # error won't be none # noqa: E501
                 return False, error_status(msg, log=logger.error)
 
-            logger.info(f"Staked {amount / 1e18} TRB")
+            logger.info(f"Staked {amount / 1e18} FETCH")
             self.staked_amount = self.stake
         elif self.staked_amount is None:
             self.staked_amount = staker_balance
@@ -175,7 +175,7 @@ class TellorFlexReporter(IntervalReporter):
     async def check_reporter_lock(self) -> ResponseStatus:
         """Ensure enough time has passed since last report.
 
-        One stake is 10 TRB. Reporter lock is depends on the
+        One stake is 10 FETCH. Reporter lock is depends on the
         total staked:
 
         reporter_lock = 12hrs / # stakes
@@ -196,8 +196,8 @@ class TellorFlexReporter(IntervalReporter):
         self.last_submission_timestamp = last_report
         logger.info(f"Last submission timestamp: {self.last_submission_timestamp}")
 
-        trb = staker_balance / 1e18
-        num_stakes = (trb - (trb % 10)) / 10
+        fetch = staker_balance / 1e18
+        num_stakes = (fetch - (fetch % 10)) / 10
         reporter_lock = (12 / num_stakes) * 3600
 
         time_remaining = round(self.last_submission_timestamp + reporter_lock - time.time())
@@ -251,7 +251,7 @@ class TellorFlexReporter(IntervalReporter):
             return self.datafeed
 
         if suggested_qtag is None:
-            suggested_qtag = await tellor_suggested_report(self.oracle)
+            suggested_qtag = await fetch_suggested_report(self.oracle)
             if suggested_qtag is None:
                 logger.warning("Could not suggest query tag")
                 return None
@@ -273,12 +273,12 @@ class TellorFlexReporter(IntervalReporter):
         tip = self.autopaytip
         # Fetch token prices in USD
         native_token_feed = get_native_token_feed(self.chain_id)
-        price_feeds = [native_token_feed, trb_usd_median_feed]
+        price_feeds = [native_token_feed, fetch_usd_median_feed]
         _ = await asyncio.gather(*[feed.source.fetch_new_datapoint() for feed in price_feeds])
         price_native_token = native_token_feed.source.latest[0]
-        price_trb_usd = trb_usd_median_feed.source.latest[0]
+        price_fetch_usd = fetch_usd_median_feed.source.latest[0]
 
-        if price_native_token is None or price_trb_usd is None:
+        if price_native_token is None or price_fetch_usd is None:
             return error_status("Unable to fetch token price", log=logger.warning)
 
         if not self.gas_info:
@@ -313,7 +313,7 @@ class TellorFlexReporter(IntervalReporter):
             )
 
         # Calculate profit
-        rev_usd = tip / 1e18 * price_trb_usd
+        rev_usd = tip / 1e18 * price_fetch_usd
         costs_usd = txn_fee / 1e9 * price_native_token  # convert gwei costs to eth, then to usd
         profit_usd = rev_usd - costs_usd
         logger.info(f"Estimated profit: ${round(profit_usd, 2)}")

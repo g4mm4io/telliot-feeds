@@ -5,7 +5,7 @@ from telliot_feeds.integrations.diva_protocol.cli import diva
 
 @click.group()
 def integrations() -> None:
-    """Commands for Tellor Protocol integrations."""
+    """Commands for Fetch Protocol integrations."""
     pass
 
 

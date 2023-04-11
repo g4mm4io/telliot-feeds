@@ -3,7 +3,7 @@ from brownie import chain
 from eth_abi import decode_single
 
 from telliot_feeds.queries.evm_call import EVMCall
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 
 
 txn_kwargs = {"gas_limit": 3500000, "legacy_gas_price": 1}
@@ -11,10 +11,10 @@ CHAIN_ID = 80001
 
 
 @pytest.mark.asyncio
-async def test_evm_call_e2e(tellor_360, caplog):
+async def test_evm_call_e2e(fetch_360, caplog):
     """Test tipping, reporting, and decoding EVMCall query reponse"""
-    contracts, account = tellor_360
-    r = Tellor360Reporter(
+    contracts, account = fetch_360
+    r = Fetch360Reporter(
         oracle=contracts.oracle,
         token=contracts.token,
         autopay=contracts.autopay,
@@ -48,7 +48,7 @@ async def test_evm_call_e2e(tellor_360, caplog):
     assert 'Current query: {"type":"EVMCall","chainId":1,"contractAddress":"0x88d' in caplog.text
     assert status.ok
 
-    # read value from tellor oracle
+    # read value from fetch oracle
     oracle_rsp, status = await r.oracle.read("getDataBefore", q.query_id, int(chain.time() + 1e9))
     assert status.ok
     assert oracle_rsp is not None
@@ -62,15 +62,15 @@ async def test_evm_call_e2e(tellor_360, caplog):
     v, t = q.value_type.decode(value)
     assert isinstance(v, bytes)
     assert isinstance(t, int)
-    trb_total_supply = decode_single("uint256", v)
-    assert trb_total_supply > 2390472032948139443578988  # TRB total supply before
+    fetch_total_supply = decode_single("uint256", v)
+    assert fetch_total_supply > 2390472032948139443578988  # FETCH total supply before
 
 
 @pytest.mark.asyncio
-async def test_no_endpoint_for_tipped_chain(tellor_360, caplog):
+async def test_no_endpoint_for_tipped_chain(fetch_360, caplog):
     """Test reporter doesn't halt if chainId is not supported"""
-    contracts, account = tellor_360
-    r = Tellor360Reporter(
+    contracts, account = fetch_360
+    r = Fetch360Reporter(
         oracle=contracts.oracle,
         token=contracts.token,
         autopay=contracts.autopay,

@@ -1,6 +1,6 @@
 """ Unit tests for GasPriceOracle queries.
 
-Copyright (c) 2021-, Tellor Development Community
+Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
 from eth_abi import decode_abi
@@ -40,8 +40,8 @@ def test_encode_decode_reported_val():
     q = GasPriceOracle(chainId=1, timestamp=1650552232)
 
     # JSON string containing data specified and
-    # referenced in Tellor /dataSpecs:
-    # https://github.com/tellor-io/dataSpecs/blob/main/types/GasPriceOracle.md
+    # referenced in Fetch /dataSpecs:
+    # https://github.com/fetch-oracle/dataSpecs/blob/main/types/GasPriceOracle.md
 
     data = 31.7  # example gas price in gwei
 

@@ -2,23 +2,23 @@ site_name: Telliot Feed Examples Documentation
 
 # Project information
 site_name: Telliot Feed Examples Documentation
-site_url: https://tellor-io.github.io/telliot-feeds/
-site_author: Tellor Development Community
+site_url: https://fetch-oracle.github.io/telliot-feeds/
+site_author: Fetch Development Community
 site_description: >-
-  Contains examples and plugins for reporting to the TellorX Oracle.
+  Contains examples and plugins for reporting to the FetchX Oracle.
 
 # Repository
-repo_name: tellor-io/telliot-feeds
-repo_url: https://github.com/tellor-io/telliot-feeds
+repo_name: fetch-oracle/telliot-feeds
+repo_url: https://github.com/fetch-oracle/telliot-feeds
 edit_uri: ""
 
 # Copyright
-copyright: Copyright (c) 2021-, Tellor Development Community
+copyright: Copyright (c) 2021-, Fetch Development Community
 
 
 theme:
   name: material
-  logo: assets/tellor_swoosh.png
+  logo: assets/fetch_swoosh.png
   favicon: assets/favicon-32x32.png
   features:
     # - navigation.tabs

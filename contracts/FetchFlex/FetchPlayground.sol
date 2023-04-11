@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.3;
 
-
-contract TellorPlayground {
+contract FetchPlayground {
     // Events
     event Approval(
         address indexed owner,
@@ -35,7 +34,7 @@ contract TellorPlayground {
     mapping(bytes32 => mapping(uint256 => address)) public reporterByTimestamp;
     mapping(address => StakeInfo) stakerDetails; //mapping from a persons address to their staking info
     mapping(bytes32 => uint256[]) public timestamps;
-    mapping(bytes32 => uint256) public tips; // mapping of data IDs to the amount of TRB they are tipped
+    mapping(bytes32 => uint256) public tips; // mapping of data IDs to the amount of FETCH they are tipped
     mapping(bytes32 => mapping(uint256 => bytes)) public values; //queryId -> timestamp -> value
     mapping(bytes32 => uint256[]) public voteRounds; // mapping of vote identifier hashes to an array of dispute IDs
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -63,8 +62,8 @@ contract TellorPlayground {
      * @dev Initializes playground parameters
      */
     constructor() {
-        _name = "TellorPlayground";
-        _symbol = "TRBP";
+        _name = "FetchPlayground";
+        _symbol = "FETCHP";
         _decimals = 18;
         addresses[
             keccak256(abi.encodePacked("_GOVERNANCE_CONTRACT"))
@@ -86,18 +85,17 @@ contract TellorPlayground {
      * @return bool Whether the transaction succeeded
      *
      */
-    function approve(address _spender, uint256 _amount)
-        public
-        virtual
-        returns (bool)
-    {
+    function approve(
+        address _spender,
+        uint256 _amount
+    ) public virtual returns (bool) {
         _approve(msg.sender, _spender, _amount);
         return true;
     }
 
     /**
      * @dev A mock function to create a dispute
-     * @param _queryId The tellorId to be disputed
+     * @param _queryId The fetchId to be disputed
      * @param _timestamp the timestamp of the value to be disputed
      */
     function beginDispute(bytes32 _queryId, uint256 _timestamp) external {
@@ -189,11 +187,10 @@ contract TellorPlayground {
      * @param _amount The amount of tokens, including decimals, to transfer
      * @return bool If the transfer succeeded
      */
-    function transfer(address _recipient, uint256 _amount)
-        public
-        virtual
-        returns (bool)
-    {
+    function transfer(
+        address _recipient,
+        uint256 _amount
+    ) public virtual returns (bool) {
         _transfer(msg.sender, _recipient, _amount);
         return true;
     }
@@ -219,7 +216,7 @@ contract TellorPlayground {
         return true;
     }
 
-    // Tellor Flex
+    // Fetch Flex
     /**
      * @dev Allows a reporter to submit stake
      * @param _amount amount of tokens to stake
@@ -282,11 +279,10 @@ contract TellorPlayground {
      * @param _timestamp uint256 timestamp of report
      * @return address of data reporter
      */
-    function getReporterByTimestamp(bytes32 _queryId, uint256 _timestamp)
-        external
-        view
-        returns (address)
-    {
+    function getReporterByTimestamp(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) external view returns (address) {
         return reporterByTimestamp[_queryId][_timestamp];
     }
 
@@ -299,17 +295,9 @@ contract TellorPlayground {
      * @return uint reporter's last reported timestamp
      * @return uint total number of reports submitted by reporter
      */
-    function getStakerInfo(address _staker)
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    function getStakerInfo(
+        address _staker
+    ) external view returns (uint256, uint256, uint256, uint256, uint256) {
         return (
             stakerDetails[_staker].startDate,
             stakerDetails[_staker].stakedBalance,
@@ -326,12 +314,10 @@ contract TellorPlayground {
      * @param _spender The address that will use the tokens
      * @return uint256 The amount of allowed tokens
      */
-    function allowance(address _owner, address _spender)
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function allowance(
+        address _owner,
+        address _spender
+    ) public view virtual returns (uint256) {
         return _allowances[_owner][_spender];
     }
 
@@ -357,11 +343,9 @@ contract TellorPlayground {
      * @param _queryId the ID to look up
      * @return uint256 count of the number of values received for the queryId
      */
-    function getNewValueCountbyQueryId(bytes32 _queryId)
-        public
-        view
-        returns (uint256)
-    {
+    function getNewValueCountbyQueryId(
+        bytes32 _queryId
+    ) public view returns (uint256) {
         return timestamps[_queryId].length;
     }
 
@@ -371,11 +355,10 @@ contract TellorPlayground {
      * @param _index is the value index to look up
      * @return uint256 timestamp
      */
-    function getTimestampbyQueryIdandIndex(bytes32 _queryId, uint256 _index)
-        public
-        view
-        returns (uint256)
-    {
+    function getTimestampbyQueryIdandIndex(
+        bytes32 _queryId,
+        uint256 _index
+    ) public view returns (uint256) {
         uint256 len = timestamps[_queryId].length;
         if (len == 0 || len <= _index) return 0;
         return timestamps[_queryId][_index];
@@ -386,11 +369,9 @@ contract TellorPlayground {
      * @param _hash is the identifier hash for a vote
      * @return uint256[] memory dispute IDs of the vote rounds
      */
-    function getVoteRounds(bytes32 _hash)
-        public
-        view
-        returns (uint256[] memory)
-    {
+    function getVoteRounds(
+        bytes32 _hash
+    ) public view returns (uint256[] memory) {
         return voteRounds[_hash];
     }
 
@@ -398,7 +379,7 @@ contract TellorPlayground {
      * @dev Returns the governance address of the contract
      * @return address (this address)
      */
-    function governance() external view returns(address){
+    function governance() external view returns (address) {
         return address(this);
     }
 
@@ -416,11 +397,10 @@ contract TellorPlayground {
      * @param _timestamp to retrieve data/value from
      * @return bytes value for queryId/timestamp submitted
      */
-    function retrieveData(bytes32 _queryId, uint256 _timestamp)
-        public
-        view
-        returns (bytes memory)
-    {
+    function retrieveData(
+        bytes32 _queryId,
+        uint256 _timestamp
+    ) public view returns (bytes memory) {
         return values[_queryId][_timestamp];
     }
 

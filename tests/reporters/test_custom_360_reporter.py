@@ -16,7 +16,7 @@ from telliot_core.apps.core import ChainedAccount
 from telliot_core.apps.core import find_accounts
 from telliot_core.apps.core import TelliotCore
 
-from telliot_feeds.reporters.tellor_360 import Tellor360Reporter
+from telliot_feeds.reporters.fetch_360 import Fetch360Reporter
 from telliot_feeds.utils.log import get_logger
 from telliot_feeds.utils.reporter_utils import create_custom_contract
 
@@ -36,11 +36,11 @@ except IndexError:
 
 
 @pytest.fixture(scope="function")
-def mock_reporter_contract(tellorflex_360_contract, mock_token_contract, mock_autopay_contract):
+def mock_reporter_contract(fetchflex_360_contract, mock_token_contract, mock_autopay_contract):
     """mock custom reporter contract"""
     return account_fake.deploy(
         SampleFlexReporter,
-        tellorflex_360_contract.address,
+        fetchflex_360_contract.address,
         mock_autopay_contract.address,
         mock_token_contract.address,
         1,
@@ -50,16 +50,16 @@ def mock_reporter_contract(tellorflex_360_contract, mock_token_contract, mock_au
 @pytest_asyncio.fixture(scope="function")
 async def custom_reporter(
     mumbai_test_cfg,
-    tellorflex_360_contract,
+    fetchflex_360_contract,
     mock_autopay_contract,
     mock_token_contract,
     mock_reporter_contract,
     monkeypatch,
 ):
     async with TelliotCore(config=mumbai_test_cfg) as core:
-        contracts = core.get_tellor360_contracts()
-        contracts.oracle.abi = tellorflex_360_contract.abi
-        contracts.oracle.address = tellorflex_360_contract.address
+        contracts = core.get_fetch360_contracts()
+        contracts.oracle.abi = fetchflex_360_contract.abi
+        contracts.oracle.address = fetchflex_360_contract.address
         contracts.autopay.address = mock_autopay_contract.address
         contracts.autopay.abi = mock_autopay_contract.abi
         contracts.token.address = mock_token_contract.address
@@ -82,7 +82,7 @@ async def custom_reporter(
             custom_abi=mock_reporter_contract.abi,
         )
 
-        r = Tellor360Reporter(
+        r = Fetch360Reporter(
             transaction_type=0,
             oracle=custom_contract,
             token=contracts.token,

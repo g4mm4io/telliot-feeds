@@ -32,10 +32,10 @@ def tipper() -> None:
     type=click.Choice([q.tag for q in query_catalog.find()]),
 )
 @click.option(
-    "--amount-trb",
-    "-trb",
-    "amount_trb",
-    help="amount to tip in TRB for a query ID",
+    "--amount-fetch",
+    "-fetch",
+    "amount_fetch",
+    help="amount to tip in FETCH for a query ID",
     nargs=1,
     type=float,
     required=True,
@@ -45,25 +45,25 @@ def tipper() -> None:
 async def tip(
     ctx: Context,
     query_tag: str,
-    amount_trb: float,
+    amount_fetch: float,
 ) -> None:
-    """Tip TRB for a selected query ID"""
+    """Tip FETCH for a selected query ID"""
 
     # Initialize telliot core app using CLI context
     async with reporter_cli_core(ctx) as core:
 
-        click.echo(f"Tipping {amount_trb} TRB for query tag: {query_tag}.")
+        click.echo(f"Tipping {amount_fetch} FETCH for query tag: {query_tag}.")
 
         chosen_feed = CATALOG_FEEDS[query_tag]
         if not isinstance(chosen_feed, DataFeed):
             click.echo(f"No corresponding datafeed found for given query tag: {query_tag}\n")
             return
-        tip = int(amount_trb * 1e18)
+        tip = int(amount_fetch * 1e18)
 
-        tellorx = core.get_tellorx_contracts()
+        fetchx = core.get_fetchx_contracts()
         tx_receipt, status = asyncio.run(
             tip_query(
-                oracle=tellorx.oracle,
+                oracle=fetchx.oracle,
                 datafeed=chosen_feed,
                 tip=tip,
             )

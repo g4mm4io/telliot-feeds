@@ -7,7 +7,7 @@ import requests
 from telliot_feeds.sources.blockhash_aggregator import get_btc_hash
 from telliot_feeds.sources.blockhash_aggregator import get_eth_hash
 from telliot_feeds.sources.blockhash_aggregator import get_mainnet_web3
-from telliot_feeds.sources.blockhash_aggregator import TellorRNGManualSource
+from telliot_feeds.sources.blockhash_aggregator import FetchRNGManualSource
 
 
 @pytest.mark.asyncio
@@ -15,7 +15,7 @@ async def test_rng():
     """Retrieve random number."""
     # "1652075943"  # BCT block num: 731547
     with mock.patch("telliot_feeds.utils.input_timeout.InputTimeout.__call__", side_effect=["1652075943", ""]):
-        rng_source = TellorRNGManualSource()
+        rng_source = FetchRNGManualSource()
         v, t = await rng_source.fetch_new_datapoint()
 
         assert v == b"\x9diF\xd9R\xf1>q%\x13F\x11\xad\x9f]\xccA\x08\xd9\x03Y\xb0#\x94\xd8\xefgi\xcc\x85t\xb3"
