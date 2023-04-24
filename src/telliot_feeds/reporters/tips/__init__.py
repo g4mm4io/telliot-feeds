@@ -41,6 +41,10 @@ add_multicall_support(
 )
 
 add_multicall_support(
+    network="PulsechainTestnet", network_id=943, multicall3_address="0x207cc7e2141Db4244BE07093CAf5df9a089128F2"
+)
+
+add_multicall_support(
     network="Chiado",
     network_id=10200,
     state_override=False,
