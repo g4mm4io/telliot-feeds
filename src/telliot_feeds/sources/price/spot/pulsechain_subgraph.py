@@ -19,8 +19,8 @@ class PulsechainSupgraphService(WebPriceService):
     """Pulsechain Supgraph Price Service for PLS/USD feed"""
 
     def __init__(self, **kwargs: Any) -> None:
-        kwargs["name"] = "Pulsechain Supgraph Price Service"
-        kwargs["url"] = "https://graph.v3.testnet.pulsechain.com"
+        kwargs["name"] = "LiquidLoans Supgraph Price Service"
+        kwargs["url"] = "https://subgraph-dev.liquidloans.io"
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
@@ -47,7 +47,7 @@ class PulsechainSupgraphService(WebPriceService):
             "Content-Type": "application/json",
         }
 
-        query = "{pls: token" + f'(id: "{token}") {{ derivedUSD }}' + " }"
+        query = "{ pls:tokenDataDAIs(orderBy: timestamp, orderDirection: desc, first: 1) {{ DAI2PLS }} }"
 
         json_data = {
             "query": query,
@@ -55,7 +55,7 @@ class PulsechainSupgraphService(WebPriceService):
             "operationName": None,
         }
 
-        request_url = self.url + "/subgraphs/name/pulsechain/pulsex"
+        request_url = self.url + "/subgraphs/name/liquidloans/liquidloans"
 
         with requests.Session() as s:
             try:
@@ -79,7 +79,7 @@ class PulsechainSupgraphService(WebPriceService):
             response = data["response"]
 
             try:
-                price = float(response["data"][asset]["derivedUSD"])
+                price = float(response["data"][asset]["DAI2PLS"])
                 return price, datetime_now_utc()
             except KeyError as e:
                 msg = f"Error parsing Pulsechain Supgraph response: KeyError: {e}"
