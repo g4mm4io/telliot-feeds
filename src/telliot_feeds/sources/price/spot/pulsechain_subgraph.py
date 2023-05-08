@@ -47,7 +47,7 @@ class PulsechainSupgraphService(WebPriceService):
             "Content-Type": "application/json",
         }
 
-        query = "{ pls:tokenDataDAIs(orderBy: timestamp, orderDirection: desc, first: 1) {{ DAI2PLS }} }"
+        query = "{ pls:tokenDataDAIs(orderBy: timestamp, orderDirection: desc, first: 1) { DAI2PLS } }"
 
         json_data = {
             "query": query,
@@ -79,7 +79,7 @@ class PulsechainSupgraphService(WebPriceService):
             response = data["response"]
 
             try:
-                price = float(response["data"][asset]["DAI2PLS"])
+                price = float(response["data"][asset][0]["DAI2PLS"])
                 return price, datetime_now_utc()
             except KeyError as e:
                 msg = f"Error parsing Pulsechain Supgraph response: KeyError: {e}"
