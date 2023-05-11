@@ -40,6 +40,9 @@ from telliot_feeds.feeds.numeric_api_response_feed import numeric_api_response_f
 from telliot_feeds.feeds.numeric_api_response_manual_feed import numeric_api_response_manual_feed
 from telliot_feeds.feeds.olympus import ohm_eth_median_feed
 from telliot_feeds.feeds.pls_usd_feed import pls_usd_feed
+from telliot_feeds.feeds.pls_usd_feed import pls_dai_feed
+from telliot_feeds.feeds.pls_usd_feed import pls_usdc_feed
+from telliot_feeds.feeds.pls_usd_feed import pls_plsx_feed
 from telliot_feeds.feeds.rai_usd_feed import rai_usd_median_feed
 from telliot_feeds.feeds.ric_usd_feed import ric_usd_median_feed
 from telliot_feeds.feeds.shib_usd_feed import shib_usd_median_feed
@@ -85,7 +88,7 @@ CATALOG_FEEDS = {
     "string-query-example": string_query_feed,
     "fetch-rng-example": fetch_rng_feed,
     "twap-eth-usd-example": twap_30d_example_manual_feed,
-    "pls-usd-spot": pls_usd_feed,
+    "pls-usd-spot": pls_dai_feed,
     "eth-usd-spot": eth_usd_median_feed,
     "btc-usd-spot": btc_usd_median_feed,
     "fetch-usd-spot": fetch_usd_median_feed,
