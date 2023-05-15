@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
 
-import requests
+from dotenv import load_dotenv
 
 from telliot_feeds.dtypes.datapoint import datetime_now_utc
 from telliot_feeds.dtypes.datapoint import OptionalDataPoint
@@ -11,14 +11,20 @@ from telliot_feeds.pricing.price_source import PriceSource
 from telliot_feeds.utils.log import get_logger
 
 from web3 import Web3
+import os
+
+load_dotenv()
+
+PLS_PLSX_SO_ADDR = os.getenv("PLS_PLSX_SO_ADDR")
+PLS_DAI_SO_ADDR = os.getenv("PLS_DAI_SO_ADDR")
+PLS_USDC_SO_ADDR = os.getenv("PLS_USDC_SO_ADDR")
 
 logger = get_logger(__name__)
 pulsechain_secondary_oracles = {
-    "plsx": "0x5a3d5c3F0C10cab165D1A2279915BCa91F75D345",
-    "dai": "0x9f838cE132684758B9628D3212E1b8a5914C49ce",
-    "usdc": "0xAb9E8788b4b8aBf795f6fe4B4e80688A5e36ED5E"
+    "plsx": PLS_PLSX_SO_ADDR,
+    "dai": PLS_DAI_SO_ADDR,
+    "usdc": PLS_USDC_SO_ADDR
 }
-
 
 class PulsechainSecOracleService(WebPriceService):
     """Pulsechain Secondary Orcale Price Service for PLS/USD feed"""
