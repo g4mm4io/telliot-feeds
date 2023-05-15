@@ -15,16 +15,9 @@ import os
 
 load_dotenv()
 
-PLS_PLSX_SO_ADDR = os.getenv("PLS_PLSX_SO_ADDR")
-PLS_DAI_SO_ADDR = os.getenv("PLS_DAI_SO_ADDR")
-PLS_USDC_SO_ADDR = os.getenv("PLS_USDC_SO_ADDR")
+PLS_SO_ADDR = os.getenv("PLS_SO_ADDR")
 
 logger = get_logger(__name__)
-pulsechain_secondary_oracles = {
-    "plsx": PLS_PLSX_SO_ADDR,
-    "dai": PLS_DAI_SO_ADDR,
-    "usdc": PLS_USDC_SO_ADDR
-}
 
 class PulsechainSecOracleService(WebPriceService):
     """Pulsechain Secondary Orcale Price Service for PLS/USD feed"""
@@ -49,7 +42,7 @@ class PulsechainSecOracleService(WebPriceService):
             logger.error(f"Currency not supported: {currency}")
             return None, None
 
-        contract_addr = pulsechain_secondary_oracles.get(currency)
+        contract_addr = PLS_SO_ADDR
         
         if asset != 'pls':
             logger.error(f"Asset not supported: {asset}")
