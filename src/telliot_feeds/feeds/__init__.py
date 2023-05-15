@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+import os
 
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.feeds.aave_usd_feed import aave_usd_median_feed
@@ -63,6 +64,26 @@ from telliot_feeds.feeds.uspce_feed import uspce_feed
 from telliot_feeds.feeds.vesq import vsq_usd_median_feed
 from telliot_feeds.feeds.xdai_usd_feed import xdai_usd_median_feed
 from telliot_feeds.feeds.yfi_usd_feed import yfi_usd_median_feed
+from dotenv import load_dotenv
+from telliot_feeds.utils.log import get_logger
+
+load_dotenv()
+logger = get_logger(__name__)
+
+PLS_SOURCE = os.getenv("PLS_SOURCE")
+
+if PLS_SOURCE == 'dai':
+    logger.info("dai selected as source for pls-usd price feed")
+    pls_usd_feed_selected = pls_dai_feed
+elif PLS_SOURCE == 'usdc':
+    logger.info("usdc selected as source for pls-usd price feed")
+    pls_usd_feed_selected = pls_usdc_feed
+elif PLS_SOURCE == 'plsx':
+    logger.info("plsx selected as source for pls-usd price feed")
+    pls_usd_feed_selected = pls_plsx_feed
+else:
+    logger.info("GraphQL selected as source for pls-usd price feed")
+    pls_usd_feed_selected = pls_usd_feed
 
 
 CATALOG_FEEDS = {
@@ -88,7 +109,7 @@ CATALOG_FEEDS = {
     "string-query-example": string_query_feed,
     "fetch-rng-example": fetch_rng_feed,
     "twap-eth-usd-example": twap_30d_example_manual_feed,
-    "pls-usd-spot": pls_dai_feed,
+    "pls-usd-spot": pls_usd_feed_selected,
     "eth-usd-spot": eth_usd_median_feed,
     "btc-usd-spot": btc_usd_median_feed,
     "fetch-usd-spot": fetch_usd_median_feed,

@@ -62,6 +62,8 @@ class PulsechainSecOracleService(WebPriceService):
 
         try:
             price = float(val)
+            if currency == 'usdc':
+                price = price * 1e12 #scale usdc
             return price, timestamp
         except Exception as e:
             msg = f"Error parsing Pulsechain Sec Oracle response: KeyError: {e}"
