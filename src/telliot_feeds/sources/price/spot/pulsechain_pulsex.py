@@ -15,23 +15,43 @@ import os
 
 load_dotenv()
 
-PLS_SO_ADDR = os.getenv("PLS_SO_ADDR")
+PLS_LP_ADDR = Web3.toChecksumAddress(os.getenv("PLS_LP_ADDR"))
 
 logger = get_logger(__name__)
 
-class PulsechainSecOracleService(WebPriceService):
-    """Pulsechain Secondary Orcale Price Service for PLS/USD feed"""
+def get_amount_out(amount_in, reserve_in, reserve_out):
+    """
+    Given an input asset amount, returns the maximum output amount of the
+    other asset (accounting for fees) given reserves.
+
+    :param amount_in: Amount of input asset.
+    :param reserve_in: Reserve of input asset in the pair contract.
+    :param reserve_out: Reserve of input asset in the pair contract.
+    :return: Maximum amount of output asset.
+    """
+    assert amount_in > 0
+    assert reserve_in > 0 and reserve_out > 0
+    amount_in_with_fee = amount_in*997
+    numerator = amount_in_with_fee*reserve_out
+    denominator = reserve_in*1000 + amount_in_with_fee
+    return int(numerator/denominator)
+
+
+class PulsechainPulseXService(WebPriceService):
+    """Pulsechain PulseX Price Service for PLS/USD feed"""
 
     def __init__(self, **kwargs: Any) -> None:
-        kwargs["name"] = "LiquidLoans Secondary Oracle Price Service"
+        kwargs["name"] = "LiquidLoans PulseX Price Service"
         kwargs["url"] = "https://rpc.v4.testnet.pulsechain.com"
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
+    
+
     async def get_price(self, asset: str, currency: str) -> OptionalDataPoint[float]:
         """Implement PriceServiceInterface
 
-        This implementation gets the price from the Pulsechain Secondary Oracle Service
+        This implementation gets the price from the Pulsechain PulseX Service
 
         """
 
@@ -42,18 +62,18 @@ class PulsechainSecOracleService(WebPriceService):
             logger.error(f"Currency not supported: {currency}")
             return None, None
 
-        contract_addr = PLS_SO_ADDR
+        contract_addr = PLS_LP_ADDR
         
         if asset != 'pls':
             logger.error(f"Asset not supported: {asset}")
             return None, None
 
-        abi = '[{"inputs":[],"name":"getPrice","outputs":[{"internalType":"bool","name":"","type":"bool"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]'
-
+        getReservesAbi = '[{"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint112","name":"reserve0","type":"uint112"},{"internalType":"uint112","name":"reserve1","type":"uint112"},{"internalType":"uint32","name":"blockTimestampLast","type":"uint32"}],"stateMutability":"view","type":"function"}]'
         w3 = Web3(Web3.HTTPProvider(self.url, request_kwargs={'timeout': self.timeout}))
         try:
-            contract = w3.eth.contract(address=contract_addr, abi=abi)
-            [_, val, timestamp, _] = contract.functions.getPrice().call()
+            contract = w3.eth.contract(address=contract_addr, abi=getReservesAbi)
+            [reserve0, reserve1, timestamp] = contract.functions.getReserves().call()
+            val = get_amount_out(1e18, reserve0, reserve1)
 
         except Exception as e:
             logger.warning(f"No prices retrieved from Pulsechain Sec Oracle with Exception {e}")
@@ -62,7 +82,7 @@ class PulsechainSecOracleService(WebPriceService):
         try:
             price = float(val)
             if currency == 'usdc':
-                price = price * 1e12 #scale usdc
+                price = price * 1e12 #scale usdc 
             return price, timestamp
         except Exception as e:
             msg = f"Error parsing Pulsechain Sec Oracle response: KeyError: {e}"
@@ -71,7 +91,9 @@ class PulsechainSecOracleService(WebPriceService):
 
 
 @dataclass
-class PulsechainSecOracleSource(PriceSource):
+class PulsechainPulseXSource(PriceSource):
     asset: str = ""
     currency: str = ""
-    service: PulsechainSecOracleService = field(default_factory=PulsechainSecOracleService, init=False)
+    service: PulsechainPulseXService = field(default_factory=PulsechainPulseXService, init=False)
+
+
