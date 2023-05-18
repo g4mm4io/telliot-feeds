@@ -5,7 +5,7 @@ from typing import Dict
 
 import requests
 
-from telliot_feeds.dtypes.datapoint import OptionalDataPoint
+from telliot_feeds.dtypes.datapoint import OptionalWeightedDataPoint
 
 
 class PriceServiceInterface(ABC):
@@ -18,7 +18,7 @@ class PriceServiceInterface(ABC):
     """
 
     @abstractmethod
-    async def get_price(self, asset: str, currency: str) -> OptionalDataPoint[float]:
+    async def get_price(self, asset: str, currency: str) -> OptionalWeightedDataPoint[float]:
         """Fetch the price of an asset
 
         TODO: Strictly specify compliant asset/currency symbols so concrete

@@ -3,9 +3,11 @@ from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.queries.price.spot_price import SpotPrice
 from telliot_feeds.sources.price.spot.pulsechain_subgraph import PulsechainSubgraphSource
 from telliot_feeds.sources.price.spot.pulsechain_pulsex import PulsechainPulseXSource
+from telliot_feeds.sources.price_aggregator import PriceAggregator
 from dotenv import load_dotenv
 from telliot_feeds.utils.log import get_logger
 import os
+import asyncio
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -28,11 +30,26 @@ pls_plsx_feed = DataFeed(
     query=SpotPrice(asset="pls", currency="usd"), source=PulsechainPulseXSource(asset="pls", currency="plsx")
 )
 
+pls_usd_weighted_feed = DataFeed(
+    query=SpotPrice(asset="pls", currency="usd"),
+    source=PriceAggregator(
+        asset="pls",
+        currency="usd",
+        algorithm="weighted_average",
+        sources=[
+            PulsechainPulseXSource(asset="pls", currency="plsx"),
+            PulsechainPulseXSource(asset="pls", currency="usdc"),
+            PulsechainPulseXSource(asset="pls", currency="dai"),
+        ],
+    ),
+)
+
 pls_sources = {
     'dai': pls_dai_feed,
     'usdc': pls_usdc_feed,
     'plsx': pls_plsx_feed,
-    'graphql': pls_usd_graphql_feed
+    'graphql': pls_usd_graphql_feed,
+    'weighted': pls_usd_weighted_feed
 }
 
 if PLS_SOURCE in pls_sources.keys():

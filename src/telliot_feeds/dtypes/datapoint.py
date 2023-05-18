@@ -13,6 +13,9 @@ DataPoint = Tuple[T, datetime]
 # An optional time-stamped value tuple
 OptionalDataPoint = Tuple[Optional[T], Optional[datetime]]
 
+# An optional weighted and time-stamped value tuple
+OptionalWeightedDataPoint = Tuple[Optional[T], Optional[datetime], Optional[float]]
+
 
 def datetime_now_utc() -> datetime:
     """A helper function to get the timestamp for "now" """
