@@ -12,50 +12,26 @@ import asyncio
 load_dotenv()
 logger = get_logger(__name__)
 
-PLS_SOURCE = os.getenv("PLS_SOURCE")
+sources = os.getenv("PLS_CURRENCY_SOURCES")
 
-pls_usd_graphql_feed = DataFeed(
-    query=SpotPrice(asset="pls", currency="usd"), source=PulsechainSubgraphSource(asset="pls", currency="usd")
-)
+if os.getenv("PLS_CURRENCY_SOURCES"):
+    sources_list = sources.split(',')
+    sources_objs = []
+    for s in sources_list:
+        sources_objs.append(PulsechainPulseXSource(asset="pls", currency=s))
 
-pls_usdc_feed = DataFeed(
-    query=SpotPrice(asset="pls", currency="usd"), source=PulsechainPulseXSource(asset="pls", currency="usdc")
-)
-
-pls_dai_feed = DataFeed(
-    query=SpotPrice(asset="pls", currency="usd"), source=PulsechainPulseXSource(asset="pls", currency="dai")
-)
-
-pls_plsx_feed = DataFeed(
-    query=SpotPrice(asset="pls", currency="usd"), source=PulsechainPulseXSource(asset="pls", currency="plsx")
-)
-
-pls_usd_weighted_feed = DataFeed(
-    query=SpotPrice(asset="pls", currency="usd"),
-    source=PriceAggregator(
-        asset="pls",
-        currency="usd",
-        algorithm="weighted_average",
-        sources=[
-            PulsechainPulseXSource(asset="pls", currency="plsx"),
-            PulsechainPulseXSource(asset="pls", currency="usdc"),
-            PulsechainPulseXSource(asset="pls", currency="dai"),
-        ],
-    ),
-)
-
-pls_sources = {
-    'dai': pls_dai_feed,
-    'usdc': pls_usdc_feed,
-    'plsx': pls_plsx_feed,
-    'graphql': pls_usd_graphql_feed,
-    'weighted': pls_usd_weighted_feed
-}
-
-if PLS_SOURCE in pls_sources.keys():
-    logger.info(PLS_SOURCE + ' selected')
-    pls_usd_feed = pls_sources.get(PLS_SOURCE)
+    logger.info(sources + ' selected')
+    pls_usd_feed = DataFeed(
+        query=SpotPrice(asset="pls", currency="usd"),
+        source=PriceAggregator(
+            asset="pls",
+            currency="usd",
+            algorithm="weighted_average",
+            sources=sources_objs,
+        ),
+    )
 else:
     logger.info('GraphQL selected')
-    pls_usd_feed = pls_usd_graphql_feed
-
+    pls_usd_feed = DataFeed(
+        query=SpotPrice(asset="pls", currency="usd"), source=PulsechainSubgraphSource(asset="pls", currency="usd")
+    )

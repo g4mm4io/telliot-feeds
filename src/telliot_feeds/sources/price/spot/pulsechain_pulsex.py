@@ -15,13 +15,18 @@ import os
 
 load_dotenv()
 
-addrs = {
-    "dai": Web3.toChecksumAddress(os.getenv("PLS_LP_DAI_ADDR")) if os.getenv("PLS_LP_DAI_ADDR") else None,
-    'usdc': Web3.toChecksumAddress(os.getenv("PLS_LP_USDC_ADDR")) if os.getenv("PLS_LP_USDC_ADDR") else None,
-    'plsx': Web3.toChecksumAddress(os.getenv("PLS_LP_PLSX_ADDR")) if os.getenv("PLS_LP_PLSX_ADDR") else None,
-}
+addrs = {}
+if os.getenv("PLS_CURRENCY_SOURCES") and os.getenv("PLS_ADDR_SOURCES"):
+    sources_addrs = os.getenv("PLS_ADDR_SOURCES")
+    sources = os.getenv("PLS_CURRENCY_SOURCES")
+    sources_list = sources.split(',')
+    sources_addr_list = sources_addrs.split(',')
+
+    for i,s in enumerate(sources_list):
+        addrs[s] = Web3.toChecksumAddress(sources_addr_list[i])
 
 logger = get_logger(__name__)
+
 
 def get_amount_out(amount_in, reserve_in, reserve_out):
     """
@@ -93,7 +98,6 @@ class PulsechainPulseXService(WebPriceService):
             msg = f"Error parsing Pulsechain Sec Oracle response: KeyError: {e}"
             logger.critical(msg)
             return None, None
-
 
 @dataclass
 class PulsechainPulseXSource(PriceSource):
