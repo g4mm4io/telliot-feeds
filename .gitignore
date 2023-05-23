@@ -171,3 +171,6 @@ package.json
 
 # ignore stray test files
 reported_pools.pickle
+
+#virtual env
+tenv

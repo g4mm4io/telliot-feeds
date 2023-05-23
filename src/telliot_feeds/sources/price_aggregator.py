@@ -8,13 +8,16 @@ from typing import Literal
 
 from telliot_feeds.datasource import DataSource
 from telliot_feeds.dtypes.datapoint import datetime_now_utc
-from telliot_feeds.dtypes.datapoint import OptionalDataPoint
+from telliot_feeds.dtypes.datapoint import OptionalDataPoint, OptionalWeightedDataPoint
 from telliot_feeds.pricing.price_source import PriceSource
 from telliot_feeds.utils.log import get_logger
 
 
 logger = get_logger(__name__)
 
+
+def weighted_average(distribution, weights):
+    return sum([distribution[i] * weights[i] for i in range(len(distribution))]) / sum(weights)
 
 @dataclass
 class PriceAggregator(DataSource[float]):
@@ -26,7 +29,7 @@ class PriceAggregator(DataSource[float]):
     currency: str = ""
 
     #: Callable algorithm that accepts an iterable of floats
-    algorithm: Literal["median", "mean"] = "median"
+    algorithm: Literal["median", "mean", "weighted_average"] = "median"
 
     #: Private storage for actual algorithm function
     _algorithm: Callable[..., float] = field(default=statistics.median, init=False, repr=False)
@@ -39,6 +42,8 @@ class PriceAggregator(DataSource[float]):
             self._algorithm = statistics.median
         elif self.algorithm == "mean":
             self._algorithm = statistics.mean
+        elif self.algorithm == "weighted_average":
+            self._algorithm = weighted_average
 
     def __str__(self) -> str:
         """Human-readable representation."""
@@ -47,7 +52,7 @@ class PriceAggregator(DataSource[float]):
         symbol = asset + "/" + currency
         return f"PriceAggregator {symbol} {self.algorithm}"
 
-    async def update_sources(self) -> List[OptionalDataPoint[float]]:
+    async def update_sources(self) -> List[OptionalWeightedDataPoint[float]]:
         """Update data feed sources
 
         Returns:
@@ -55,7 +60,7 @@ class PriceAggregator(DataSource[float]):
             to the time-stamped answer for that data source
         """
 
-        async def gather_inputs() -> List[OptionalDataPoint[float]]:
+        async def gather_inputs() -> List[OptionalWeightedDataPoint[float]]:
             sources = self.sources
             datapoints = await asyncio.gather(*[source.fetch_new_datapoint() for source in sources])
             return datapoints
@@ -64,7 +69,7 @@ class PriceAggregator(DataSource[float]):
 
         return inputs
 
-    async def fetch_new_datapoint(self) -> OptionalDataPoint[float]:
+    async def fetch_new_datapoint(self) -> OptionalWeightedDataPoint[float]:
         """Update current value with time-stamped value fetched from source
 
         Args:
@@ -77,11 +82,15 @@ class PriceAggregator(DataSource[float]):
         datapoints = await self.update_sources()
 
         prices = []
+        weights = []
         for datapoint in datapoints:
-            v, _ = datapoint  # Ignore input timestamps
+            v, _, w = datapoint  # Ignore input timestamps
             # Check for valid answers
             if v is not None and isinstance(v, float):
                 prices.append(v)
+            # Check for valid answers
+            if w is not None and isinstance(w, float):
+                weights.append(w)
 
         if not prices:
             logger.warning(f"No prices retrieved for {self}.")
@@ -89,7 +98,11 @@ class PriceAggregator(DataSource[float]):
 
         # Run the algorithm on all valid prices
         logger.info(f"Running {self.algorithm} on {prices}")
-        result = self._algorithm(prices)
+
+        if len(weights) > 0:
+            logger.info(f"Running {self.algorithm} using weights {weights}")
+
+        result = self._algorithm(prices, weights)
         datapoint = (result, datetime_now_utc())
         self.store_datapoint(datapoint)
 

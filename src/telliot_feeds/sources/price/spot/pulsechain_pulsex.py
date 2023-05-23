@@ -15,9 +15,18 @@ import os
 
 load_dotenv()
 
-PLS_LP_ADDR = Web3.toChecksumAddress(os.getenv("PLS_LP_ADDR"))
+addrs = {}
+if os.getenv("PLS_CURRENCY_SOURCES") and os.getenv("PLS_ADDR_SOURCES"):
+    sources_addrs = os.getenv("PLS_ADDR_SOURCES")
+    sources = os.getenv("PLS_CURRENCY_SOURCES")
+    sources_list = sources.split(',')
+    sources_addr_list = sources_addrs.split(',')
+
+    for i,s in enumerate(sources_list):
+        addrs[s] = Web3.toChecksumAddress(sources_addr_list[i])
 
 logger = get_logger(__name__)
+
 
 def get_amount_out(amount_in, reserve_in, reserve_out):
     """
@@ -36,7 +45,6 @@ def get_amount_out(amount_in, reserve_in, reserve_out):
     denominator = reserve_in*1000 + amount_in_with_fee
     return int(numerator/denominator)
 
-
 class PulsechainPulseXService(WebPriceService):
     """Pulsechain PulseX Price Service for PLS/USD feed"""
 
@@ -45,8 +53,6 @@ class PulsechainPulseXService(WebPriceService):
         kwargs["url"] = "https://rpc.v4.testnet.pulsechain.com"
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
-
-    
 
     async def get_price(self, asset: str, currency: str) -> OptionalDataPoint[float]:
         """Implement PriceServiceInterface
@@ -62,7 +68,7 @@ class PulsechainPulseXService(WebPriceService):
             logger.error(f"Currency not supported: {currency}")
             return None, None
 
-        contract_addr = PLS_LP_ADDR
+        contract_addr = addrs.get(currency)
         
         if asset != 'pls':
             logger.error(f"Asset not supported: {asset}")
@@ -75,6 +81,10 @@ class PulsechainPulseXService(WebPriceService):
             [reserve0, reserve1, timestamp] = contract.functions.getReserves().call()
             val = get_amount_out(1e18, reserve0, reserve1)
 
+            vl0 = ((1e18 * reserve1) / (reserve0 + 1e18)) * reserve0 #value locked token0 without fees
+            vl1 = ((1e18 * reserve0) / (reserve1 + 1e18)) * reserve1 #value locked token0 without fees
+            tvl = vl0 + vl1 #total value locked of the pool
+
         except Exception as e:
             logger.warning(f"No prices retrieved from Pulsechain Sec Oracle with Exception {e}")
             return None, None
@@ -83,17 +93,15 @@ class PulsechainPulseXService(WebPriceService):
             price = float(val)
             if currency == 'usdc':
                 price = price * 1e12 #scale usdc 
-            return price, timestamp
+            return price, timestamp, float(tvl)
         except Exception as e:
             msg = f"Error parsing Pulsechain Sec Oracle response: KeyError: {e}"
             logger.critical(msg)
             return None, None
 
-
 @dataclass
 class PulsechainPulseXSource(PriceSource):
     asset: str = ""
     currency: str = ""
+    addr: str = ""
     service: PulsechainPulseXService = field(default_factory=PulsechainPulseXService, init=False)
-
-
