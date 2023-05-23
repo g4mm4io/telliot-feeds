@@ -1,9 +1,8 @@
 # Getting Started
 
 ## Prerequisites
-- An account with your chain's native token for gas fees. Testnets often have a faucet. For example, [here is Polygon's](https://faucet.polygon.technology/) for Mumbai testnet.
-- [Test FETCH](https://docs.fetch.io/fetch/the-basics/readme#need-testnet-tokens-fetch) for staking.
-- [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use`telliot-feeds`. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
+- An account with your chain's native token for gas fees. Testnets often have a faucet. For example, [here is Pulsechain's ](https://faucet.v4.testnet.pulsechain.com/) for testnet V4.
+- [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use `telliot-feeds`. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
 
 
 ## Install Telliot Feeds
@@ -33,9 +32,24 @@ In this example, the virtual environment will be created in a subfolder called `
     source tenv/bin/activate
     ```
 
-Once the virtual environment is activated, install telliot feeds with pip:
+Once the virtual environment is activated, install telliot from the source code. First, clone telliot feeds and telliot core repositories in the same folder:
 
-    pip install telliot-feeds
+    git clone git@github.com:fetchoracle/telliot-feeds.git
+    git clone git@github.com:fetchoracle/telliot-core.git
+
+After that, install telliot core:
+
+    cd telliot-core
+    pip install -e .
+    pip install -r requirements-dev.txt
+
+
+Finally, install telliot feeds:
+
+    cd ../telliot-feeds
+    pip install -e .
+    pip install -r requirements-dev.txt
+
 
 *If your log shows no errors, that's it! Next, follow the instructions for [configuring telliot](#telliot-configuration).*
 
@@ -58,11 +72,35 @@ Once the virtual environment is activated, install telliot feeds with pip:
 ### Install Telliot Feeds Using Docker
 Use the following commands to create and run a container with the correct Python version and dependencies to configure and run Telliot:
 
-1. Pull image from docker hub:
+1. clone telliot feeds and telliot core repositories in the same folder:
+
 ```
-sudo docker pull fetchofficial/telliot
+git clone git@github.com:fetchoracle/telliot-feeds.git
+git clone git@github.com:fetchoracle/telliot-core.git
 ```
-2. Create the following `docker-compose.yml` file using the command:
+
+2. Create the following `Dockerfile` file using the command:
+```
+echo "FROM python:3.9-alpine
+
+#install dependencies for build pip packages
+RUN apk add protobuf gcc libc-dev linux-headers nano
+
+#copy and install dependencies for telliot core
+WORKDIR /usr/src/app/telliot-core
+COPY telliot-core/requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY ./telliot-core .
+RUN pip install -e .
+
+#copy and install dependencies for telliot core
+WORKDIR /usr/src/app/telliot-feeds
+COPY telliot-feeds/requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY ./telliot-feeds .
+RUN pip install -e ." > Dockerfile
+```
+3. Create the following `docker-compose.yml` file using the command:
 ```
 echo "services:
   telliot:
@@ -72,15 +110,15 @@ echo "services:
     tty: true
     entrypoint: sh" > docker-compose.yml
 ```
-3. Create & start container in background:
+4. Create & start container in background:
 ```
 sudo docker compose up -d
 ```
-4. Open shell to container: 
+5. Open shell to container: 
 ```
 sudo docker exec -it telliot_container sh
 ```
-5. Next [configure telliot](#telliot-configuration) inside the container. To close shell to the container run: `exit`. If you exit the shell, the container will still be running in the background, so you can open a new shell to the container at any time with the command above. This is useful if running telliot from a remote server like an AWS instance. You can close the shell and disconnect from the server, but the container can still be running Telliot in the background.
+6. Next [configure telliot](#telliot-configuration) inside the container. To close shell to the container run: `exit`. If you exit the shell, the container will still be running in the background, so you can open a new shell to the container at any time with the command above. This is useful if running telliot from a remote server like an AWS instance. You can close the shell and disconnect from the server, but the container can still be running Telliot in the background.
 
 ## Telliot Configuration
 
@@ -101,12 +139,12 @@ To view your current configuration at any time:
 The reporter (telliot) needs to know which accounts (wallet addresses) are available for submitting values to the oracle.
 Use the command line to add necessary reporting accounts/private keys.
 
-For example, to add an account called `myacct1` for reporting on Polygon mainnet (chain ID 137). You'll need to replace the private key in this example with the private key that holds your FETCH for reporting:
+For example, to add an account called `myacct1` for reporting on Pulsechain testnet v4 (chain ID 943). You'll need to replace the private key in this example with the private key that holds your FETCH for reporting:
 
-    >> telliot account add myacct1 0x57fe7105302229455bcfd58a8b531b532d7a2bb3b50e1026afa455cd332bf706 137
+    >> telliot account add myacct1 0x57fe7105302229455bcfd58a8b531b532d7a2bb3b50e1026afa455cd332bf706 943
     Enter encryption password for myacct1: 
     Confirm password: 
-    Added new account myacct1 (address= 0xcd19cf65af3a3aea1f44a7cb0257fc7455f245f0) for use on chains (137,)
+    Added new account myacct1 (address= 0xcd19cf65af3a3aea1f44a7cb0257fc7455f245f0) for use on chains (943,)
 
 To view other options for managing accounts with telliot, use the command:
     
@@ -123,15 +161,15 @@ You can add your RPC endpoints via the command line or by editing the `endpoints
 To configure your endpoint via the CLI, use the `report` command and enter `n` when asked if you want to keep the default settings:
 ```
 $ telliot report -a myacct1
-INFO    | telliot_core | telliot-core 0.1.9
-INFO    | telliot_core | Connected to polygon-mumbai [default account: myacct1], time: 2023-01-24 08:25:36.676658
+INFO    | telliot_core | telliot-core 0.2.3dev0
+INFO    | telliot_core | Connected to PulseChain Testnet-V4 [default account: myacct1], time: 2023-05-23 23:47:06.014174
 Your current settings...
-Your chain id: 80001
+Your chain id: 943
 
-Your mumbai endpoint: 
- - provider: Infura
- - RPC url: https://polygon-mumbai.infura.io/v3/****
- - explorer url: https://mumbai.polygonscan.com/
+Your Pulsechain Testnet endpoint: 
+ - provider: Pulsechain
+ - RPC url: https://rpc.v4.testnet.pulsechain.com
+ - explorer url: https://scan.v4.testnet.pulsechain.com
 Your account: myacct1 at address 0x1234...
 Proceed with current settings (y) or update (n)? [Y/n]:
 ...
@@ -145,32 +183,8 @@ Press [ENTER] to confirm settings.
 ...
 ```
 
-If you don't have your own node URL, a free one can be obtained at [Infura.io](http://www.infura.io).  Simply replace `INFURA_API_KEY` with the one provided by Infura.
+If you don't have your own node URL, a free RPC one can be obtained at [Pulsechain.com](http://pulsechain.com).  
 
-Note that endpoints should use the websocket (wss) protocol because HTTPS endpoints do not support event listeners. (If reporting on Polygon, websockets are not supported, so the HTTPS endpoint is fine.)
-
-**Once you've added an endpoint, you can read the [Usage](https://fetch-oracle.github.io/telliot-feeds/usage/) section,
+**Once you've added an endpoint, you can read the [Usage](./usage.md) section,
 then you'll be set to report.**
 
-## Other possible configs
-*Note: These configs are not necessary to run Telliot, so you can skip this section and move on to [Usage](./usage.md) if you've already finished installing Telliot, adding accounts, and adding endpoints.*
-
-### AMPL
-
-If you'd like to report legacy AMPL values, generate default AMPL configs from the repository's home directory:
-```
-python3 src/telliot_feeds/config.py
-```
-
-This will create a `api_keys.yaml` file in your telliot folder if it doesn't already exist. Add the necessary API keys (BraveNewCoin/Rapid & AnyBlock) to `~/telliot/api_keys.yaml`. (Most reporters need not do this)
-
-Additionally, if you're going to be reporting data using sources that require API keys, add them using the following example. 
-
-*Example `api_keys.yaml` file:*
-```yaml
-type: ApiKey
-name: 'anyblock'
-key: 'abc123fakeapikey'
-url: 'https://123www.api.com/
-
-```
