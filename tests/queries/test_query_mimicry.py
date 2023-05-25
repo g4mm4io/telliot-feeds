@@ -41,7 +41,7 @@ def test_encode_decode_reported_val():
 
     # JSON string containing data specified and
     # referenced in Fetch /dataSpecs:
-    # https://github.com/fetch-oracle/dataSpecs/blob/main/types/MimicryCollectionStat.md
+    # https://github.com/fetchoracle/dataSpecs/blob/main/types/MimicryCollectionStat.md
 
     data = 31.7  # example reported metric
 

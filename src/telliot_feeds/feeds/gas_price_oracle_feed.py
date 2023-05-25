@@ -1,7 +1,7 @@
 """Datafeed for reporting responses to the GasPriceOracle query type.
 
 More info:
-https://github.com/fetch-oracle/dataSpecs/blob/main/types/GasPriceOracle.md
+https://github.com/fetchoracle/dataSpecs/blob/main/types/GasPriceOracle.md
 
  """
 from telliot_feeds.datafeed import DataFeed

@@ -20,7 +20,7 @@ class LegacyRequest(AbiQuery):
     The LegacyQuery class is deprecated and should not be used by
     new projects.
 
-    Refer to [fetch documentation](https://docs.fetch.io/fetch/integration/data-ids)
+    Refer to [fetch documentation](https://docs.fetchoracle.com/fetch/integration/data-ids)
     for a description of each ``id``
 
     """
