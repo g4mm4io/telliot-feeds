@@ -20,7 +20,6 @@ if os.getenv("PLS_CURRENCY_SOURCES"):
     for s in sources_list:
         sources_objs.append(PulsechainPulseXSource(asset="pls", currency=s))
 
-    logger.info(sources + ' selected')
     pls_usd_feed = DataFeed(
         query=SpotPrice(asset="pls", currency="usd"),
         source=PriceAggregator(
@@ -31,7 +30,6 @@ if os.getenv("PLS_CURRENCY_SOURCES"):
         ),
     )
 else:
-    logger.info('GraphQL selected')
     pls_usd_feed = DataFeed(
         query=SpotPrice(asset="pls", currency="usd"), source=PulsechainSubgraphSource(asset="pls", currency="usd")
     )
