@@ -68,7 +68,4 @@ Check style (you may need run this step several times):
 
 Once all those pass, you're ready to make a pull request to the project's main branch.
 
-Link any related issues, tag desired reviewers, and watch the [#telliot-feeds](https://discord.gg/URXVQdGjAT) channel in the
-community discord for updates.
-
 
