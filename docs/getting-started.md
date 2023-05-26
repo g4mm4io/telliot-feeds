@@ -78,47 +78,15 @@ Use the following commands to create and run a container with the correct Python
 git clone git@github.com:fetchoracle/telliot-feeds.git
 git clone git@github.com:fetchoracle/telliot-core.git
 ```
-
-2. Create the following `Dockerfile` file using the command:
+2. Create & start container in background:
 ```
-echo "FROM python:3.9-alpine
-
-#install dependencies for build pip packages
-RUN apk add protobuf gcc libc-dev linux-headers nano
-
-#copy and install dependencies for telliot core
-WORKDIR /usr/src/app/telliot-core
-COPY telliot-core/requirements-dev.txt ./
-RUN pip install --no-cache-dir -r requirements-dev.txt
-COPY ./telliot-core .
-RUN pip install -e .
-
-#copy and install dependencies for telliot core
-WORKDIR /usr/src/app/telliot-feeds
-COPY telliot-feeds/requirements-dev.txt ./
-RUN pip install --no-cache-dir -r requirements-dev.txt
-COPY ./telliot-feeds .
-RUN pip install -e ." > Dockerfile
+sudo docker compose -f telliot-feeds/docker-compose.yml up -d
 ```
-3. Create the following `docker-compose.yml` file using the command:
-```
-echo "services:
-  telliot:
-    image: fetchofficial/telliot
-    container_name: telliot_container
-    build: .
-    tty: true
-    entrypoint: sh" > docker-compose.yml
-```
-4. Create & start container in background:
-```
-sudo docker compose up -d
-```
-5. Open shell to container: 
+3. Open shell to container: 
 ```
 sudo docker exec -it telliot_container sh
 ```
-6. Next [configure telliot](#telliot-configuration) inside the container. To close shell to the container run: `exit`. If you exit the shell, the container will still be running in the background, so you can open a new shell to the container at any time with the command above. This is useful if running telliot from a remote server like an AWS instance. You can close the shell and disconnect from the server, but the container can still be running Telliot in the background.
+4. Next [configure telliot](#telliot-configuration) inside the container. To close shell to the container run: `exit`. If you exit the shell, the container will still be running in the background, so you can open a new shell to the container at any time with the command above. This is useful if running telliot from a remote server like an AWS instance. You can close the shell and disconnect from the server, but the container can still be running Telliot in the background.
 
 ## Telliot Configuration
 
@@ -160,7 +128,7 @@ You can add your RPC endpoints via the command line or by editing the `endpoints
 
 To configure your endpoint via the CLI, use the `report` command and enter `n` when asked if you want to keep the default settings:
 ```
-$ telliot report -a myacct1
+$ telliot report -a myacct1 --fetch-flex
 INFO    | telliot_core | telliot-core 0.2.3dev0
 INFO    | telliot_core | Connected to PulseChain Testnet-V4 [default account: myacct1], time: 2023-05-23 23:47:06.014174
 Your current settings...

@@ -44,7 +44,7 @@ class Snapshot(AbiQuery):
         return ValueType(abi_type="bool", packed=False)
 ```
 3. Next you'll need to add a data source for your query type in `src/telliot_feeds/sources/`. For an example of an automated data source, see `src/telliot_feeds/sources/etherscan_gas.py`. For an example of a data source that requires manual entry, see `src/telliot_feeds/sources/manual/snapshot.py`.
-4. Create an instance of the `DataFeed` class in `src/telliot_feeds/feeds/`. For example, if you had implemented the `SpotPrice` query type and added sources for `MATIC/USD`, the `DataFeed` subclass would look like this (`src/telliot_feeds/feeds/matic_usd_feed.py`):
+4. Create an instance of the `DataFeed` class in `src/telliot_feeds/feeds/`. For example, if you had implemented the `SpotPrice` query type and added sources for `PLS/USD`, the `DataFeed` subclass would look like this (`src/telliot_feeds/feeds/pls_usd_feed.py`):
 ```python
 from telliot_feeds.datafeed import DataFeed
 from telliot_feeds.queries.price.spot_price import SpotPrice
@@ -56,19 +56,19 @@ from telliot_feeds.sources.price.spot.gemini import GeminiSpotPriceSource
 from telliot_feeds.sources.price.spot.kraken import KrakenSpotPriceSource
 from telliot_feeds.sources.price_aggregator import PriceAggregator
 
-matic_usd_median_feed = DataFeed(
-    query=SpotPrice(asset="MATIC", currency="USD"),
+pls_usd_median_feed = DataFeed(
+    query=SpotPrice(asset="PLS", currency="USD"),
     source=PriceAggregator(
-        asset="matic",
+        asset="pls",
         currency="usd",
         algorithm="median",
         sources=[
-            CoinGeckoSpotPriceSource(asset="matic", currency="usd"),
-            BittrexSpotPriceSource(asset="matic", currency="usd"),
-            BinanceSpotPriceSource(asset="matic", currency="usdt"),
-            CoinbaseSpotPriceSource(asset="matic", currency="usd"),
-            GeminiSpotPriceSource(asset="matic", currency="usd"),
-            KrakenSpotPriceSource(asset="matic", currency="usd"),
+            CoinGeckoSpotPriceSource(asset="pls", currency="usd"),
+            BittrexSpotPriceSource(asset="pls", currency="usd"),
+            BinanceSpotPriceSource(asset="pls", currency="usdt"),
+            CoinbaseSpotPriceSource(asset="pls", currency="usd"),
+            GeminiSpotPriceSource(asset="pls", currency="usd"),
+            KrakenSpotPriceSource(asset="pls", currency="usd"),
         ],
     ),
 )

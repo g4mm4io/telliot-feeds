@@ -2,6 +2,8 @@ services:
   telliot:
     image: fetchofficial/telliot
     container_name: telliot_container
-    build: .
+    build: 
+      dockerfile: telliot-feeds/Dockerfile
+      context: ../
     tty: true
     entrypoint: sh

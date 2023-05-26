@@ -1,5 +1,20 @@
-FROM python:3.9
+FROM python:3.9-alpine
 
-RUN pip install telliot-feeds==0.1.6
+#install dependencies for build pip packages
+RUN apk add protobuf gcc libc-dev linux-headers nano
 
-CMD echo "telliot image built"
+#copy and install dependencies for telliot core
+WORKDIR /usr/src/app/telliot-core
+COPY telliot-core/requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY ./telliot-core .
+RUN pip install -e .
+
+#copy and install dependencies for telliot core
+WORKDIR /usr/src/app/telliot-feeds
+COPY telliot-feeds/requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY ./telliot-feeds .
+RUN pip install -e .
+
+
