@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-- [ ] Links to [dataSpecs](https://github.com/fetch-oracle/dataSpecs) issue & new query type file
+- [ ] Links to [dataSpecs](https://github.com/fetchoracle/dataSpecs) issue & new query type file
 - [ ] Add query type (subclass `AbiQuery`)
 - [ ] Add sources (subclass `DataSource`)
 - [ ] Add feed (instance of `DataFeed`)

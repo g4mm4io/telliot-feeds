@@ -15,7 +15,7 @@ class DailyVolatility(AbiQuery):
         version:
             A reference to DailyVolatility data specifications found
             here:
-            https://github.com/fetch-oracle/dataSpecs/blob/main/types/DailyVolatility.md
+            https://github.com/fetchoracle/dataSpecs/blob/main/types/DailyVolatility.md
 
             More information about volatility:
             https://www.investopedia.com/terms/v/volatility.asp

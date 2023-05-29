@@ -1,6 +1,6 @@
 # Usage
 
-Prerequisites: [Getting Started](https://fetch-oracle.github.io/telliot-feeds/getting-started/)
+Prerequisites: [Getting Started](https://fetchoracle.github.io/telliot-feeds/getting-started/)
 
 To report data to Fetch oracles, or access any other functionality, use the `telliot` CLI. A basic example:
 
@@ -18,7 +18,7 @@ $ telliot report -a acct1 -ncr -qt fetch-usd-spot
 
 # Reporting Basics
 
-**Note: When using the `report` command, `telliot` will automatically attempt to stake the minimum required to report. To see the current stake amount, find the oracle contract on your desired chain [here](https://docs.fetch.io/fetch/the-basics/contracts-reference), then call `getStakeAmount` in the contract's read functions section on the block explorer. The returned value is denominated in wei.**
+**Note: When using the `report` command, `telliot` will automatically attempt to stake the minimum required to report. To see the current stake amount, find the oracle contract on your desired chain [here](https://docs.fetchoracle.com/fetch/the-basics/contracts-reference), then call `getStakeAmount` in the contract's read functions section on the block explorer. The returned value is denominated in wei.**
 
 ## Help flag
 
@@ -160,7 +160,7 @@ Normal profit flag usage:
 telliot report -a acct4 -p 2
 ```
 
-**Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/fetch-oracle/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
+**Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/fetchoracle/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
 
 ## Gas, Fee, & Transaction Type Flags
 
@@ -196,7 +196,7 @@ Reporting with Flashbots on testnet is not supported.
 
 ### Create Signatory Account
 
-In order to submit transactions through the [Flashbots](https://docs.flashbots.net/flashbots-auction/searchers/quick-start/) relay, you need an additional Ethereum acccount. The Flashbots organization uses this signatory account's address to identify you and build your historical reputation as a MEV ["searcher"](https://docs.flashbots.net/flashbots-auction/searchers/quick-start). This signatory account doesn't need any funds in it. Store it it as a `ChainedAccount` in the same way you would any other (see [Getting Started](https://fetch-oracle.github.io/telliot-feeds/getting-started/)).
+In order to submit transactions through the [Flashbots](https://docs.flashbots.net/flashbots-auction/searchers/quick-start/) relay, you need an additional Ethereum acccount. The Flashbots organization uses this signatory account's address to identify you and build your historical reputation as a MEV ["searcher"](https://docs.flashbots.net/flashbots-auction/searchers/quick-start). This signatory account doesn't need any funds in it. Store it it as a `ChainedAccount` in the same way you would any other (see [Getting Started](https://fetchoracle.github.io/telliot-feeds/getting-started/)).
 
 When reporting, select your signatory account by tag as well as your staked mainnet account. Use the `--account/-a` and `--signature-tag/-sgt` flags.
 

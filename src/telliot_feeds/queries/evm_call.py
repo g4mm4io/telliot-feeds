@@ -12,7 +12,7 @@ from telliot_feeds.queries.abi_query import AbiQuery
 class EVMCall(AbiQuery):
     """EVMCall query type.
 
-    More info: https://github.com/fetch-oracle/dataSpecs/blob/main/types/EVMCall.md
+    More info: https://github.com/fetchoracle/dataSpecs/blob/main/types/EVMCall.md
 
     Parameters
     ----------

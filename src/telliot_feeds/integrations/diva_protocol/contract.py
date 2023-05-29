@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class PoolParameters:
-    """Source: https://github.com/fetch-oracle/dataSpecs/blob/main/types/DIVAProtocolPolygon.md"""
+    """Source: https://github.com/fetchoracle/dataSpecs/blob/main/types/DIVAProtocolPolygon.md"""
 
     reference_asset: str  # (string) Reference asset string (e.g., "BTC/USD", "ETH Gas Price (Wei)", "TVL Locked in DeFi", etc.) # noqa: E501
     expiry_time: int  # (uint256) Expiration time of the pool and as of time of final value expressed as a unix timestamp in seconds # noqa: E501

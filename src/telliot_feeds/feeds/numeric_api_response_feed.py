@@ -1,7 +1,7 @@
 """Datafeed for reporting responses to the NumericApiResponse query type.
 
 More info:
-https://github.com/fetch-oracle/dataSpecs/blob/main/types/NumericApiResponse.md
+https://github.com/fetchoracle/dataSpecs/blob/main/types/NumericApiResponse.md
 
  """
 from telliot_feeds.datafeed import DataFeed

@@ -7,7 +7,7 @@ is already installed on the system.*
 
 Clone telliot repositories to a local working directory:
 
-    git clone https://github.com/fetch-oracle/telliot-feeds.git
+    git clone https://github.com/fetchoracle/telliot-feeds.git
 
 Change directories:
 
@@ -67,8 +67,5 @@ Check style (you may need run this step several times):
     tox -e style
 
 Once all those pass, you're ready to make a pull request to the project's main branch.
-
-Link any related issues, tag desired reviewers, and watch the [#telliot-feeds](https://discord.gg/URXVQdGjAT) channel in the
-community discord for updates.
 
 

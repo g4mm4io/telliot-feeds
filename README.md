@@ -2,11 +2,11 @@
 
 This package contains reporting tools and datafeeds for Fetch oracles.
 
-## [Documentation](https://fetch-oracle.github.io/telliot-feeds/)
+## [Documentation](https://fetchoracle.github.io/telliot-feeds/)
 
-## [Installation and Configuration](https://fetch-oracle.github.io/telliot-feeds/getting-started/)
+## [Installation and Configuration](https://fetchoracle.github.io/telliot-feeds/getting-started/)
 
-## [Usage](https://fetch-oracle.github.io/telliot-feeds/usage/)
+## [Usage](https://fetchoracle.github.io/telliot-feeds/usage/)
 
 ## Example
 

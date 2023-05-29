@@ -41,7 +41,7 @@ def test_encode_decode_reported_val():
 
     # JSON string containing data specified and
     # referenced in Fetch /dataSpecs:
-    # https://github.com/fetch-oracle/dataSpecs/blob/main/types/GasPriceOracle.md
+    # https://github.com/fetchoracle/dataSpecs/blob/main/types/GasPriceOracle.md
 
     data = 31.7  # example gas price in gwei
 

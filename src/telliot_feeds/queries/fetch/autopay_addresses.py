@@ -17,7 +17,7 @@ class AutopayAddresses(AbiQuery):
             Empty bytes, always used for query types with no arguments
 
     See the data spec for more info about this query type:
-    https://github.com/fetch-oracle/dataSpecs/blob/main/types/AutopayAddresses.md
+    https://github.com/fetchoracle/dataSpecs/blob/main/types/AutopayAddresses.md
     """
 
     @property
