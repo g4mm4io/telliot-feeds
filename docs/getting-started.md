@@ -40,15 +40,15 @@ Once the virtual environment is activated, install telliot from the source code.
 After that, install telliot core:
 
     cd telliot-core
-    pip install -e .
     pip install -r requirements-dev.txt
+    pip install -e .
 
 
 Finally, install telliot feeds:
 
     cd ../telliot-feeds
-    pip install -e .
     pip install -r requirements-dev.txt
+    pip install -e .
 
 
 *If your log shows no errors, that's it! Next, follow the instructions for [configuring telliot](#telliot-configuration).*
