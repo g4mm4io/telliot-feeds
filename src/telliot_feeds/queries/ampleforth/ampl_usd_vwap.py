@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class AmpleforthCustomSpotPrice(AbiQuery):
     """Returns VWAP for AMPL in USD.
 
-    More details in the data spec: https://github.com/fetch-oracle/dataSpecs/blob/master/AmpleforthCustomSpotPrice.md
+    More details in the data spec: https://github.com/fetchoracle/dataSpecs/blob/master/AmpleforthCustomSpotPrice.md
     """
 
     @property

@@ -1,6 +1,6 @@
 # Steps for releasing a new version of telliot-feeds
 
-1. Make sure the latest changes in `telliot-core` are released to PyPI. Follow the steps [here](https://fetch-oracle.github.io/telliot-core/contributing/#new-release-processchecklist) to release a new version of `telliot-core`.
+1. Make sure the latest changes in `telliot-core` are released to PyPI. Follow the steps [here](https://fetchoracle.github.io/telliot-core/contributing/#new-release-processchecklist) to release a new version of `telliot-core`.
 2. Update the `telliot-core` dependency version in `setup.cfg` to the latest version.
 3. The steps for releasing a new version of `telliot-feeds` are very similar to the steps for `telliot-core` releases, so follow the steps in the link above, after you've completed step 2.
 4. Update the `telliot-feeds` version in the `Dockerfile` to the latest version. For example, if the latest version is `0.1.0`, then the line in the `Dockerfile` should be `RUN pip install telliot-feeds==0.1.0`.
@@ -13,4 +13,4 @@
     - get image id: `docker images`
     - tag image: `docker tag {img_id} fetchofficial/telliot:latest` (replace {img_id} with the image id)
     - push image: `docker push fetchofficial/telliot:latest`
-6. Test the new image using the steps in the docker getting started section of the docs [here](https://fetch-oracle.github.io/telliot-feeds/getting-started/#optional-docker-setup).
+6. Test the new image using the steps in the docker getting started section of the docs [here](https://fetchoracle.github.io/telliot-feeds/getting-started/#optional-docker-setup).

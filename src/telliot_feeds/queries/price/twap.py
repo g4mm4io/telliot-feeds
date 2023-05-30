@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class TWAP(AbiQuery):
     """Returns the spot price of a cryptocurrency asset in the given currency.
 
-    Reference: https://github.com/fetch-oracle/dataSpecs/blob/main/types/TWAP.md
+    Reference: https://github.com/fetchoracle/dataSpecs/blob/main/types/TWAP.md
 
     Attributes:
         1. asset

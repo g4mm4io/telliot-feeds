@@ -2,14 +2,14 @@ site_name: Telliot Feed Examples Documentation
 
 # Project information
 site_name: Telliot Feed Examples Documentation
-site_url: https://fetch-oracle.github.io/telliot-feeds/
+site_url: https://fetchoracle.github.io/telliot-feeds/
 site_author: Fetch Development Community
 site_description: >-
   Contains examples and plugins for reporting to the FetchX Oracle.
 
 # Repository
-repo_name: fetch-oracle/telliot-feeds
-repo_url: https://github.com/fetch-oracle/telliot-feeds
+repo_name: fetchoracle/telliot-feeds
+repo_url: https://github.com/fetchoracle/telliot-feeds
 edit_uri: ""
 
 # Copyright

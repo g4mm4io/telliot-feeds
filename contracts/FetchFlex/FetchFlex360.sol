@@ -89,7 +89,7 @@ contract FetchFlex360 {
 
     /**
      * @dev Allows the owner to initialize the governance (flex addy needed for governance deployment)
-     * @param _governanceAddress address of governance contract (github.com/fetch-oracle/governance)
+     * @param _governanceAddress address of governance contract (github.com/fetchoracle/governance)
      */
     function init(address _governanceAddress) external {
         // require(msg.sender == owner, "only owner can set governance address");

@@ -15,7 +15,7 @@ $ telliot report -a acct1 -ncr -qt pls-usd-spot --fetch-flex
 
 # Reporting Basics
 
-**Note: When using the `report` command, `telliot` will automatically attempt to stake the minimum required to report. To see the current stake amount, find the oracle contract on your desired chain [here](https://docs.fetch.io/fetch/the-basics/contracts-reference), then call `getStakeAmount` in the contract's read functions section on the block explorer. The returned value is denominated in 1e-18 PLS (wei equivalet in PLS).**
+**Note: When using the `report` command, `telliot` will automatically attempt to stake the minimum required to report. To see the current stake amount, find the oracle contract on your desired chain [here](https://docs.fetchoracle.com/fetch/the-basics/contracts-reference), then call `getStakeAmount` in the contract's read functions section on the block explorer. The returned value is denominated in wei.**
 
 ## Help flag
 
@@ -157,7 +157,7 @@ Normal profit flag usage:
 telliot report -a acct4 -p 2 --fetch-flex
 ```
 
-**Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/fetch-oracle/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
+**Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/fetchoracle/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
 
 ## Gas, Fee, & Transaction Type Flags
 
