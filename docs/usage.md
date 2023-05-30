@@ -1,20 +1,17 @@
 # Usage
 
-Prerequisites: [Getting Started](https://fetchoracle.github.io/telliot-feeds/getting-started/)
+Prerequisites: [Getting Started](./getting-started.md)
 
 To report data to Fetch oracles, or access any other functionality, use the `telliot` CLI. A basic example:
 
 ```
-$ telliot report -a acct1 -ncr -qt fetch-usd-spot
+$ telliot report -a acct1 -ncr -qt pls-usd-spot --fetch-flex
 ```
 
 **Be sure to always confirm the correct settings when prompted and read chain-specific usage sections before setting up your reporter!**
 
-# Table of Contents
+**Note that Fetch360 is not currently available in Pulsechain. Please always include --fetch-flex on the CLI for reporting to FetchFlex contract.**
 
-- [Reporting Basics](#reporting-basics)
-- [Reporting on Ethereum](#reporting-on-ethereum)
-- [Reporting on Polygon](#reporting-on-polygon)
 
 # Reporting Basics
 
@@ -99,7 +96,7 @@ Options:
 You must select an account (funds address) to use for reporting. To do so, use the `--account`/`-a` flags:
 
 ```
-telliot --account acct1 report
+telliot --account acct1 report --fetch-flex
 ```
 
 ## Report Command
@@ -107,24 +104,24 @@ telliot --account acct1 report
 Use the `report` command to submit data to Fetch oracles. Example `report` command usage:
 
 ```
-telliot report -a acct2
+telliot report -a acct2 --fetch-flex
 ```
 
 When calling the `report` command, `telliot` will ask you to confirm the reporter's settings:
   
 ```
 ...
-Reporting query tag: eth-usd-spot
-Current chain ID: 80001
+Reporting query tag: pls-usd-spot
+Current chain ID: 943
 Expected percent profit: 100.0%
 Transaction type: 0
 Gas Limit: 350000
-Legacy gas price (gwei): None
-Max fee (gwei): None
-Priority fee (gwei): None
+Legacy gas price (1e-18 PLS): None
+Max fee (1e-18 PLS): None
+Priority fee (1e-18 PLS): None
 Gas price speed: fast
 Desired stake amount: 10.0
-Minimum native token balance: 0.25 MATIC
+Minimum native token balance: 0.25 PLS
 
 Press [ENTER] to confirm settings.
 ```
@@ -133,7 +130,7 @@ The default settings are probably fine to use on testnets, but you may want to a
 By default, the reporter will continue to attempt reporting whenever out of reporting lock. Use the `--submit-once` flag to only report once:
 
 ```
-telliot report -a staker1 --submit-once
+telliot report -a staker1 --submit-once --fetch-flex
 ```
 
 ### Build Feed Flag
@@ -141,7 +138,7 @@ telliot report -a staker1 --submit-once
 Use the build-a-feed flag (`--build-feed`) to build a DataFeed of a QueryType with one or more QueryParameters. When reporting, the CLI will list the QueryTypes this flag supports. To select a QueryType, enter a type from the list provided. Then, enter in the corresponding QueryParameters for the QueryType you have selected, and telliot will build the Query and select the appropriate source.
 
 ```
-telliot report -a staker1 --build-feed --submit-once -p YOLO
+telliot report -a staker1 --build-feed --submit-once -p YOLO --fetch-flex
 ```
 
 ## Profit Flag
@@ -151,13 +148,13 @@ telliot report -a staker1 --build-feed --submit-once -p YOLO
 Use this flag (`--profit/-p`) to set an expected profit. The default is 100%, which will likely result in your reporter never attempting to report unless you're on a testnet. To bypass profitability checks, use the `"YOLO"` string:
 
 ```
-telliot report -a acct1 -p YOLO
+telliot report -a acct1 -p YOLO --fetch-flex
 ```
 
 Normal profit flag usage:
 
 ```
-telliot report -a acct4 -p 2
+telliot report -a acct4 -p 2 --fetch-flex
 ```
 
 **Note: Skipping profit checks does not skip checks for tips on the [AutoPay contract](https://github.com/fetchoracle/autoPay). If you'd like to skip these checks as well, use the `--no-check-rewards/-ncr` flag.**
@@ -171,56 +168,24 @@ The `--gas-price/-gp` flag is for legacy transactions, while the `--max-fee/-mf`
 Example usage:
 
 ```
-telliot report -a acct3 -tx 0 -gl 310000 -gp 9001 -p 22
-```
-
-# Reporting on Ethereum
-
-Both transaction types (0 & 2) are supported for reporting.
-
-## Regular Usage
-
-It's not advised to report without Flashbots, unless on a testnet like Goerli, because transactions sent to the public mempool on Ethereum mainnet will most likely be [front-run](https://www.paradigm.xyz/2020/08/ethereum-is-a-dark-forest/), so you'll lose money.
-
-By default, `telliot` will report without Flashbots. You need to use the signature account flag (`--signature-account/-sa`) to report with Flashbots. See [below](#using-flashbots) for more info.
-
-## Using Flashbots
-
-The Flashbots organization provides an endpoint, or relay, to bypass the public mempool and submit transaction bundles directly to miners. More info [here](https://github.com/flashbots/pm).
-
-Even using Flashbots, reporting on Ethereum mainnet is competitive. Other endpoints are available to experiment with ([MiningDAO](https://github.com/Mining-DAO/mev-geth#quick-start), [mistX](https://mistx.stoplight.io/)).
-
-If the account you've selected for reporting is staked on mainnet, then the reporter will send transactions to the Flashbots relay by default. To explicitly use Flashbots, include the `--flashbots/-fb` flag.
-
-Reporting with Flashbots on testnet is not supported.
-
-### Create Signatory Account
-
-In order to submit transactions through the [Flashbots](https://docs.flashbots.net/flashbots-auction/searchers/quick-start/) relay, you need an additional Ethereum acccount. The Flashbots organization uses this signatory account's address to identify you and build your historical reputation as a MEV ["searcher"](https://docs.flashbots.net/flashbots-auction/searchers/quick-start). This signatory account doesn't need any funds in it. Store it it as a `ChainedAccount` in the same way you would any other (see [Getting Started](https://fetchoracle.github.io/telliot-feeds/getting-started/)).
-
-When reporting, select your signatory account by tag as well as your staked mainnet account. Use the `--account/-a` and `--signature-tag/-sgt` flags.
-
-Example usage:
-
-```
-telliot report -a acct2 -sgt sigacct
+telliot report -a acct3 -tx 0 -gl 310000 -gp 9001 -p 22 --fetch-flex
 ```
 
 ## Staking
 
-If reporting to Fetch360 oracles, reporters can stake multiple times. Each stake is 10 FETCH, so if you stake 140 FETCH, you've staked 14 times.
+If reporting to Fetch oracles, reporters can stake multiple times. Each stake is 10 FETCH, so if you stake 140 FETCH, you've staked 14 times.
 
 The reporter will automatically attempt to stake the required amount, but if you'd like to stake more than the current minimum, use the `--stake/-s` flag.
 
 ```
-telliot report -a acct1 -s 2000 -ncr -rf
+telliot report -a acct1 -s 2000 -ncr -rf --fetch-flex
 ```
 
 If the reporter account's actual stake is reduced after a dispute, the reporter will attempt to stake the difference in FETCH to return to the original desired stake amount.
 
 ### Withdraw Stake
 
-To withdraw your stake, there isn't a command available. Instead, you'll have to connect your wallet to the token address on your chain's explorer (e.g. [FETCH on etherscan](https://etherscan.io/token/0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0#writeProxyContract)), run `requestStakingWithdraw`, wait seven days, then run `withdrawStake`.
+To withdraw your stake, there isn't a command available. Instead, you'll have to connect your wallet to the token address on your chain's explorer, run `requestStakingWithdraw`, wait seven days, then run `withdrawStake`.
 
 ## Reporter Lock
 
