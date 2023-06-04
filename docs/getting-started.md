@@ -34,8 +34,8 @@ In this example, the virtual environment will be created in a subfolder called `
 
 Once the virtual environment is activated, install telliot from the source code. First, clone telliot feeds and telliot core repositories in the same folder:
 
-    git clone git@github.com:fetchoracle/telliot-feeds.git
-    git clone git@github.com:fetchoracle/telliot-core.git
+    git clone https://github.com/fetchoracle/telliot-feeds.git
+    git clone https://github.com/fetchoracle/telliot-core.git
 
 After that, install telliot core:
 
@@ -75,8 +75,8 @@ Use the following commands to create and run a container with the correct Python
 1. clone telliot feeds and telliot core repositories in the same folder:
 
 ```
-git clone git@github.com:fetchoracle/telliot-feeds.git
-git clone git@github.com:fetchoracle/telliot-core.git
+git clone https://github.com/fetchoracle/telliot-feeds.git
+git clone https://github.com/fetchoracle/telliot-core.git
 ```
 2. Create & start container in background:
 ```
