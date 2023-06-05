@@ -2,8 +2,11 @@
 
 ## Prerequisites
 - An account with your chain's native token for gas fees. Testnets often have a faucet. For example, [here is Pulsechain's ](https://faucet.v4.testnet.pulsechain.com/) for testnet V4.
-- [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use `telliot-feeds`. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
+- [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use `telliot-feeds`. Please refer to [Install Python 3.9 using pyenv](#install-python-39-using-pyenv) section if you have a different Python version in your system. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
 
+## Install Python 3.9 using pyenv
+
+[Pyenv](https://github.com/pyenv/pyenv) is a Python version manager that lets you easily switch between multiple versions of Python. Using pyenv, you don't need to uninstall the Python version you have installed to use version 3.9, thus avoiding problems with applications that rely on your current version. You can install pyenv following the [pyenv documentation](https://github.com/pyenv/pyenv).
 
 ## Install Telliot Feeds
 
