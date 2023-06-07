@@ -1,13 +1,14 @@
 """Example datafeed used by PLSUSDReporter."""
 from telliot_feeds.datafeed import DataFeed
-from telliot_feeds.queries.price.spot_price import SpotPrice
-from telliot_feeds.sources.price.spot.pulsechain_subgraph import PulsechainSubgraphSource
-from telliot_feeds.sources.price.spot.pulsechain_pulsex import PulsechainPulseXSource
 from telliot_feeds.sources.price_aggregator import PriceAggregator
+from telliot_feeds.queries.price.spot_price import SpotPrice
+from telliot_feeds.sources.price.spot.coingecko import CoinGeckoSpotPriceSource
+from telliot_feeds.sources.price.spot.binance import BinanceSpotPriceSource
+from telliot_feeds.sources.price.spot.pulsechain_pulsex import PulsechainPulseXSource
+from telliot_feeds.sources.price.spot.pulsechain_subgraph import PulsechainSubgraphSource
 from dotenv import load_dotenv
 from telliot_feeds.utils.log import get_logger
 import os
-import asyncio
 
 load_dotenv()
 logger = get_logger(__name__)
@@ -31,5 +32,5 @@ if os.getenv("PLS_CURRENCY_SOURCES"):
     )
 else:
     pls_usd_feed = DataFeed(
-        query=SpotPrice(asset="pls", currency="usd"), source=PulsechainSubgraphSource(asset="pls", currency="usd")
+        query=SpotPrice(asset="pls", currency="usd"), source=CoinGeckoSpotPriceSource(asset="pulsechain", currency="usd")
     )

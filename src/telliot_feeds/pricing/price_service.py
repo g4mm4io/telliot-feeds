@@ -59,6 +59,8 @@ class WebPriceService(PriceServiceInterface):
         request_url = self.url + url
 
         with requests.Session() as s:
+            s.verify = False
+
             try:
                 r = s.get(request_url, timeout=self.timeout)
                 json_data = r.json()

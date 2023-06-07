@@ -1,3 +1,5 @@
+import os
+
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
@@ -49,6 +51,7 @@ coingecko_coin_id = {
     "uni": "uniswap",
     "usdt": "tether",
     "yfi": "yearn-finance",
+    "pulsechain": "pulsechain"
 }
 
 
@@ -57,7 +60,7 @@ class CoinGeckoSpotPriceService(WebPriceService):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "CoinGecko Price Service"
-        kwargs["url"] = "https://api.coingecko.com"
+        kwargs["url"] = os.getenv("COINGECKO_MOCK_API_URL", "https://api.coingecko.com")
         super().__init__(**kwargs)
 
     async def get_price(self, asset: str, currency: str) -> OptionalDataPoint[float]:
@@ -77,7 +80,7 @@ class CoinGeckoSpotPriceService(WebPriceService):
             raise Exception("Asset not supported: {}".format(asset))
 
         url_params = urlencode({"ids": coin_id, "vs_currencies": currency})
-        request_url = "/api/v3/simple/price?{}".format(url_params)
+        request_url = "/simple/price?{}".format(url_params)
 
         d = self.get_url(request_url)
 
