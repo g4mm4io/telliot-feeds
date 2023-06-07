@@ -30,7 +30,11 @@ if os.getenv("PLS_CURRENCY_SOURCES"):
             sources=sources_objs,
         ),
     )
-else:
+elif os.getenv("COINGECKO_MOCK_URL"):
     pls_usd_feed = DataFeed(
         query=SpotPrice(asset="pls", currency="usd"), source=CoinGeckoSpotPriceSource(asset="pulsechain", currency="usd")
+    )
+else:
+    pls_usd_feed = DataFeed(
+         query=SpotPrice(asset="pls", currency="usd"), source=PulsechainSubgraphSource(asset="pls", currency="usd")
     )
