@@ -60,7 +60,7 @@ class CoinGeckoSpotPriceService(WebPriceService):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "CoinGecko Price Service"
-        kwargs["url"] = os.getenv("COINGECKO_MOCK_API_URL", "https://api.coingecko.com")
+        kwargs["url"] = os.getenv("COINGECKO_MOCK_URL", "https://api.coingecko.com/api/v3")
         super().__init__(**kwargs)
 
     async def get_price(self, asset: str, currency: str) -> OptionalDataPoint[float]:
