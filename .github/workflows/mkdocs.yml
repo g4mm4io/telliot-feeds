@@ -22,4 +22,4 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install -r ${{ github.workspace }}/requirements.txt
-      - run: mkdocs gh-deploy --force
+      - run: mkdocs gh-deploy -c --force
