@@ -1,16 +1,5 @@
-eth-brownie
 mkdocs-material
 mkdocstrings[python]>=0.18
-pytest
-pytest-cov
-pytest-dotenv
-pytest-asyncio
-pre-commit
-mypy
-mypy-extensions
-types-requests
-types-PyYAML
-tox
 mkdocs-autorefs
 telliot-core
 telliot-feeds
