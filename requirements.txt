@@ -1,6 +1,6 @@
 eth-brownie
 mkdocs-material
-mkdocstrings[python]
+mkdocstrings[python]>=0.18
 pytest
 pytest-cov
 pytest-dotenv
@@ -11,3 +11,6 @@ mypy-extensions
 types-requests
 types-PyYAML
 tox
+mkdocs-autorefs
+telliot-core
+telliot-feeds
