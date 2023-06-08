@@ -79,7 +79,7 @@ class PulsechainSupgraphService(WebPriceService):
             response = data["response"]
 
             try:
-                price = float(response["data"][asset][0]["DAI2PLS"])
+                price = float(response["data"][asset][0]["PLS2DAI"])
                 return price, datetime_now_utc()
             except KeyError as e:
                 msg = f"Error parsing Pulsechain Supgraph response: KeyError: {e}"
