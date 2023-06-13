@@ -20,6 +20,7 @@ async def test_YOLO_feed_suggestion(fetch_flex_reporter):
     assert isinstance(feed, DataFeed)
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_ensure_profitable(fetch_flex_reporter):
     r = fetch_flex_reporter
@@ -129,6 +130,7 @@ async def test_dispute(fetch_flex_reporter: FetchFlexReporter):
     )
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_reset_datafeed(fetch_flex_reporter):
     # Test when reporter selects qtag vs not

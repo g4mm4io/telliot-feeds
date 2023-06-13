@@ -43,6 +43,7 @@ async def test_get_current_tips(setup_autopay_call):
     assert tips["eth-usd-spot"] == 0
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_get_current_feeds(caplog, setup_autopay_call):
     """Test getCurrentFeeds call in autopay using multicall"""

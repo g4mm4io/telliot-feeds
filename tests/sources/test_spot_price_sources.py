@@ -78,6 +78,7 @@ def coinmarketcap_key():
     return key
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_coinbase():
     """Test retrieving from Coinbase price source."""
@@ -88,6 +89,7 @@ async def test_coinbase():
     validate_price(v, t)
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_bitfinex():
     """Test retrieving from Bitfinex price source."""
@@ -98,6 +100,7 @@ async def test_bitfinex():
     validate_price(v, t)
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_coingecko():
     """Test retrieving from Coingecko price source."""

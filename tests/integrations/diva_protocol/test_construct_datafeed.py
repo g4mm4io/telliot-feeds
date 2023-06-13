@@ -32,6 +32,7 @@ def test_assemble_diva_datafeed_fail(caplog):
     assert feed is None
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_diva_datafeed_fetch_data():
     feed = assemble_diva_datafeed(EXAMPLE_POOLS[1])

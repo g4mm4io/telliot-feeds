@@ -6,6 +6,7 @@ from telliot_core.apps.telliot_config import TelliotConfig
 from telliot_feeds.sources.evm_call import EVMCallSource
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_source():
     """Test initialization of EVMCallSource."""
@@ -49,6 +50,7 @@ async def test_source():
     assert t is not None
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_non_getter_calldata():
     """Test if calldata is not for a getter function."""

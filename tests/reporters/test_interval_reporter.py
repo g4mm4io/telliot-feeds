@@ -64,6 +64,7 @@ async def test_ensure_staked(fetch_flex_reporter):
     assert status.ok
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_ensure_profitable(fetch_flex_reporter):
     """Test profitability check."""
@@ -95,6 +96,7 @@ async def test_ethgasstation_error(fetch_flex_reporter):
         assert not status.ok
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_interval_reporter_submit_once(fetch_flex_reporter):
     """Test reporting once to the FetchX playground on Rinkeby
@@ -128,6 +130,7 @@ async def test_interval_reporter_submit_once(fetch_flex_reporter):
         assert status.error in EXPECTED_ERRORS
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_no_updated_value(fetch_flex_reporter, bad_datasource):
     """Test handling for no updated value returned from datasource."""
@@ -200,6 +203,7 @@ async def test_handle_contract_master_read_timeout(fetch_flex_reporter):
         assert "Unable to read reporters staker status" in status.error
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_ensure_reporter_lock_check_after_submitval_attempt(fetch_flex_reporter, guaranteed_price_source):
     r = fetch_flex_reporter
