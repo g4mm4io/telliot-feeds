@@ -43,7 +43,7 @@ async def test_api_reporter_submit_once(
         r = FetchFlexReporter(
             endpoint=core.endpoint,
             account=account,
-            chain_id=943,
+            chain_id=80001,
             oracle=flex.oracle,
             token=flex.token,
             autopay=flex.autopay,

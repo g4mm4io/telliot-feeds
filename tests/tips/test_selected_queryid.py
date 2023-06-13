@@ -238,7 +238,7 @@ async def test_rng(autopay_contract_setup, mumbai_test_cfg, caplog):
         autopay=flex.autopay,
         endpoint=core.endpoint,
         account=account,
-        chain_id=943,
+        chain_id=80001,
         transaction_type=0,
         expected_profit=100,
     )

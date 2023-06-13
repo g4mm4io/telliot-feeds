@@ -143,7 +143,7 @@ async def test_reset_datafeed(fetch_flex_reporter):
         autopay=r.autopay,
         endpoint=r.endpoint,
         account=r.account,
-        chain_id=943,
+        chain_id=80001,
         transaction_type=0,
         datafeed=CATALOG_FEEDS["fetch-usd-spot"],
         min_native_token_balance=0,
@@ -154,7 +154,7 @@ async def test_reset_datafeed(fetch_flex_reporter):
         autopay=r.autopay,
         endpoint=r.endpoint,
         account=r.account,
-        chain_id=943,
+        chain_id=80001,
         transaction_type=0,
         min_native_token_balance=0,
     )
