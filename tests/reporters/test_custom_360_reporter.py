@@ -29,7 +29,7 @@ try:
 except IndexError:
     account = ChainedAccount.add(
         name="fake_flex_custom_reporter_address",
-        chains=943,
+        chains=80001,
         key="023861e2ceee1ea600e43cbd203e9e01ea2ed059ee3326155453a1ed3b1113a9",
         password="",
     )
