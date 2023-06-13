@@ -47,7 +47,7 @@ class PulsechainSupgraphService(WebPriceService):
             "Content-Type": "application/json",
         }
 
-        query = "{ pls:tokenDataDAIs(orderBy: timestamp, orderDirection: desc, first: 1) { DAI2PLS } }"
+        query = "{ pls:tokenDataDAIs(orderBy: timestamp, orderDirection: desc, first: 1) { PLS2DAI } }"
 
         json_data = {
             "query": query,
