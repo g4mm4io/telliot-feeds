@@ -25,11 +25,11 @@ logger = get_logger(__name__)
 
 account_fake = accounts.add("023861e2ceee1ea600e43cbd203e9e01ea2ed059ee3326155453a1ed3b1113a9")
 try:
-    account = find_accounts(name="fake_flex_custom_reporter_address", chain_id=80001)[0]
+    account = find_accounts(name="fake_flex_custom_reporter_address", chain_id=943)[0]
 except IndexError:
     account = ChainedAccount.add(
         name="fake_flex_custom_reporter_address",
-        chains=80001,
+        chains=943,
         key="023861e2ceee1ea600e43cbd203e9e01ea2ed059ee3326155453a1ed3b1113a9",
         password="",
     )
@@ -89,7 +89,7 @@ async def custom_reporter(
             autopay=contracts.autopay,
             endpoint=core.endpoint,
             account=account,
-            chain_id=80001,
+            chain_id=943,
             gas_limit=350000,
             min_native_token_balance=0,
         )
