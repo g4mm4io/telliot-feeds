@@ -12,6 +12,7 @@ txn_kwargs = {"gas_limit": 3500000, "legacy_gas_price": 1}
 CHAIN_ID = 80001
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_report(fetch_360, caplog, guaranteed_price_source):
     """Test 360 reporter deposit and balance changes when stakeAmount changes"""
@@ -60,7 +61,7 @@ async def test_report(fetch_360, caplog, guaranteed_price_source):
     await r.report_once()
     assert "Currently in reporter lock. Time left: 5:59" in caplog.text  # 6hr
 
-
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_fail_get_account_nonce(fetch_360, caplog, guaranteed_price_source, monkeypatch):
     """Test 360 reporter fails to retrieve account nonce"""
@@ -102,6 +103,7 @@ async def test_fail_get_account_nonce(fetch_360, caplog, guaranteed_price_source
         assert "Unable to retrieve account nonce: UnknownException" in caplog.text
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_get_time_based_rewards(fetch_360, caplog):
 
@@ -113,6 +115,7 @@ async def test_get_time_based_rewards(fetch_360, caplog):
     assert "not found in contract abi" not in caplog.text
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_360_reporter_rewards(fetch_360, guaranteed_price_source):
 
@@ -135,6 +138,7 @@ async def test_360_reporter_rewards(fetch_360, guaranteed_price_source):
     assert isinstance(await r.rewards(), int)
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_adding_stake(fetch_360, guaranteed_price_source):
     """Test 360 reporter depositing more stake"""
@@ -176,6 +180,7 @@ async def test_adding_stake(fetch_360, guaranteed_price_source):
     assert reporter.staker_info.stake_balance == pytest.approx(90000e18), "Staker balance should be 90000e18"
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_no_native_token(fetch_360, caplog, guaranteed_price_source):
     """Test reporter quits if no native token"""
@@ -202,6 +207,7 @@ async def test_no_native_token(fetch_360, caplog, guaranteed_price_source):
     assert "insufficient native token funds" in caplog.text.lower()
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_checks_reporter_lock_when_manual_source(fetch_360, monkeypatch, caplog, guaranteed_price_source):
     """Test reporter lock check when reporting for a tip that requires a manaul data source"""
@@ -240,6 +246,7 @@ async def test_checks_reporter_lock_when_manual_source(fetch_360, monkeypatch, c
     assert "Currently in reporter lock. Time left: 11:59" in caplog.text
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_fail_gen_query_id(fetch_360, monkeypatch, caplog, guaranteed_price_source):
     """Test failure to generate query id when calling rewards() method."""

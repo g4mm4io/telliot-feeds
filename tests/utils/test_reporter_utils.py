@@ -24,6 +24,7 @@ from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 logger = get_logger(__name__)
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_suggested_report(fetch_360):
     contracts, _ = fetch_360
