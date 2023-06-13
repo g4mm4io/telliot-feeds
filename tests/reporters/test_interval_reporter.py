@@ -18,6 +18,7 @@ from tests.utils.utils import passing_bool_w_status
 from tests.utils.utils import passing_status
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_fetch_datafeed(fetch_flex_reporter):
     r = fetch_flex_reporter
@@ -42,6 +43,7 @@ def test_get_fee_info(fetch_flex_reporter):
     assert isinstance(info.gasUsedRatio, list)
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_get_num_reports_by_id(fetch_flex_reporter):
     r = fetch_flex_reporter
@@ -55,6 +57,7 @@ async def test_get_num_reports_by_id(fetch_flex_reporter):
         assert num is None
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_ensure_staked(fetch_flex_reporter):
     """Test staking status of reporter."""
@@ -84,6 +87,7 @@ async def test_ensure_profitable(fetch_flex_reporter):
     assert status.error == "Estimated profitability below threshold."
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_ethgasstation_error(fetch_flex_reporter):
     with mock.patch("telliot_feeds.reporters.interval.IntervalReporter.fetch_gas_price") as func:

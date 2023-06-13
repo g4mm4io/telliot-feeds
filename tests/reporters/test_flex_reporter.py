@@ -11,6 +11,7 @@ from telliot_feeds.feeds.matic_usd_feed import matic_usd_median_feed
 from telliot_feeds.reporters.fetch_flex import FetchFlexReporter
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_YOLO_feed_suggestion(fetch_flex_reporter):
     fetch_flex_reporter.expected_profit = "YOLO"
@@ -39,6 +40,7 @@ async def test_ensure_profitable(fetch_flex_reporter):
     assert not status.ok
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_fetch_gas_price(fetch_flex_reporter):
     price = await fetch_flex_reporter.fetch_gas_price()
@@ -47,6 +49,7 @@ async def test_fetch_gas_price(fetch_flex_reporter):
     assert price > 0
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_ensure_staked(fetch_flex_reporter):
     staked, status = await fetch_flex_reporter.ensure_staked()
@@ -59,6 +62,7 @@ async def test_ensure_staked(fetch_flex_reporter):
         assert "Unable to approve staking" in status.error
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_check_reporter_lock(fetch_flex_reporter):
     status = await fetch_flex_reporter.check_reporter_lock()
@@ -68,6 +72,7 @@ async def test_check_reporter_lock(fetch_flex_reporter):
         assert ("reporter lock" in status.error) or ("Staker balance too low" in status.error)
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_get_num_reports_by_id(fetch_flex_reporter):
     qid = eth_usd_median_feed.query.query_id
@@ -80,6 +85,7 @@ async def test_get_num_reports_by_id(fetch_flex_reporter):
         assert count is None
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_fetch_gas_price_error(fetch_flex_reporter, caplog):
     # Test invalid gas price speed
@@ -98,6 +104,7 @@ async def test_fetch_gas_price_error(fetch_flex_reporter, caplog):
         assert "Unable to fetch gas price" in status.error
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_reporting_without_internet(fetch_flex_reporter, caplog):
     async def offline():
@@ -115,6 +122,7 @@ async def test_reporting_without_internet(fetch_flex_reporter, caplog):
         assert "Unable to connect to the internet!" in caplog.text
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_dispute(fetch_flex_reporter: FetchFlexReporter):
     # Test when reporter in dispute

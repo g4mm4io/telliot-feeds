@@ -45,6 +45,7 @@ def test_reporter_sync_schedule_list():
     assert "eth-usd-spot" in lis
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_has_native_token_funds(mumbai_test_cfg, caplog):
     """Test has_native_token_funds"""
