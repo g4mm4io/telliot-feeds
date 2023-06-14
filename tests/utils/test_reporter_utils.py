@@ -24,6 +24,7 @@ from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 logger = get_logger(__name__)
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_suggested_report(fetch_360):
     contracts, _ = fetch_360
@@ -44,6 +45,7 @@ def test_reporter_sync_schedule_list():
     assert "eth-usd-spot" in lis
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_has_native_token_funds(mumbai_test_cfg, caplog):
     """Test has_native_token_funds"""

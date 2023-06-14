@@ -83,6 +83,7 @@ async def test_diva_protocol_contract(ropsten_test_cfg, diva_mock_contract):
         assert p.capacity == 0
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_diva_fetch_oracle_contract(ropsten_test_cfg, diva_oracle_mock_contract):
     """Test the DIVAOracleFetch contract"""

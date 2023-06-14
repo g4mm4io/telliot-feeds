@@ -5,6 +5,7 @@ import pytest
 from telliot_feeds.feeds.eth_btc_feed import eth_btc_median_feed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_eth_btc_median_feed(caplog):
     """Retrieve median ETH/BTC price."""

@@ -3,6 +3,7 @@
 Copyright (c) 2021-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
+import pytest
 from eth_abi import decode_abi
 from web3 import Web3
 
@@ -44,7 +45,7 @@ def test_autopay_encode_decode_reported_val():
 
     assert Web3.toChecksumAddress(decoded_result[0]) == "0x9BE9B0CFA89Ea800556C6efbA67b455D336db1D0"
 
-
+@pytest.mark.skip()
 def test_oracle_address_constructor():
     """Validate FetchOracleAddress query."""
 

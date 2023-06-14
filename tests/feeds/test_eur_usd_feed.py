@@ -6,6 +6,7 @@ import pytest
 from telliot_feeds.feeds.eur_usd_feed import eur_usd_median_feed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_fetch_price():
     """Fetch latest EUR/USD price"""

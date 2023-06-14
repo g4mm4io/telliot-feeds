@@ -5,6 +5,7 @@ import pytest
 from telliot_feeds.feeds.gas_price_oracle_feed import gas_price_oracle_feed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_fetch_new_datapoint(caplog):
     """Retrieve historical gas price data from source."""

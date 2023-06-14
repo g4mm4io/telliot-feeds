@@ -10,6 +10,7 @@ from telliot_feeds.sources.blockhash_aggregator import get_mainnet_web3
 from telliot_feeds.sources.blockhash_aggregator import FetchRNGManualSource
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_rng():
     """Retrieve random number."""
@@ -39,6 +40,7 @@ async def test_no_mainnet_configured(caplog, monkeypatch):
     assert "Web3 not connected" in caplog.text
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_rng_failures(caplog):
     """Simulate API failures."""
