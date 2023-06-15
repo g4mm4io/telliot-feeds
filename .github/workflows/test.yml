@@ -1,7 +1,7 @@
 name: Tests
 on:
   push:
-    branches: ["dev", "staging", "main", "add-test-workflow"]
+    branches: ["dev", "staging", "main"]
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: 'telliot-feeds'
-          ref: 'add-test-workflow'
+          ref: 'dev'
       - name: Set Python version to v3.9.2
         uses: actions/setup-python@v3.1.4
         with:
