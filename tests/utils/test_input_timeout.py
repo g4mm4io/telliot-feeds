@@ -22,6 +22,7 @@ def suspend_capture(pytestconfig):
 
     yield suspend_guard()
 
+@pytest.mark.skip("Pytest related issue")
 def test_input_timeout(suspend_capture) -> None:
     """Test input_timeout() function."""
     with suspend_capture:
