@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: 'telliot-feeds'
-          ref: 'dev'
+          ref: 'add-test-workflow'
       - name: Set Python version to v3.9.2
         uses: actions/setup-python@v3.1.4
         with:
