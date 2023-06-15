@@ -22,9 +22,11 @@ def suspend_capture(pytestconfig):
 
     yield suspend_guard()
 
-
 def test_input_timeout(suspend_capture) -> None:
     """Test input_timeout() function."""
     with suspend_capture:
         with pytest.raises(TimeoutOccurred):
-            input_timeout(prompt="sup", timeout=0)
+            try:
+                input_timeout(prompt="sup", timeout=0)
+            except TimeoutOccurred:
+                raise
