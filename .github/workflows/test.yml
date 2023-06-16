@@ -1,0 +1,54 @@
+name: Tests
+on:
+  push:
+    branches: ["dev", "staging", "main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: 'fetchoracle/telliot-core'
+          path: 'telliot-core'
+          ref: 'dev'
+      - uses: actions/checkout@v3
+        with:
+          path: 'telliot-feeds'
+          ref: 'dev'
+      - name: Set Python version to v3.9.2
+        uses: actions/setup-python@v3.1.4
+        with:
+            python-version: '${{ matrix.python-version }}'
+      - name: Set Node.js version to latest LTS
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install telliot-core dependencies
+        run: |
+          cd telliot-core
+          pip install --no-cache-dir -r requirements-dev.txt
+          pip install -e .
+          npm install -g ganache
+      - name: Install telliot-feeds dependencies
+        run: |
+          cd telliot-feeds
+          pip install --no-cache-dir -r requirements.txt
+          pip install -e .
+      - name: Ensure telliot-core dependencies
+        run: |
+          cd telliot-core
+          pip install --no-cache-dir -r requirements-dev.txt
+          pip install -e .  
+      - name: Run tests
+        run: |
+          cd telliot-feeds
+          pytest
