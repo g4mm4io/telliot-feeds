@@ -1,7 +1,7 @@
 # Add New Data Type (Custom Oracle Query)
 
 ### Steps
-1. Your new data type, or query, should be defined in the [dataSpecs](https:://github.com/fetchoracle/dataSpecs) repo. If not, [create the spec there](https://github.com/fetchoracle/dataSpecs/issues/new?assignees=&labels=&template=new_query_type.yaml&title=%5BNew+Query+Type%5D%3A+) first. Once that's done, follow the steps below.
+1. Your new data type, or query, should be defined in the [dataSpecs](https://github.com/fetchoracle/dataSpecs) repo. If not, [create the spec there](https://github.com/fetchoracle/dataSpecs/issues/new?assignees=&labels=&template=new_query_type.yaml&title=%5BNew+Query+Type%5D%3A+) first. Once that's done, follow the steps below.
 2. Create a subclass of `AbiQuery` in `src/telliot_feeds/queries/`. For example, if you wanted to implement the [Snapshot query type](https://github.com/fetchoracle/dataSpecs/blob/main/types/Snapshot.md), it would look like this:
 ```python
 import logging
