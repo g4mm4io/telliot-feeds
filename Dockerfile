@@ -12,8 +12,8 @@ RUN pip install -e .
 
 #copy and install dependencies for telliot core
 WORKDIR /usr/src/app/telliot-feeds
-COPY telliot-feeds/requirements-dev.txt ./
-RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY telliot-feeds/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 COPY ./telliot-feeds .
 RUN pip install -e .
 
