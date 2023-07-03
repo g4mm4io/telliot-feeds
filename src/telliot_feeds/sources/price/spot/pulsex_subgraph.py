@@ -1,3 +1,5 @@
+import os
+
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
@@ -10,24 +12,28 @@ from telliot_feeds.pricing.price_service import WebPriceService
 from telliot_feeds.pricing.price_source import PriceSource
 from telliot_feeds.utils.log import get_logger
 
-
 logger = get_logger(__name__)
-pulsechain_subgraph_supporten_tokens = {"pls": "0x8a810ea8b121d08342e9e7696f4a9915cbe494b7"}
+pulsex_subgraph_supporten_tokens = {
+    "dai": "0x826e4e896cc2f5b371cd7bb0bd929db3e3db67c0",
+    "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "plsx": "0x8a810ea8b121d08342e9e7696f4a9915cbe494b7",
+    "fetch": os.getenv("FETCH_ADDRESS")
+}
 
 
-class PulsechainSupgraphService(WebPriceService):
-    """Pulsechain Subgraph Price Service for PLS/USD feed"""
+class PulseXSupgraphService(WebPriceService):
+    """PulseX Subgraph Price Service for token price"""
 
     def __init__(self, **kwargs: Any) -> None:
-        kwargs["name"] = "LiquidLoans Supgraph Price Service"
-        kwargs["url"] = "https://subgraph-dev.liquidloans.io"
+        kwargs["name"] = "PulseX Supgraph Price Service"
+        kwargs["url"] = os.getenv("PULSEX_SUBGRAPH_URL")
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
     async def get_price(self, asset: str, currency: str) -> OptionalDataPoint[float]:
         """Implement PriceServiceInterface
 
-        This implementation gets the price from the Pulsechain hosted subgraphs
+        This implementation gets the price from the PulseX hosted subgraphs
 
         """
 
@@ -38,7 +44,7 @@ class PulsechainSupgraphService(WebPriceService):
             logger.error(f"Currency not supported: {currency}")
             return None, None
 
-        token = pulsechain_subgraph_supporten_tokens.get(asset, None)
+        token = pulsex_subgraph_supporten_tokens.get(asset, None)
         if not token:
             logger.error(f"Asset not supported: {asset}")
             return None, None
@@ -47,7 +53,7 @@ class PulsechainSupgraphService(WebPriceService):
             "Content-Type": "application/json",
         }
 
-        query = "{ pls:tokenDataDAIs(orderBy: timestamp, orderDirection: desc, first: 1) { PLS2DAI } }"
+        query = "{ token(id: \"" + token.lower() + "\") { derivedUSD } }"
 
         json_data = {
             "query": query,
@@ -55,7 +61,7 @@ class PulsechainSupgraphService(WebPriceService):
             "operationName": None,
         }
 
-        request_url = self.url + "/subgraphs/name/liquidloans/liquidloans"
+        request_url = self.url + "/subgraphs/name/pulsechain/pulsex"
 
         with requests.Session() as s:
             try:
@@ -64,11 +70,11 @@ class PulsechainSupgraphService(WebPriceService):
                 data = {"response": res}
 
             except requests.exceptions.ConnectTimeout:
-                logger.warning("Timeout Error, No prices retrieved from Pulsechain Supgraph")
+                logger.warning("Timeout Error, No prices retrieved from PulseX Supgraph")
                 return None, None
 
             except Exception as e:
-                logger.warning(f"No prices retrieved from Pulsechain Supgraph with Exception {e}")
+                logger.warning(f"No prices retrieved from PulseX Supgraph with Exception {e}")
                 return None, None
 
         if "error" in data:
@@ -77,12 +83,15 @@ class PulsechainSupgraphService(WebPriceService):
 
         elif "response" in data:
             response = data["response"]
+            print(response)
 
             try:
-                price = float(response["data"][asset][0]["PLS2DAI"])
+                price = float(response["data"]["token"]["derivedUSD"])
                 return price, datetime_now_utc()
             except KeyError as e:
                 msg = f"Error parsing Pulsechain Supgraph response: KeyError: {e}"
+                if response["data"]["token"] == None:
+                    msg = f"Invalid token address: {token}"
                 logger.critical(msg)
                 return None, None
 
@@ -92,7 +101,7 @@ class PulsechainSupgraphService(WebPriceService):
 
 
 @dataclass
-class PulsechainSubgraphSource(PriceSource):
+class PulseXSupgraphSource(PriceSource):
     asset: str = ""
     currency: str = ""
-    service: PulsechainSupgraphService = field(default_factory=PulsechainSupgraphService, init=False)
+    service: PulseXSupgraphService = field(default_factory=PulseXSupgraphService, init=False)
