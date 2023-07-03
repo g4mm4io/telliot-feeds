@@ -129,6 +129,12 @@ You can add your RPC endpoints via the command line or by editing the `endpoints
     
     nano ~/telliot/endpoints.yaml
 
+[Optional] Run `set_teliot_env.py` script to set Telliot environment first. The supported environments are: default, dev, testnet, mainnet, preprod and staging. If the environment is no set up, Telliot will be configured to use the default environment, execute `python set_telliot_env.py --help` for details:
+
+```sh
+python set_telliot_env.py --env default
+```
+
 To configure your endpoint via the CLI, use the `report` command and enter `n` when asked if you want to keep the default settings:
 ```
 $ telliot report -a myacct1 --fetch-flex
