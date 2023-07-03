@@ -83,7 +83,6 @@ class PulseXSupgraphService(WebPriceService):
 
         elif "response" in data:
             response = data["response"]
-            print(response)
 
             try:
                 price = float(response["data"]["token"]["derivedUSD"])
