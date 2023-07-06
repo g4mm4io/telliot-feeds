@@ -43,18 +43,25 @@ Once the virtual environment is activated, install telliot from the source code.
 After that, install telliot core:
 
     cd telliot-core
-    pip install -r requirements-dev.txt
     pip install -e .
+    pip install -r requirements-dev.txt
 
 
 Finally, install telliot feeds:
 
     cd ../telliot-feeds
-    pip install -r requirements-dev.txt
     pip install -e .
+    pip install -r requirements.txt
 
+During the installation, the package `eth-brownie` may log errors about dependencies version conflict. It will not compromise the installation, it happens because that package pushes some packages' versions downwards whereas there are packages that require newer versions.
 
-*If your log shows no errors, that's it! Next, follow the instructions for [configuring telliot](#telliot-configuration).*
+After the installtion you can check telliot installtion by running:
+
+```sh
+telliot config show
+```
+
+After the installation, follow the instructions for [configuring telliot](#telliot-configuration).*
 
 ## (Optional) Docker Setup
 *Skip this section if you already have Python 3.9 and and the correct dependencies installed.*
