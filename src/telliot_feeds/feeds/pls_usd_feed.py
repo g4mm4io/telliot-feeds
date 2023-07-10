@@ -5,6 +5,7 @@ from telliot_feeds.queries.price.spot_price import SpotPrice
 from telliot_feeds.sources.price.spot.coingecko import CoinGeckoSpotPriceSource
 from telliot_feeds.sources.price.spot.binance import BinanceSpotPriceSource
 from telliot_feeds.sources.price.spot.pulsechain_pulsex import PulsechainPulseXSource
+from telliot_feeds.sources.price.spot.pulsechain_subgraph import PulsechainSubgraphSource
 from dotenv import load_dotenv
 from telliot_feeds.utils.log import get_logger
 import os
