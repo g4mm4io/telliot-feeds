@@ -20,7 +20,8 @@ query_catalog = Catalog()
 # Query Catalog Entries
 # --------------------------------------------------------------------------------------
 
-query_catalog.add_entry(tag="fetch-usd-spot", title="FETCH/USD spot price", q=SpotPrice(asset="fetch", currency="usd"))
+query_catalog.add_entry(tag="fetch-usd-spot", title="FETCH/USD spot price",
+                        q=SpotPrice(asset="fetch", currency="usd"))
 
 query_catalog.add_entry(
     tag="ohm-eth-spot",
@@ -90,13 +91,15 @@ query_catalog.add_entry(
     q=GasPriceOracle(1, 1656633600),
 )
 
-query_catalog.add_entry(tag="eur-usd-spot", title="EUR/USD spot price", q=SpotPrice(asset="eur", currency="usd"))
+query_catalog.add_entry(tag="eur-usd-spot", title="EUR/USD spot price",
+                        q=SpotPrice(asset="eur", currency="usd"))
 # Source:
 # https://snapshot.org/#/aave.eth/proposal/0xcce9760adea906176940ae5fd05bc007cc9252b524832065800635484cb5cb57
 query_catalog.add_entry(
     tag="snapshot-proposal-example",
     title="Snapshot proposal example",
-    q=Snapshot(proposalId="cce9760adea906176940ae5fd05bc007cc9252b524832065800635484cb5cb57"),
+    q=Snapshot(
+        proposalId="cce9760adea906176940ae5fd05bc007cc9252b524832065800635484cb5cb57"),
 )
 
 query_catalog.add_entry(
@@ -114,7 +117,8 @@ query_catalog.add_entry(
 query_catalog.add_entry(
     tag="diva-protocol-example",
     title="Diva protocol example",
-    q=DIVAProtocol(poolId=1234, divaDiamond="0xebBAA31B1Ebd727A1a42e71dC15E304aD8905211", chainId=3),
+    q=DIVAProtocol(
+        poolId=1234, divaDiamond="0xebBAA31B1Ebd727A1a42e71dC15E304aD8905211", chainId=3),
 )
 query_catalog.add_entry(
     tag="string-query-example", title="String query example", q=StringQuery(text="Where is the Atlantic ocean?")
@@ -123,6 +127,12 @@ query_catalog.add_entry(
 query_catalog.add_entry(
     tag="pls-usd-spot",
     title="Pulsechain LiquidLoans feed",
+    q=SpotPrice(asset="pls", currency="usd"),
+)
+
+query_catalog.add_entry(
+    tag="plsx-usd-spot",
+    title="Pulsechain PulseX feed",
     q=SpotPrice(asset="pls", currency="usd"),
 )
 
@@ -138,7 +148,8 @@ query_catalog.add_entry(
     q=SpotPrice(asset="btc", currency="usd"),
 )
 
-query_catalog.add_entry(tag="fetch-rng-example", title="Fetch RNG", q=FetchRNG(timestamp=1660567612))
+query_catalog.add_entry(tag="fetch-rng-example",
+                        title="Fetch RNG", q=FetchRNG(timestamp=1660567612))
 query_catalog.add_entry(
     tag="twap-eth-usd-example", title="Time Weighted Average Price", q=TWAP(asset="eth", currency="usd", timespan=86400)
 )
@@ -292,5 +303,6 @@ query_catalog.add_entry(
 query_catalog.add_entry(
     tag="mimicry-crypto-coven-tami",
     title="Crypto Coven TAMI calculation for Mimicry",
-    q=MimicryCollectionStat(collectionAddress="0x5180db8F5c931aaE63c74266b211F580155ecac8", chainId=1, metric=0),
+    q=MimicryCollectionStat(
+        collectionAddress="0x5180db8F5c931aaE63c74266b211F580155ecac8", chainId=1, metric=0),
 )
