@@ -188,7 +188,7 @@ class FetchFlexReporter(IntervalReporter):
             msg = "Unable to read reporters staker info"
             return error_status(msg, log=logger.error)
 
-        _, staker_balance, _, last_report, _ = staker_info
+        _, staker_balance, _, _, last_report = staker_info
 
         if staker_balance < 10 * 1e18:
             return error_status("Staker balance too low.", log=logger.info)
