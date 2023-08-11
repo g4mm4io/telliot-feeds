@@ -6,6 +6,7 @@ from typing import Any
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from decimal import *
 
 from chained_accounts import ChainedAccount
 from eth_abi.exceptions import EncodingTypeError
@@ -131,13 +132,13 @@ class FetchFlexReporter(IntervalReporter):
             msg = "Staked balance has decreased, account might be in dispute; restart telliot to keep reporting"
             return False, error_status(msg)
         # Attempt to stake
-        if staker_balance / 1e18 < self.stake:
+        if (Decimal(staker_balance) / Decimal(1e18)).compare(Decimal(self.stake)) == -1:
             logger.info("Current stake too low. Approving & depositing stake.")
 
             gas_price_gwei = await self.fetch_gas_price()
             if gas_price_gwei is None:
                 return False, error_status("Unable to fetch gas price for staking", log=logger.info)
-            amount = int(self.stake * 1e18) - staker_balance
+            amount = int(Decimal(self.stake) * Decimal(1e18) - Decimal(staker_balance))
 
             _, write_status = await self.token.write(
                 func_name="approve",
