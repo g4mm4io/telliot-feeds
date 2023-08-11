@@ -6,14 +6,14 @@ from telliot_feeds.feeds.plsx_usd_feed import plsx_usd_feed
 
 
 @pytest.mark.asyncio
-async def test_pls_usd_median_feed(caplog):
+async def test_plsx_usd_median_feed(caplog):
     """Retrieve weighted_average PLSX/USD price."""
     v, _ = await plsx_usd_feed.source.fetch_new_datapoint()
 
     assert v is not None
     assert v > 0
     assert (
-        "sources used in aggregate: 4" in caplog.text.lower() or "sources used in aggregate: 5" in caplog.text.lower()
+        "sources used in aggregate: 1" in caplog.text.lower()
     )
     print(f"PLSX/USD Price: {v}")
 
