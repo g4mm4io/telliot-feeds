@@ -109,8 +109,12 @@ class FetchFlexReporter(IntervalReporter):
             staker_startdate,
             staker_balance,
             locked_balance,
+            rewardDebt,
             last_report,
             num_reports,
+            startVoteCount,
+            startVoteTally,
+            staked
         ) = staker_info
 
         logger.info(
@@ -118,10 +122,12 @@ class FetchFlexReporter(IntervalReporter):
 
             STAKER INFO
             start date:     {staker_startdate}
+            start date formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(staker_startdate))}
             desired stake:  {self.stake}
             amount staked:  {staker_balance / 1e18}
             locked balance: {locked_balance / 1e18}
             last report:    {last_report}
+            last report formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_report))}
             total reports:  {num_reports}
             """
         )
@@ -189,7 +195,17 @@ class FetchFlexReporter(IntervalReporter):
             msg = "Unable to read reporters staker info"
             return error_status(msg, log=logger.error)
 
-        _, staker_balance, _, _, last_report = staker_info
+        (
+            staker_startdate,
+            staker_balance,
+            locked_balance,
+            rewardDebt,
+            last_report,
+            num_reports,
+            startVoteCount,
+            startVoteTally,
+            staked
+        ) = staker_info
 
         if staker_balance < 10 * 1e18:
             return error_status("Staker balance too low.", log=logger.info)
