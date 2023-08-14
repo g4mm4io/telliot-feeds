@@ -6,6 +6,7 @@ from typing import Any
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from decimal import *
 
 from chained_accounts import ChainedAccount
 from eth_abi.exceptions import EncodingTypeError
@@ -108,8 +109,12 @@ class FetchFlexReporter(IntervalReporter):
             staker_startdate,
             staker_balance,
             locked_balance,
+            rewardDebt,
             last_report,
             num_reports,
+            startVoteCount,
+            startVoteTally,
+            staked
         ) = staker_info
 
         logger.info(
@@ -117,10 +122,12 @@ class FetchFlexReporter(IntervalReporter):
 
             STAKER INFO
             start date:     {staker_startdate}
+            start date formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(staker_startdate))}
             desired stake:  {self.stake}
             amount staked:  {staker_balance / 1e18}
             locked balance: {locked_balance / 1e18}
             last report:    {last_report}
+            last report formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_report))}
             total reports:  {num_reports}
             """
         )
@@ -131,13 +138,13 @@ class FetchFlexReporter(IntervalReporter):
             msg = "Staked balance has decreased, account might be in dispute; restart telliot to keep reporting"
             return False, error_status(msg)
         # Attempt to stake
-        if staker_balance / 1e18 < self.stake:
+        if (Decimal(staker_balance) / Decimal(1e18)).compare(Decimal(self.stake)) == -1:
             logger.info("Current stake too low. Approving & depositing stake.")
 
             gas_price_gwei = await self.fetch_gas_price()
             if gas_price_gwei is None:
                 return False, error_status("Unable to fetch gas price for staking", log=logger.info)
-            amount = int(self.stake * 1e18) - staker_balance
+            amount = int(Decimal(self.stake) * Decimal(1e18) - Decimal(staker_balance))
 
             _, write_status = await self.token.write(
                 func_name="approve",
@@ -188,7 +195,17 @@ class FetchFlexReporter(IntervalReporter):
             msg = "Unable to read reporters staker info"
             return error_status(msg, log=logger.error)
 
-        _, staker_balance, _, _, last_report = staker_info
+        (
+            staker_startdate,
+            staker_balance,
+            locked_balance,
+            rewardDebt,
+            last_report,
+            num_reports,
+            startVoteCount,
+            startVoteTally,
+            staked
+        ) = staker_info
 
         if staker_balance < 10 * 1e18:
             return error_status("Staker balance too low.", log=logger.info)
