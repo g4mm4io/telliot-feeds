@@ -61,7 +61,16 @@ async def fetch_suggested_report(
 
     else:
         return None
+    
+def suggest_working_random_feed() -> DataFeed[Any]:
+    """Suggest a random tried and tested feed to report against."""
 
+    available_feeds_tags = [
+        "pls-usd-spot",
+        "fetch-usd-spot"
+    ]
+
+    return random.choice([CATALOG_FEEDS[feed] for feed in available_feeds_tags])
 
 def suggest_random_feed() -> DataFeed[Any]:
     """Suggest a random feed to report against."""
