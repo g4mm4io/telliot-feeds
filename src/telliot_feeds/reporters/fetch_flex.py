@@ -27,6 +27,7 @@ from telliot_feeds.utils.log import get_logger
 from telliot_feeds.utils.reporter_utils import get_native_token_feed
 from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 from telliot_feeds.utils.reporter_utils import tkn_symbol
+from telliot_feeds.utils.reporter_utils import suggest_working_random_feed
 
 
 logger = get_logger(__name__)
@@ -55,6 +56,7 @@ class FetchFlexReporter(IntervalReporter):
         wait_period: int = 7,
         min_native_token_balance: int = 10**18,
         check_rewards: bool = True,
+        use_random_feeds: bool = False
     ) -> None:
 
         self.endpoint = endpoint
@@ -79,6 +81,7 @@ class FetchFlexReporter(IntervalReporter):
         self.qtag_selected = False if self.datafeed is None else True
         self.min_native_token_balance = min_native_token_balance
         self.check_rewards: bool = check_rewards
+        self.use_random_feeds: bool = use_random_feeds
         self.web3 = self.endpoint.web3
 
         self.gas_info: dict[str, Union[float, int]] = {}
@@ -249,6 +252,9 @@ class FetchFlexReporter(IntervalReporter):
     async def fetch_datafeed(self) -> Optional[DataFeed[Any]]:
         """Fetches datafeed suggestion plus the reward amount from autopay if query tag isn't selected
         if query tag is selected fetches the rewards, if any, for that query tag"""
+        if self.use_random_feeds:
+            self.datafeed = suggest_working_random_feed()
+
         if self.datafeed:
             # add query id to catalog to fetch tip for legacy autopay
             try:
