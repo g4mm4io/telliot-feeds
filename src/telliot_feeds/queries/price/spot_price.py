@@ -30,6 +30,7 @@ SPOT_PRICE_PAIRS = [
     "USDC/USD",
     "EUR/USD",
     "PLS/USD",
+    "PLSX/USD",
     "ETH/JPY",
     "ALBT/USD",
     "RAI/USD",
@@ -83,7 +84,8 @@ class SpotPrice(AbiQuery):
     currency: str
 
     #: ABI used for encoding/decoding parameters
-    abi = [{"name": "asset", "type": "string"}, {"name": "currency", "type": "string"}]
+    abi = [{"name": "asset", "type": "string"},
+           {"name": "currency", "type": "string"}]
 
     @property
     def value_type(self) -> ValueType:
@@ -103,4 +105,5 @@ class SpotPrice(AbiQuery):
             raise ValueError(f"currency {self.currency} not supported")
 
         if (self.asset, self.currency) not in format_spot_price_pairs():
-            raise ValueError(f"{self.asset}/{self.currency} is not a supported pair")
+            raise ValueError(
+                f"{self.asset}/{self.currency} is not a supported pair")
