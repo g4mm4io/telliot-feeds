@@ -99,6 +99,14 @@ class CoinGeckoSpotPriceService(WebPriceService):
             except KeyError as e:
                 msg = "Error parsing Coingecko API response: KeyError: {}".format(e)
                 logger.error(msg)
+                logger.info(
+                    f"""
+
+                    Please either check the COINGECKO_MOCK_URL in the .env file or Coingecko service can be unavailable.
+                    Request URL: {self.url}{request_url}
+                    API response: {response}
+                    """
+                )
                 return None, None
 
         else:
