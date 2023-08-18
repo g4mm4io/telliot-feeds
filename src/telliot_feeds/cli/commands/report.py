@@ -240,7 +240,7 @@ def reporter() -> None:
     help=STAKE_MESSAGE,
     nargs=1,
     type=float,
-    default=10.0,
+    default=100.0,
 )
 @click.option(
     "--min-native-token-balance",
