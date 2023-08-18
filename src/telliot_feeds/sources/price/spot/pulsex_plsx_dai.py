@@ -49,8 +49,6 @@ def get_amount_out(amount_in, reserve_in, reserve_out):
 class PulseX_PLSXDAI_Service(WebPriceService):
     """Pulsechain PulseX Price Service for PLS/USD feed"""
 
-    logger.warning(f"inside PulseX_PLSXDAI_Service")
-
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "Earn Protocol PulseX Price Service"
         kwargs["url"] = "https://rpc.v4.testnet.pulsechain.com"
