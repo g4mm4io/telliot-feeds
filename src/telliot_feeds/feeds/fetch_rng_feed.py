@@ -9,12 +9,12 @@ from telliot_feeds.queries.fetch_rng import FetchRNG
 from telliot_feeds.sources.blockhash_aggregator import FetchRNGManualSource
 
 local_source = FetchRNGManualSource()
-
+local_source.set_timestamp(1660567612)
 fetch_rng_feed = DataFeed(source=local_source, query=FetchRNG(timestamp=local_source.timestamp))
 
 
 async def assemble_rng_datafeed(
-    timestamp: int, node: RPCEndpoint, account: chained_accounts
+    timestamp: int
 ) -> Optional[DataFeed[float]]:
     """Assembles a FetchRNG datafeed for the given timestamp."""
     local_source.set_timestamp(timestamp)
