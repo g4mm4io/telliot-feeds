@@ -56,7 +56,8 @@ class FetchFlexReporter(IntervalReporter):
         wait_period: int = 7,
         min_native_token_balance: int = 10**18,
         check_rewards: bool = True,
-        use_random_feeds: bool = False
+        use_random_feeds: bool = False,
+        continue_reporting_on_dispute: bool = False
     ) -> None:
 
         self.endpoint = endpoint
@@ -83,6 +84,7 @@ class FetchFlexReporter(IntervalReporter):
         self.check_rewards: bool = check_rewards
         self.use_random_feeds: bool = use_random_feeds
         self.web3 = self.endpoint.web3
+        self.continue_reporting_on_dispute: bool = continue_reporting_on_dispute
 
         self.gas_info: dict[str, Union[float, int]] = {}
         logger.info(f"Reporting with account: {self.acct_addr}")
@@ -137,7 +139,7 @@ class FetchFlexReporter(IntervalReporter):
 
         self.last_submission_timestamp = last_report
         # check if staker balance has decreased after initial assignment
-        if await self.in_dispute(staker_balance):
+        if await self.in_dispute(staker_balance) and not self.continue_reporting_on_dispute:
             msg = "Staked balance has decreased, account might be in dispute; restart telliot to keep reporting"
             return False, error_status(msg)
         # Attempt to stake
