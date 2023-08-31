@@ -90,7 +90,7 @@ class PulsechainPulseXService(WebPriceService):
             return None, None
 
         try:
-            price = float(val)
+            price = float(val / 1e18)
             if currency == 'usdc':
                 price = price * 1e12 #scale usdc 
             return price, timestamp, float(tvl)
