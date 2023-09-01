@@ -5,6 +5,13 @@
 - A Linux distribution or macOS on your machine, as they are both Unix-based. **Windows is currently not supported.**
 - [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use `telliot-feeds`. Please refer to [Install Python 3.9 using pyenv](#install-python-39-using-pyenv) section if you have a different Python version in your system. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
 
+## Use the stable environment
+
+Please switch to the stable environment by using the production-ready branch for Telliot:
+```sh
+git checkout main
+```
+
 ## Install Python 3.9 using pyenv
 
 [Pyenv](https://github.com/pyenv/pyenv) is a Python version manager that lets you easily switch between multiple versions of Python. Using pyenv, you don't need to uninstall the Python version you have installed to use version 3.9, thus avoiding problems with applications that rely on your current version. You can install pyenv following the [pyenv documentation](https://github.com/pyenv/pyenv).
