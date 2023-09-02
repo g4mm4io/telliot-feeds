@@ -2,8 +2,8 @@ name: 'telliot-feeds mkdocs'
 
 on:
   push:
-    branches:
-      - dev #Todo: change this to main; once we have stable version
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
