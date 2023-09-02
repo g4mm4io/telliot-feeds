@@ -79,7 +79,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*JOB NAME:*\n${{jobs.mkdocs.name}}"
+                      "text": "*JOB NAME:*\nPublish Documentation"
                     },
                     {
                       "type": "mrkdwn",
