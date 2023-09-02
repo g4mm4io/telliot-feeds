@@ -48,10 +48,10 @@ jobs:
         run: |
           pip install -r requirements.txt
           cd telliot-core && pip install -e .
-          pip install pytest brownie eth-brownie
+          cd .. && pip install pytest brownie eth-brownie
 
       - name: Run tests
-        run: cd .. && pytest
+        run: pytest
 
       - name: Obtain Commit SHA
         if: always()
