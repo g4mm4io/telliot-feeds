@@ -47,7 +47,7 @@ jobs:
 
       - name: Install mkdocs
         run: |
-          pip install mkdocs-material mkdocstrings mkdocs-autorefs
+          pip install mkdocs-material mkdocstrings-python mkdocs-autorefs
 
       - name: Deploy Documentation
         run: mkdocs gh-deploy --force
@@ -88,14 +88,6 @@ jobs:
                     {
                       "type": "mrkdwn",
                       "text": "*Author:*\n${{github.actor}}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*ENVIRONMENT:*\n${{env.environment}}"
-                    },
-                    {
-                    "type": "mrkdwn",
-                    "text": "*APP:*\n<${{ vars.APP_URL }}|dashboard-${{env.environment}}>"
                     }
                   ]
                 }
