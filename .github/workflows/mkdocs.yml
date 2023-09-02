@@ -1,24 +1,53 @@
-name: ci
+name: 'telliot-feeds mkdocs'
+
 on:
   push:
     branches:
-      - dev
+      - dev #Todo: change this to main; once we have stable version
+
 permissions:
   contents: write
+
+env:
+  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
 jobs:
-  deploy:
+  mkdocs:
+    name: 'Publish Documentation'
     runs-on: ubuntu-latest
+    env:
+      working-directory: ${{ github.workspace }}/iac
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ env.working-directory }}
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+          ref: ${{ github.ref_name }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Obtain Cache ID
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+
       - uses: actions/cache@v3
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install -r ${{ github.workspace }}/requirements.txt
-      - run: mkdocs gh-deploy --force
+
+      - name: Install mkdocs
+        run: |
+          pip install mkdocs-material mkdocstrings mkdocs-autorefs
+
+      - name: Deploy Documentation
+        run: mkdocs gh-deploy --force
