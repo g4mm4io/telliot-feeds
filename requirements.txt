@@ -3,3 +3,5 @@ mkdocstrings[python]>=0.18
 mkdocs-autorefs
 telliot-feeds
 pytest
+brownie
+eth-brownie
