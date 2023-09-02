@@ -48,7 +48,8 @@ jobs:
         run: |
           mv ./telliot-core ../
           pip install --no-cache-dir -r requirements.txt && pip install -e .
-          cd ../telliot-core && pip install --no-cache-dir -r requirements-dev.txt && pip install -e .          
+          cd ../telliot-core && pip install --no-cache-dir -r requirements-dev.txt && pip install -e .   
+          npm install -g ganache
 
       - name: Run tests
         run: pytest
