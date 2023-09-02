@@ -30,6 +30,7 @@ data_feed = {
 }
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_feed_suggestion(autopay_contract_setup, caplog):
     """Test the feed tip suggestions taking into account previous submissions"""
@@ -81,7 +82,7 @@ async def test_feed_suggestion(autopay_contract_setup, caplog):
     tip_amount = await get_feed_and_tip(autopay=flex.autopay, current_timestamp=chain.time() + 5)
     assert tip_amount == (None, None)
 
-
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_one_time_tip_suggestion(autopay_contract_setup):
     """Test one time tip doesn't show after submission

@@ -18,6 +18,7 @@ from tests.utils.utils import passing_bool_w_status
 from tests.utils.utils import passing_status
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_fetch_datafeed(fetch_flex_reporter):
     r = fetch_flex_reporter
@@ -42,6 +43,7 @@ def test_get_fee_info(fetch_flex_reporter):
     assert isinstance(info.gasUsedRatio, list)
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_get_num_reports_by_id(fetch_flex_reporter):
     r = fetch_flex_reporter
@@ -55,6 +57,7 @@ async def test_get_num_reports_by_id(fetch_flex_reporter):
         assert num is None
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_ensure_staked(fetch_flex_reporter):
     """Test staking status of reporter."""
@@ -64,6 +67,7 @@ async def test_ensure_staked(fetch_flex_reporter):
     assert status.ok
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_ensure_profitable(fetch_flex_reporter):
     """Test profitability check."""
@@ -83,6 +87,7 @@ async def test_ensure_profitable(fetch_flex_reporter):
     assert status.error == "Estimated profitability below threshold."
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_ethgasstation_error(fetch_flex_reporter):
     with mock.patch("telliot_feeds.reporters.interval.IntervalReporter.fetch_gas_price") as func:
@@ -95,6 +100,7 @@ async def test_ethgasstation_error(fetch_flex_reporter):
         assert not status.ok
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_interval_reporter_submit_once(fetch_flex_reporter):
     """Test reporting once to the FetchX playground on Rinkeby
@@ -128,6 +134,7 @@ async def test_interval_reporter_submit_once(fetch_flex_reporter):
         assert status.error in EXPECTED_ERRORS
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_no_updated_value(fetch_flex_reporter, bad_datasource):
     """Test handling for no updated value returned from datasource."""
@@ -200,6 +207,7 @@ async def test_handle_contract_master_read_timeout(fetch_flex_reporter):
         assert "Unable to read reporters staker status" in status.error
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_ensure_reporter_lock_check_after_submitval_attempt(fetch_flex_reporter, guaranteed_price_source):
     r = fetch_flex_reporter

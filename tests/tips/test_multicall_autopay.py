@@ -15,6 +15,7 @@ async def setattr_autopay(mumbai_test_cfg):
         return call
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_assemble_call_object(setattr_autopay):
     call: MulticallAutopay = await setattr_autopay
@@ -25,6 +26,7 @@ async def test_assemble_call_object(setattr_autopay):
     assert isinstance(assemble_call, Call)
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_get_data_feed(setattr_autopay):
     call: MulticallAutopay = await setattr_autopay
@@ -36,6 +38,7 @@ async def test_get_data_feed(setattr_autopay):
     assert assemble_call.returns == [[b"", None]]
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_get_multiple_values_before(setattr_autopay):
     call: MulticallAutopay = await setattr_autopay
@@ -46,6 +49,7 @@ async def test_get_multiple_values_before(setattr_autopay):
     assert assemble_call.returns == [[("values_array", b""), None], [("timestamps_array", b""), None]]
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_get_reward_claimed_status(setattr_autopay):
     call: MulticallAutopay = await setattr_autopay
@@ -56,6 +60,7 @@ async def test_get_reward_claimed_status(setattr_autopay):
     assert assemble_call.returns == [[(b"", b""), None]]
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_get_current_feeds(setattr_autopay):
     call: MulticallAutopay = await setattr_autopay

@@ -41,6 +41,7 @@ from telliot_feeds.feeds.numeric_api_response_feed import numeric_api_response_f
 from telliot_feeds.feeds.numeric_api_response_manual_feed import numeric_api_response_manual_feed
 from telliot_feeds.feeds.olympus import ohm_eth_median_feed
 from telliot_feeds.feeds.pls_usd_feed import pls_usd_feed
+from telliot_feeds.feeds.plsx_usd_feed import plsx_usd_feed
 from telliot_feeds.feeds.rai_usd_feed import rai_usd_median_feed
 from telliot_feeds.feeds.ric_usd_feed import ric_usd_median_feed
 from telliot_feeds.feeds.shib_usd_feed import shib_usd_median_feed
@@ -87,6 +88,7 @@ CATALOG_FEEDS = {
     "fetch-rng-example": fetch_rng_feed,
     "twap-eth-usd-example": twap_30d_example_manual_feed,
     "pls-usd-spot": pls_usd_feed,
+    "plsx-usd-spot": plsx_usd_feed,
     "eth-usd-spot": eth_usd_median_feed,
     "btc-usd-spot": btc_usd_median_feed,
     "fetch-usd-spot": fetch_usd_median_feed,
@@ -122,7 +124,8 @@ DATAFEED_BUILDER_MAPPING: Dict[str, DataFeed[Any]] = {
     "GasPriceOracle": gas_price_oracle_feed,
     "StringQuery": string_query_feed,
     "NumericApiManualResponse": numeric_api_response_manual_feed,
-    "NumericApiResponse": numeric_api_response_feed,  # this build will parse and submit response value automatically
+    # this build will parse and submit response value automatically
+    "NumericApiResponse": numeric_api_response_feed,
     "TWAP": twap_manual_feed,
     "DailyVolatility": daily_volatility_manual_feed,
     "FetchRNG": fetch_rng_feed,

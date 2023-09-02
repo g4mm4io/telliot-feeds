@@ -84,7 +84,9 @@ class PriceAggregator(DataSource[float]):
         prices = []
         weights = []
         for datapoint in datapoints:
-            v, _, w = datapoint  # Ignore input timestamps
+            # Ignore input timestamps
+            v = datapoint[0]
+            w = datapoint[2] if len(datapoint) == 3 else None
             # Check for valid answers
             if v is not None and isinstance(v, float):
                 prices.append(v)
@@ -101,8 +103,9 @@ class PriceAggregator(DataSource[float]):
 
         if len(weights) > 0:
             logger.info(f"Running {self.algorithm} using weights {weights}")
-
-        result = self._algorithm(prices, weights)
+            result = self._algorithm(prices, weights)
+        else:
+            result = self._algorithm(prices)
         datapoint = (result, datetime_now_utc())
         self.store_datapoint(datapoint)
 

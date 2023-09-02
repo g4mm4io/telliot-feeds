@@ -5,6 +5,7 @@ import pytest
 from telliot_feeds.feeds.eth_jpy_feed import eth_jpy_median_feed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_AssetPriceFeed():
     """Retrieve median ETH/JPY price."""

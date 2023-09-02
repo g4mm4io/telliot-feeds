@@ -1,0 +1,97 @@
+name: 'telliot-feeds mkdocs'
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  mkdocs:
+    name: 'Publish Documentation'
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ${{ github.workspace }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ env.working-directory }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref_name }}
+          submodules: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Obtain Cache ID
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          cd telliot-core && pip install -e .
+
+      - name: Deploy Documentation
+        run: mkdocs gh-deploy --force
+
+      - name: Obtain Commit SHA
+        if: always()
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1.19.0
+        if: always()
+        with:
+          channel-id: 'devops-build-notification'
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action ${{github.repository}} result: *${{ job.status }}*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*REPO:*\n${{github.repository}}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*JOB NAME:*\nPublish Documentation"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*COMMIT:*\n<${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{env.SHORT_SHA}}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author:*\n${{github.actor}}"
+                    }
+                  ]
+                }
+              ]
+            }

@@ -115,6 +115,7 @@ async def custom_reporter(
         return r
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_submit_once(custom_reporter):
     _, status = await custom_reporter.report_once()

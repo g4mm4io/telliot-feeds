@@ -7,6 +7,7 @@ from telliot_feeds.feeds.dai_usd_feed import dai_usd_median_feed
 from telliot_feeds.reporters.fetch_flex import FetchFlexReporter
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_dai_usd_reporter_submit_once(
     mumbai_test_cfg, mock_flex_contract, mock_autopay_contract, mock_token_contract

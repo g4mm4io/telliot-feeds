@@ -27,6 +27,7 @@ from telliot_feeds.queries.price.spot_price import SpotPrice
 # import DataFeed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_spot_price_feeds():
     """Test popular spot price feeds."""

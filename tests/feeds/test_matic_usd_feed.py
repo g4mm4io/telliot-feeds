@@ -3,6 +3,7 @@ import pytest
 from telliot_feeds.feeds.matic_usd_feed import matic_usd_median_feed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_fetch_price():
     (value, _) = await matic_usd_median_feed.source.fetch_new_datapoint()

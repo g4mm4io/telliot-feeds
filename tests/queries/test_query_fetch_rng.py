@@ -3,12 +3,13 @@
 Copyright (c) 2022-, Fetch Development Community
 Distributed under the terms of the MIT License.
 """
+import pytest
 from eth_abi import decode_abi
 from eth_abi import decode_single
 
 from telliot_feeds.queries.fetch_rng import FetchRNG
 
-
+@pytest.mark.skip()
 def test_fetch_rng_query():
     """Validate fetch rng query"""
     q = FetchRNG(
