@@ -51,7 +51,7 @@ jobs:
           cd telliot-core && pip install --no-cache-dir -r requirements-dev.txt && pip install -e .
 
       - name: Run tests
-        run: cd .. && pytest
+        run: pytest
 
       - name: Obtain Commit SHA
         if: always()
