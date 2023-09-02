@@ -46,11 +46,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd telliot-core && pip install --no-cache-dir -r requirements-dev.txt && pip install -e .
-          cd .. && pip install --no-cache-dir -r requirements.txt && pip install -e .
+          mv ./telliot-core ../
+          pip install --no-cache-dir -r requirements.txt && pip install -e .
+          cd ../telliot-core && pip install --no-cache-dir -r requirements-dev.txt && pip install -e .          
 
       - name: Run tests
-        run: pytest
+        run: cd .. && pytest
 
       - name: Obtain Commit SHA
         if: always()
