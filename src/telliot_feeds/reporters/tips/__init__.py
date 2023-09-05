@@ -35,11 +35,6 @@ def add_multicall_support(
     else:
         print(f"Network {network} already exists in multicall package")
 
-
-add_multicall_support(
-    network="PulsechainTestnet v3", network_id=942, multicall3_address="0x4177eFCa61Cdb9bc2bAac31C2675C0e576E5b795"
-)
-
 add_multicall_support(
     network="PulsechainTestnet v4", network_id=943, multicall3_address="0x207cc7e2141Db4244BE07093CAf5df9a089128F2"
 )

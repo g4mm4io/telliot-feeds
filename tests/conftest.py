@@ -49,7 +49,7 @@ def mumbai_cfg():
     cfg = TelliotConfig()
 
     # Override configuration for rinkeby testnet
-    cfg.main.chain_id = 80001
+    cfg.main.chain_id = 943
 
     endpt = cfg.get_endpoint()
     if "INFURA_API_KEY" in endpt.url:

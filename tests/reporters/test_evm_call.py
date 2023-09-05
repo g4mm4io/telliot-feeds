@@ -10,6 +10,7 @@ txn_kwargs = {"gas_limit": 3500000, "legacy_gas_price": 1}
 CHAIN_ID = 80001
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_evm_call_e2e(fetch_360, caplog):
     """Test tipping, reporting, and decoding EVMCall query reponse"""
@@ -66,6 +67,7 @@ async def test_evm_call_e2e(fetch_360, caplog):
     assert fetch_total_supply > 2390472032948139443578988  # FETCH total supply before
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_no_endpoint_for_tipped_chain(fetch_360, caplog):
     """Test reporter doesn't halt if chainId is not supported"""

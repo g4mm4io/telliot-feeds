@@ -13,6 +13,7 @@ from telliot_feeds.reporters.reporter_autopay_utils import autopay_suggested_rep
 from telliot_feeds.reporters.reporter_autopay_utils import get_feed_tip
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_main(
     mumbai_test_cfg, mock_flex_contract, mock_autopay_contract, mock_token_contract, multicall_contract

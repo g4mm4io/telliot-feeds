@@ -35,6 +35,7 @@ async def rng_reporter(mumbai_test_cfg, fetch_360):
         return r
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_report(rng_reporter):
     """Test reporting Fetch RNG value."""
@@ -66,6 +67,7 @@ async def test_report(rng_reporter):
         assert status.error in EXPECTED_ERRORS
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_missing_blockhash(rng_reporter, monkeypatch, caplog):
     """Mock the datasource missing btc blockhash. Make sure still attemps to report after 3 retries."""
@@ -112,6 +114,7 @@ async def test_missing_blockhash(rng_reporter, monkeypatch, caplog):
     assert caplog.text.count("bazinga") == 3
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_invalid_timestamp(rng_reporter, monkeypatch, caplog):
     """Test reporting Fetch RNG value."""
@@ -130,6 +133,7 @@ async def test_invalid_timestamp(rng_reporter, monkeypatch, caplog):
         assert "should be greater than eth genesis block timestamp" in caplog.text
 
 
+@pytest.mark.skip("Fetch360 not available for Pulsechain")
 @pytest.mark.asyncio
 async def test_invalid_timestamp_in_future(rng_reporter, monkeypatch, caplog):
     """Test invalid timestamp in the future."""

@@ -16,6 +16,7 @@ numeric_api_rsp_feed = DataFeed(
 )
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_api_reporter_submit_once(
     mumbai_test_cfg, mock_flex_contract, mock_autopay_contract, mock_token_contract

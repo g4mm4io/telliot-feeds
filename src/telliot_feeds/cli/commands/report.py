@@ -240,7 +240,7 @@ def reporter() -> None:
     help=STAKE_MESSAGE,
     nargs=1,
     type=float,
-    default=10.0,
+    default=100.0,
 )
 @click.option(
     "--min-native-token-balance",
@@ -278,6 +278,7 @@ def reporter() -> None:
 @click.option("--submit-once/--submit-continuous", default=False)
 @click.option("-pwd", "--password", type=str)
 @click.option("-spwd", "--signature-password", type=str)
+@click.option("--continue-reporting-on-dispute/--stop-reporting-on-dispute", type=bool,default=False)
 @click.pass_context
 @async_run
 async def report(
@@ -310,6 +311,7 @@ async def report(
     check_rewards: bool,
     use_random_feeds: bool,
     gas_multiplier: int,
+    continue_reporting_on_dispute: bool
 ) -> None:
     """Report values to Fetch oracle"""
     ctx.obj["ACCOUNT_NAME"] = account_str
@@ -369,7 +371,7 @@ async def report(
                 return
             chosen_feed = None
         elif rng_timestamp is not None:
-            chosen_feed = await assemble_rng_datafeed(timestamp=rng_timestamp, node=core.endpoint, account=account)
+            chosen_feed = await assemble_rng_datafeed(timestamp=rng_timestamp)
         else:
             chosen_feed = None
 
@@ -446,7 +448,7 @@ async def report(
             "transaction_type": tx_type,
             "min_native_token_balance": int(min_native_token_balance * 10**18),
             "check_rewards": check_rewards,
-            #"use_random_feeds": use_random_feeds, #TODO: Error if this line is uncommented
+            "use_random_feeds": use_random_feeds,
             "gas_multiplier": gas_multiplier,
         }
 
@@ -475,9 +477,10 @@ async def report(
                 **common_reporter_kwargs,
             )  # type: ignore
         else:
-            reporter = FetchFlexReporter(
+            reporter = FetchFlexReporter(**{
                 **common_reporter_kwargs,
-            )  # type: ignore
+                "continue_reporting_on_dispute": continue_reporting_on_dispute
+            }) # type: ignore
 
         if submit_once:
             _, _ = await reporter.report_once()

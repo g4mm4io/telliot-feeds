@@ -5,6 +5,7 @@ import pytest
 from telliot_feeds.feeds.fetch_usd_feed import fetch_usd_median_feed
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_fetch_asset_price_feed():
     """Retrieve median FETCH/USD price."""

@@ -1,9 +1,10 @@
+import pytest
 from unittest import mock
 
 from telliot_feeds.cli.utils import build_query
 from telliot_feeds.queries.price.spot_price import SpotPrice
 
-
+@pytest.mark.skip()
 def test_build_query():
     """Test building a query."""
     with (

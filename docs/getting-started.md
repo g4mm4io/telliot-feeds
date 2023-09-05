@@ -2,8 +2,19 @@
 
 ## Prerequisites
 - An account with your chain's native token for gas fees. Testnets often have a faucet. For example, [here is Pulsechain's ](https://faucet.v4.testnet.pulsechain.com/) for testnet V4.
-- [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use `telliot-feeds`. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
+- A Linux distribution or macOS on your machine, as they are both Unix-based. **Windows is currently not supported.**
+- [Python 3.9](https://www.python.org/downloads/release/python-3915/) is required to install and use `telliot-feeds`. Please refer to [Install Python 3.9 using pyenv](#install-python-39-using-pyenv) section if you have a different Python version in your system. Alternatively, you can use our [docker](https://docs.docker.com/get-started/) release. If using Docker, please follow the [Docker setup instructions](#optional-docker-setup).
 
+## Use the stable environment
+
+Please switch to the stable environment by using the production-ready branch for Telliot:
+```sh
+git checkout main
+```
+
+## Install Python 3.9 using pyenv
+
+[Pyenv](https://github.com/pyenv/pyenv) is a Python version manager that lets you easily switch between multiple versions of Python. Using pyenv, you don't need to uninstall the Python version you have installed to use version 3.9, thus avoiding problems with applications that rely on your current version. You can install pyenv following the [pyenv documentation](https://github.com/pyenv/pyenv).
 
 ## Install Telliot Feeds
 
@@ -34,24 +45,31 @@ In this example, the virtual environment will be created in a subfolder called `
 
 Once the virtual environment is activated, install telliot from the source code. First, clone telliot feeds and telliot core repositories in the same folder:
 
-    git clone git@github.com:fetchoracle/telliot-feeds.git
-    git clone git@github.com:fetchoracle/telliot-core.git
+    git clone https://github.com/fetchoracle/telliot-feeds.git
+    git clone https://github.com/fetchoracle/telliot-core.git
 
 After that, install telliot core:
 
     cd telliot-core
-    pip install -r requirements-dev.txt
     pip install -e .
+    pip install -r requirements-dev.txt
 
 
 Finally, install telliot feeds:
 
     cd ../telliot-feeds
-    pip install -r requirements-dev.txt
     pip install -e .
+    pip install -r requirements.txt
 
+During the installation, the package `eth-brownie` may log errors about dependencies version conflict. It will not compromise the installation, it happens because that package pushes some packages' versions downwards whereas there are packages that require newer versions.
 
-*If your log shows no errors, that's it! Next, follow the instructions for [configuring telliot](#telliot-configuration).*
+After the installtion you can check telliot installtion by running:
+
+```sh
+telliot config show
+```
+
+After the installation, follow the instructions for [configuring telliot](#telliot-configuration).*
 
 ## (Optional) Docker Setup
 *Skip this section if you already have Python 3.9 and and the correct dependencies installed.*
@@ -75,8 +93,8 @@ Use the following commands to create and run a container with the correct Python
 1. clone telliot feeds and telliot core repositories in the same folder:
 
 ```
-git clone git@github.com:fetchoracle/telliot-feeds.git
-git clone git@github.com:fetchoracle/telliot-core.git
+git clone https://github.com/fetchoracle/telliot-feeds.git
+git clone https://github.com/fetchoracle/telliot-core.git
 ```
 2. Create & start container in background:
 ```
@@ -125,6 +143,12 @@ After adding accounts, [configure your endpoints](#configure-endpoints).
 You can add your RPC endpoints via the command line or by editing the `endpoints.yaml` file. It's easier to do via the command line, but here's an example command using the [nano](https://www.nano-editor.org/) text editor to edit the YAML file directly:
     
     nano ~/telliot/endpoints.yaml
+
+[Optional] Run `set_teliot_env.py` script to set Telliot environment first. The supported environments are: default, dev, testnet, mainnet, preprod and staging. If the environment is no set up, Telliot will be configured to use the default environment, execute `python set_telliot_env.py --help` for details:
+
+```sh
+python set_telliot_env.py --env default
+```
 
 To configure your endpoint via the CLI, use the `report` command and enter `n` when asked if you want to keep the default settings:
 ```

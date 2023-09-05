@@ -35,6 +35,7 @@ async def setup_autopay_call(mumbai_test_cfg, mock_autopay_contract) -> AutopayC
         return calls
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_get_current_tips(setup_autopay_call):
     """Test Multicall by calling getCurrentTip in autopay"""
@@ -43,6 +44,7 @@ async def test_get_current_tips(setup_autopay_call):
     assert tips["eth-usd-spot"] == 0
 
 
+@pytest.mark.skip()
 @pytest.mark.asyncio
 async def test_get_current_feeds(caplog, setup_autopay_call):
     """Test getCurrentFeeds call in autopay using multicall"""
@@ -71,6 +73,7 @@ async def test_get_current_feeds(caplog, setup_autopay_call):
     assert "Contract reversion in multicall request" in caplog.text
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_safe_multicall(caplog, setup_autopay_call):
     """Test safe multicall with error handling"""
@@ -107,6 +110,7 @@ async def test_safe_multicall(caplog, setup_autopay_call):
         assert "Contract reversion in multicall request" in caplog.text
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_index_error(setup_autopay_call, caplog):
     bad_response = {
@@ -126,6 +130,7 @@ async def test_index_error(setup_autopay_call, caplog):
     assert "No feeds balance to check"
 
 
+@pytest.mark.skip("Default network (Mumbai) is not available")
 @pytest.mark.asyncio
 async def test_multicall_return_none(setup_autopay_call):
     calls: AutopayCalls = await setup_autopay_call

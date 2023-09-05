@@ -6,6 +6,7 @@ from typing import Any
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from decimal import *
 
 from chained_accounts import ChainedAccount
 from eth_abi.exceptions import EncodingTypeError
@@ -26,6 +27,7 @@ from telliot_feeds.utils.log import get_logger
 from telliot_feeds.utils.reporter_utils import get_native_token_feed
 from telliot_feeds.utils.reporter_utils import fetch_suggested_report
 from telliot_feeds.utils.reporter_utils import tkn_symbol
+from telliot_feeds.utils.reporter_utils import suggest_working_random_feed
 
 
 logger = get_logger(__name__)
@@ -54,6 +56,8 @@ class FetchFlexReporter(IntervalReporter):
         wait_period: int = 7,
         min_native_token_balance: int = 10**18,
         check_rewards: bool = True,
+        use_random_feeds: bool = False,
+        continue_reporting_on_dispute: bool = False
     ) -> None:
 
         self.endpoint = endpoint
@@ -78,7 +82,9 @@ class FetchFlexReporter(IntervalReporter):
         self.qtag_selected = False if self.datafeed is None else True
         self.min_native_token_balance = min_native_token_balance
         self.check_rewards: bool = check_rewards
+        self.use_random_feeds: bool = use_random_feeds
         self.web3 = self.endpoint.web3
+        self.continue_reporting_on_dispute: bool = continue_reporting_on_dispute
 
         self.gas_info: dict[str, Union[float, int]] = {}
         logger.info(f"Reporting with account: {self.acct_addr}")
@@ -108,8 +114,12 @@ class FetchFlexReporter(IntervalReporter):
             staker_startdate,
             staker_balance,
             locked_balance,
+            rewardDebt,
             last_report,
             num_reports,
+            startVoteCount,
+            startVoteTally,
+            staked
         ) = staker_info
 
         logger.info(
@@ -117,27 +127,30 @@ class FetchFlexReporter(IntervalReporter):
 
             STAKER INFO
             start date:     {staker_startdate}
+            start date formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(staker_startdate))}
             desired stake:  {self.stake}
             amount staked:  {staker_balance / 1e18}
+            Minimum stake amount: {self.web3.fromWei((await self.oracle.read(func_name='minimumStakeAmount'))[0], 'ether')}
             locked balance: {locked_balance / 1e18}
             last report:    {last_report}
+            last report formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_report))}
             total reports:  {num_reports}
             """
         )
 
         self.last_submission_timestamp = last_report
         # check if staker balance has decreased after initial assignment
-        if await self.in_dispute(staker_balance):
+        if await self.in_dispute(staker_balance) and not self.continue_reporting_on_dispute:
             msg = "Staked balance has decreased, account might be in dispute; restart telliot to keep reporting"
             return False, error_status(msg)
         # Attempt to stake
-        if staker_balance / 1e18 < self.stake:
+        if (Decimal(staker_balance) / Decimal(1e18)).compare(Decimal(self.stake)) == -1:
             logger.info("Current stake too low. Approving & depositing stake.")
 
             gas_price_gwei = await self.fetch_gas_price()
             if gas_price_gwei is None:
                 return False, error_status("Unable to fetch gas price for staking", log=logger.info)
-            amount = int(self.stake * 1e18) - staker_balance
+            amount = int(Decimal(self.stake) * Decimal(1e18) - Decimal(staker_balance))
 
             _, write_status = await self.token.write(
                 func_name="approve",
@@ -188,7 +201,17 @@ class FetchFlexReporter(IntervalReporter):
             msg = "Unable to read reporters staker info"
             return error_status(msg, log=logger.error)
 
-        _, staker_balance, _, last_report, _ = staker_info
+        (
+            staker_startdate,
+            staker_balance,
+            locked_balance,
+            rewardDebt,
+            last_report,
+            num_reports,
+            startVoteCount,
+            startVoteTally,
+            staked
+        ) = staker_info
 
         if staker_balance < 10 * 1e18:
             return error_status("Staker balance too low.", log=logger.info)
@@ -232,6 +255,9 @@ class FetchFlexReporter(IntervalReporter):
     async def fetch_datafeed(self) -> Optional[DataFeed[Any]]:
         """Fetches datafeed suggestion plus the reward amount from autopay if query tag isn't selected
         if query tag is selected fetches the rewards, if any, for that query tag"""
+        if self.use_random_feeds:
+            self.datafeed = suggest_working_random_feed()
+
         if self.datafeed:
             # add query id to catalog to fetch tip for legacy autopay
             try:
