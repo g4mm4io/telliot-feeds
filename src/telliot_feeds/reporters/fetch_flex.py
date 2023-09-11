@@ -130,6 +130,7 @@ class FetchFlexReporter(IntervalReporter):
             start date formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(staker_startdate))}
             desired stake:  {self.stake}
             amount staked:  {staker_balance / 1e18}
+            Minimum stake amount: {self.web3.fromWei((await self.oracle.read(func_name='minimumStakeAmount'))[0], 'ether')}
             locked balance: {locked_balance / 1e18}
             last report:    {last_report}
             last report formatted: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_report))}
