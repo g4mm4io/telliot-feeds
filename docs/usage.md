@@ -173,7 +173,7 @@ telliot report -a acct3 -tx 0 -gl 310000 -gp 9001 -p 22 --fetch-flex
 
 ## Staking
 
-If reporting to Fetch oracles, reporters can stake multiple times. Each stake is 10 FETCH, so if you stake 140 FETCH, you've staked 14 times.
+If reporting to Fetch oracles, reporters can stake multiple times. The minimum value for each stake will be given by the minimum stake amount as configured in the oracle contract. You can get that information either by running `telliot report -a my-acct --fetch-flex` and a log with `STAKER INFO` showing the `Minimum stake amount` will be shown, or you can call the contract getter function `minimumStakeAmount()` directly.
 
 The reporter will automatically attempt to stake the required amount, but if you'd like to stake more than the current minimum, use the `--stake/-s` flag.
 

@@ -14,7 +14,46 @@ git checkout main
 
 ## Install Python 3.9 using pyenv
 
-[Pyenv](https://github.com/pyenv/pyenv) is a Python version manager that lets you easily switch between multiple versions of Python. Using pyenv, you don't need to uninstall the Python version you have installed to use version 3.9, thus avoiding problems with applications that rely on your current version. You can install pyenv following the [pyenv documentation](https://github.com/pyenv/pyenv).
+[Pyenv](https://github.com/pyenv/pyenv) is a Python version manager that lets you easily switch between multiple versions of Python. Using pyenv, you don't need to uninstall the Python version you have installed to use version 3.9, thus avoiding problems with applications that rely on your current version. Following the documentation, this pyenv setup guide is for Ubuntu:
+
+1. Install pyenv dependencies
+
+    ```sh
+    sudo apt update; sudo apt install build-essential libssl-dev zlib1g-dev \
+    libbz2-dev libreadline-dev libsqlite3-dev curl \
+    libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+    ```
+
+2. Execute the pyenv installer
+
+    ```sh
+    curl https://pyenv.run | bash
+    ```
+
+3. Add these commands into your `~/.bashrc` file.
+
+    ```sh
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+    ```
+
+    These commands will define an environment variable PYENV_ROOT to point to the path where Pyenv will store its data (default in `$HOME/.pyenv`); add the pyenv executable to your PATH;  install pyenv into your shell as a shell function to enable shims and autocompletion.
+
+4. Restart your shell
+
+    ```sh
+    exec "$SHELL"
+    ```
+
+5. Install Python 3.9 and select Python 3.9 globally
+
+    ```sh
+    pyenv install 3.9
+    pyenv global 3.9
+    ```
+
+Please refer to the [pyenv wiki documentation](https://github.com/pyenv/pyenv/wiki) for troubleshooting.
 
 ## Install Telliot Feeds
 
@@ -98,7 +137,7 @@ git clone https://github.com/fetchoracle/telliot-core.git
 ```
 2. Create & start container in background:
 ```
-sudo docker compose -f telliot-feeds/docker-compose.yml up -d
+sudo docker compose -f docker-compose.yml up -d
 ```
 3. Open shell to container: 
 ```
@@ -144,11 +183,43 @@ You can add your RPC endpoints via the command line or by editing the `endpoints
     
     nano ~/telliot/endpoints.yaml
 
-[Optional] Run `set_teliot_env.py` script to set Telliot environment first. The supported environments are: default, dev, testnet, mainnet, preprod and staging. If the environment is no set up, Telliot will be configured to use the default environment, execute `python set_telliot_env.py --help` for details:
+[Optional] Run `set_telliot_env.py` script to set Telliot environment. That script will configure local `telliot-core` to use `ENV_NAME` environment variable when selecting the `contract_directory.<ENV_NAME>.json` contracts directory file.
+
+The supported environments are testnet and mainnet.Execute `python set_telliot_env.py --help` for details:
 
 ```sh
-python set_telliot_env.py --env default
+python set_telliot_env.py --env testnet
 ```
+
+### Configuring telliot-feeds sources environment variables
+
+Looking the `.env.example` file you'll encounter the following env config:
+
+```sh
+PLS_CURRENCY_SOURCES=dai,usdc,plsx
+PLS_ADDR_SOURCES="0xa2d510bf42d2b9766db186f44a902228e76ef262,0xb7f1f5a3b79b0664184bb0a5893aa9359615171b,0xFfd1fD891301D347ECaf4fC76866030387e97ED4"
+
+COINGECKO_MOCK_URL=https://mock-price.fetchoracle.com/coingecko
+PULSEX_SUBGRAPH_URL=https://graph.v4.testnet.pulsechain.com
+FETCH_ADDRESS=0xb0f674d98ef8534b27a142ea2993c7b03bc7d649
+```
+
+These environment variables configure which source will be used to Spot a Price. Using a different source will report a different values.
+
+- Query FETCH/USD (`-qt fetch-usd-pot`)
+
+    The SpotPrice for fetch-usd-spot query-tag can use one of two sources: `PulseXSupgraphSource` or `CoinGeckoSpotPriceSource`.
+
+    The feed [fetch_usd_feed.py](https://github.com/fetchoracle/telliot-feeds/blob/dev/src/telliot_feeds/feeds/fetch_usd_feed.py) checks the environment variables in the `.env` file for its respective sources. If it finds a config for `PULSEX_SUBGRAPH_URL` it uses the PulseX Supgraph as source. Otherwise, it uses the default CoinGecko source. The `PulseXSupgraphSource` also requires the `FETCH_ADDRESS` environment variable.
+
+
+- Query PLS/USD (`-qt pls-usd-spot`)
+
+    The SpotPrice for pls-usd-spot query-tag can use one of three sources: `PulsechainPulseXSource`, `CoinGeckoSpotPriceSource` or `PulsechainSubgraphSource`.
+    
+    The feed [pls_usd_feed.py](https://github.com/fetchoracle/telliot-feeds/blob/dev/src/telliot_feeds/feeds/pls_usd_feed.py) checks the environment variable in the `.env` file for its respective sources. If it finds a config for `PLS_CURRENCY_SOURCES`, it uses the `PulsechainPulseXSource` and pass its data to a Price Aggregator using the weighted average algorithm. Otherwise, it checks for `COINGECKO_MOCK_URL` to use the CoinGecko as source. Finally, if it does not find neither configuration, it uses the default Pulsechain Subgraph as source. The `PulsechainPulseXSource` also requires the `PLS_ADDR_SOURCES` environment variable, which are the contract addresses for the given `PLS_CURRENCY_SOURCES`.
+
+### Configure endpoint via CLI
 
 To configure your endpoint via the CLI, use the `report` command and enter `n` when asked if you want to keep the default settings:
 ```

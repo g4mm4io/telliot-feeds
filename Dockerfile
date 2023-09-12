@@ -10,11 +10,8 @@ RUN pip3 install --no-cache-dir Jinja2==3.1.2
 WORKDIR /usr/src/app/telliot-core
 COPY ./telliot-core .
 RUN pip install -e .
-COPY ./change_address.py .
 
 #copy and install dependencies for telliot feeds
 WORKDIR /usr/src/app/telliot-feeds
-COPY . .
+COPY ./telliot-feeds .
 RUN pip install -e .
-
-COPY ./podinit.sh .
