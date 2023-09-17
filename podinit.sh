@@ -5,9 +5,7 @@ cat ./src/telliot_core/data/contract_directory.json
 
 telliot config init
 
-sleep 30 #Allow some time to pull the secret private key
-
-directory_path="/mnt/secrets-store"
+directory_path="/mnt/secrets-store/${SECRET_NAME}"
 directory_path_contents=$(cat "$directory_path")
 export PRIVATE_KEY="$directory_path_contents"
 
