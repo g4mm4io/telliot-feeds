@@ -40,6 +40,10 @@ add_multicall_support(
 )
 
 add_multicall_support(
+    network="PulsechainMainnet", network_id=369, multicall3_address="0xca11bde05977b3631167028862be2a173976ca11"
+)
+
+add_multicall_support(
     network="Chiado",
     network_id=10200,
     state_override=False,
