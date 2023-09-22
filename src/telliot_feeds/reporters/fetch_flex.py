@@ -142,7 +142,8 @@ class FetchFlexReporter(IntervalReporter):
         # check if staker balance has decreased after initial assignment
         if await self.in_dispute(staker_balance) and not self.continue_reporting_on_dispute:
             msg = "Staked balance has decreased, account might be in dispute; restart telliot to keep reporting"
-            return False, error_status(msg)
+            logger.error(msg)
+            exit(1)
         # Attempt to stake
         if (Decimal(staker_balance) / Decimal(1e18)).compare(Decimal(self.stake)) == -1:
             logger.info("Current stake too low. Approving & depositing stake.")
