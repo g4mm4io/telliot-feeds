@@ -1,4 +1,3 @@
-sleep 10
 cd ../telliot-core
 
 python3 change_address.py
