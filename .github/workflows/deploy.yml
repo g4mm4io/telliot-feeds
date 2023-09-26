@@ -1,4 +1,4 @@
-name: 'telliot-feeds'
+name: 'Image Builder'
 
 on:
   push:
