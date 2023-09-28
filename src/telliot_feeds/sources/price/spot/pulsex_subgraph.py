@@ -85,6 +85,11 @@ class PulseXSupgraphService(WebPriceService):
             response = data["response"]
 
             try:
+                if response["data"]["token"] == None:
+                    logger.error(f"No data found for the token {token}")
+                    logger.info(f"It is possible that no Liquidity Pool exists including this token ({token})")
+                    return None, None
+
                 price = float(response["data"]["token"]["derivedUSD"])
                 return price, datetime_now_utc()
             except KeyError as e:
