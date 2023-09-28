@@ -16,14 +16,20 @@ import os
 load_dotenv()
 
 addrs = {}
-if os.getenv("PLS_CURRENCY_SOURCES") and os.getenv("PLS_ADDR_SOURCES"):
-    sources_addrs = "0x38c4bB88FCAf4Ba045ec34C8a2C290Ff74c2b79f"
-    sources = "dai"
-    sources_list = sources.split(',')
-    sources_addr_list = sources_addrs.split(',')
+if os.getenv("PLSX_CURRENCY_SOURCES") and os.getenv("PLSX_ADDR_SOURCES"):
+    sources_list = os.getenv("PLSX_CURRENCY_SOURCES").split(',')
+    sources_addr_list = os.getenv("PLSX_ADDR_SOURCES").split(',')
 
     for i, s in enumerate(sources_list):
         addrs[s] = Web3.toChecksumAddress(sources_addr_list[i])
+
+plsx_lps_order = {}
+if os.getenv("PLSX_LPS_ORDER") and os.getenv("PLSX_CURRENCY_SOURCES"):
+    sources_list = os.getenv("PLSX_CURRENCY_SOURCES").split(',')
+    sources_lps_list = os.getenv("PLSX_LPS_ORDER").split(',')
+
+    for i,s in enumerate(sources_list):
+        plsx_lps_order[s] = sources_lps_list[i]
 
 logger = get_logger(__name__)
 
@@ -63,12 +69,11 @@ class PulseX_PLSXDAI_Service(WebPriceService):
         asset = asset.lower()
         currency = currency.lower()
 
-        if currency not in ["usdc", "dai"]:
+        if currency not in ["usdc", "dai", "usdt"]:
             logger.error(f"Currency not supported: {currency}")
             return None, None
 
-        # contract_addr = addrs.get(currency)
-        contract_addr = "0x38c4bB88FCAf4Ba045ec34C8a2C290Ff74c2b79f"
+        contract_addr = addrs.get(currency)
 
         if asset != 'plsx':
             logger.error(f"Asset not supported: {asset}")
@@ -81,8 +86,10 @@ class PulseX_PLSXDAI_Service(WebPriceService):
             contract = w3.eth.contract(
                 address=contract_addr, abi=getReservesAbi)
             [reserve0, reserve1, timestamp] = contract.functions.getReserves().call()
-            # val = get_amount_out(1e18, reserve1, reserve0)
-            val = (reserve0/reserve1)
+            token0, _ = plsx_lps_order[currency].split('/')
+            if token0 != "PLSX":
+                reserve0, reserve1 = reserve1, reserve0
+            val = get_amount_out(1e18, reserve0, reserve1)
 
             vl0 = ((1e18 * reserve1) / (reserve0 + 1e18)) * \
                 reserve0  # value locked token0 without fees
@@ -96,9 +103,9 @@ class PulseX_PLSXDAI_Service(WebPriceService):
             return None, None
 
         try:
-            price = float(val)
-            if currency == 'usdc':
-                price = price * 1e12  # scale usdc
+            price = float(val / 1e18)
+            if currency == 'usdc' or currency == 'usdt':
+                price = price * 1e12 #scale usdc
             return price, timestamp, float(tvl)
         except Exception as e:
             msg = f"Error parsing Pulsechain Sec Oracle response: KeyError: {e}"
