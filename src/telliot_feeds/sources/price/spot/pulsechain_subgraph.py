@@ -1,14 +1,19 @@
+import os
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Any
 
 import requests
 
+from dotenv import load_dotenv
+
 from telliot_feeds.dtypes.datapoint import datetime_now_utc
 from telliot_feeds.dtypes.datapoint import OptionalDataPoint
 from telliot_feeds.pricing.price_service import WebPriceService
 from telliot_feeds.pricing.price_source import PriceSource
 from telliot_feeds.utils.log import get_logger
+
+load_dotenv()
 
 
 logger = get_logger(__name__)
@@ -20,7 +25,7 @@ class PulsechainSupgraphService(WebPriceService):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "LiquidLoans Supgraph Price Service"
-        kwargs["url"] = "https://subgraph-dev.liquidloans.io"
+        kwargs["url"] = os.getenv("PULSECHAIN_SUBGRAPH_URL", "https://subgraph-dev.liquidloans.io")
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
