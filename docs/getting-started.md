@@ -196,8 +196,10 @@ python set_telliot_env.py --env testnet
 Looking the `.env.example` file you'll encounter the following env config:
 
 ```sh
-PLS_CURRENCY_SOURCES=dai,usdc,plsx
-PLS_ADDR_SOURCES="0xa2d510bf42d2b9766db186f44a902228e76ef262,0xb7f1f5a3b79b0664184bb0a5893aa9359615171b,0xFfd1fD891301D347ECaf4fC76866030387e97ED4"
+PLS_CURRENCY_SOURCES="usdt,usdc,dai"
+PLS_ADDR_SOURCES="0x322df7921f28f1146cdf62afdac0d6bc0ab80711,0x6753560538eca67617a9ce605178f788be7e524e,0xe56043671df55de5cdf8459710433c10324de0ae"
+PLS_LPS_ORDER="USDT/WPLS,USDC/WPLS,WPLS/DAI"
+LP_PULSE_NETWORK_URL="https://rpc.v4.testnet.pulsechain.com"
 
 COINGECKO_MOCK_URL=https://mock-price.fetchoracle.com/coingecko
 PULSEX_SUBGRAPH_URL=https://graph.v4.testnet.pulsechain.com
@@ -217,7 +219,7 @@ These environment variables configure which source will be used to Spot a Price.
 
     The SpotPrice for pls-usd-spot query-tag can use one of three sources: `PulsechainPulseXSource`, `CoinGeckoSpotPriceSource` or `PulsechainSubgraphSource`.
     
-    The feed [pls_usd_feed.py](https://github.com/fetchoracle/telliot-feeds/blob/dev/src/telliot_feeds/feeds/pls_usd_feed.py) checks the environment variable in the `.env` file for its respective sources. If it finds a config for `PLS_CURRENCY_SOURCES`, it uses the `PulsechainPulseXSource` and pass its data to a Price Aggregator using the weighted average algorithm. Otherwise, it checks for `COINGECKO_MOCK_URL` to use the CoinGecko as source. Finally, if it does not find neither configuration, it uses the default Pulsechain Subgraph as source. The `PulsechainPulseXSource` also requires the `PLS_ADDR_SOURCES` environment variable, which are the contract addresses for the given `PLS_CURRENCY_SOURCES`.
+    The feed [pls_usd_feed.py](https://github.com/fetchoracle/telliot-feeds/blob/dev/src/telliot_feeds/feeds/pls_usd_feed.py) checks the environment variable in the `.env` file for its respective sources. If it finds a config for `PLS_CURRENCY_SOURCES`, it uses the `PulsechainPulseXSource` and passes its data to a Price Aggregator using the weighted average algorithm. Otherwise, it checks for `COINGECKO_MOCK_URL` to use the CoinGecko as source. Finally, if it does not find either configuration, it uses the default Pulsechain Subgraph as source. The `PulsechainPulseXSource` also requires the `PLS_ADDR_SOURCES` environment variable, which are the contract addresses for the given `PLS_CURRENCY_SOURCES`; the `PLS_LPS_ORDER` variable, which tells the currency order of the Liquidity pool since the `PulsechainPulseXSource` needs to know if it is a "WPLS/DAI" or "DAI/WPLS" Liquidity Pool for example; and the `LP_PULSE_NETWORK_URL`, it configures the `PulsechainPulseXSource` URL to pulse mainnet or pulse testnet to interact with the Pool contract.
 
 ### Configure endpoint via CLI
 

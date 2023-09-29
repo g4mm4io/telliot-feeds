@@ -25,6 +25,14 @@ if os.getenv("PLS_CURRENCY_SOURCES") and os.getenv("PLS_ADDR_SOURCES"):
     for i,s in enumerate(sources_list):
         addrs[s] = Web3.toChecksumAddress(sources_addr_list[i])
 
+pls_lps_order = {}
+if os.getenv("PLS_LPS_ORDER") and os.getenv("PLS_CURRENCY_SOURCES"):
+    sources_list = os.getenv("PLS_CURRENCY_SOURCES").split(',')
+    sources_lps_list = os.getenv("PLS_LPS_ORDER").split(',')
+
+    for i,s in enumerate(sources_list):
+        pls_lps_order[s] = sources_lps_list[i]
+
 logger = get_logger(__name__)
 
 
@@ -50,7 +58,7 @@ class PulsechainPulseXService(WebPriceService):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "LiquidLoans PulseX Price Service"
-        kwargs["url"] = "https://rpc.v4.testnet.pulsechain.com"
+        kwargs["url"] = os.getenv("LP_PULSE_NETWORK_URL", "https://rpc.v4.testnet.pulsechain.com")
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
@@ -64,7 +72,7 @@ class PulsechainPulseXService(WebPriceService):
         asset = asset.lower()
         currency = currency.lower()
 
-        if currency not in ["usdc", "dai", "plsx"]:
+        if currency not in  ["usdc", "dai", "usdt"]:
             logger.error(f"Currency not supported: {currency}")
             return None, None
 
@@ -79,6 +87,10 @@ class PulsechainPulseXService(WebPriceService):
         try:
             contract = w3.eth.contract(address=contract_addr, abi=getReservesAbi)
             [reserve0, reserve1, timestamp] = contract.functions.getReserves().call()
+            token0, _ = pls_lps_order[currency].split('/')
+            if token0 != "WPLS":
+                reserve0, reserve1 = reserve1, reserve0
+
             val = get_amount_out(1e18, reserve0, reserve1)
 
             vl0 = ((1e18 * reserve1) / (reserve0 + 1e18)) * reserve0 #value locked token0 without fees
@@ -91,7 +103,7 @@ class PulsechainPulseXService(WebPriceService):
 
         try:
             price = float(val / 1e18)
-            if currency == 'usdc':
+            if currency == 'usdc' or currency == 'usdt':
                 price = price * 1e12 #scale usdc 
             return price, timestamp, float(tvl)
         except Exception as e:

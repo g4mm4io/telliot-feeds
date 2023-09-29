@@ -51,7 +51,7 @@ class PulseX_PLSXDAI_Service(WebPriceService):
 
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "Earn Protocol PulseX Price Service"
-        kwargs["url"] = "https://rpc.v4.testnet.pulsechain.com"
+        kwargs["url"] = os.getenv("LP_PULSE_NETWORK_URL", "https://rpc.v4.testnet.pulsechain.com")
         kwargs["timeout"] = 10.0
         super().__init__(**kwargs)
 
