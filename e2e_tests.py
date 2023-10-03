@@ -100,7 +100,7 @@ def initialize_mock_price_api(price: Decimal) -> subprocess.Popen:
     _configure_mock_price_api_env(mock_price_path, price)
 
     os.chdir(mock_price_path)
-    process = subprocess.Popen(['npm', 'start'])
+    process = subprocess.Popen(['npm', 'start'], preexec_fn=os.setsid)
     os.chdir(current_dir)
 
     logger.info(f"MOCK_PRICE_API initialized with price {price}")
@@ -234,13 +234,13 @@ def main():
     price: Decimal = contract.get_current_value_as_decimal(queryId)
     logger.info(f"Price after report for {queryId} is {price} USD")
     try:
-        assert price.quantize(Decimal('1e-15')) == new_price.quantize(Decimal('1e-15'))
+        assert abs(price - new_price) <= Decimal('1e-15')
         logger.info('OK - Submit price test passed (considering 15 decimals)')
     except AssertionError as e:
         logger.error('FAIL - Submit price test failed')
         logger.error(e)
     finally:
-        os.kill(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
+        os.killpg(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
 
 if __name__ == "__main__":
     main()
