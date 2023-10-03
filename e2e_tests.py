@@ -1,4 +1,5 @@
 import os
+import signal
 import sys
 import logging
 import pexpect
@@ -105,7 +106,32 @@ def initialize_mock_price_api(price: Decimal) -> subprocess.Popen:
     logger.info(f"MOCK_PRICE_API initialized with price {price}")
     return process
 
+def _configure_telliot_env(env_config: list[str] = None) -> list[str]:
+    current_dir = Path(__file__).parent.absolute()
+    telliot_path = current_dir.parent.absolute() / 'telliot-feeds'
+    env_file = telliot_path / '.env'
+
+    if env_config != None:
+        with open(env_file, 'w') as file:
+            file.write("".join(env_config))
+        logger.info(f"TELLIOT original env configuration restored")
+        return []
+
+    prev_env_config = []
+    env_file = telliot_path / '.env'
+    if env_file.exists():
+        with open(env_file, 'r') as file:
+            prev_env_config = file.readlines()
+            prev_env_config = [line if line.endswith('\n') else line + '\n' for line in prev_env_config]
+        logger.info("TELLIOT original env configuration saved")
+    with open(env_file, 'w') as file:
+        file.write(f"COINGECKO_MOCK_URL=http://localhost:{MOCK_PRICE_API_PORT}/coingecko")
+    logger.info(f"TELLIOT env configuration updated")
+    return prev_env_config
+
 def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
+    prev_env_config = _configure_telliot_env()
+
     try:
         report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount}'
         logger.info(f"Submitting report: {report}")
@@ -125,6 +151,8 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
     except Exception as e:
         logger.error("Submit report with telliot error:")
         logger.error(e)
+    finally:
+        _configure_telliot_env(prev_env_config)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -203,8 +231,6 @@ def main():
 
     submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
 
-    mock_price_ps.kill()
-
     price: Decimal = contract.get_current_value_as_decimal(queryId)
     logger.info(f"Price after report for {queryId} is {price} USD")
     try:
@@ -213,6 +239,8 @@ def main():
     except AssertionError as e:
         logger.error('FAIL - Submit price test failed')
         logger.error(e)
+    finally:
+        os.kill(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
 
 if __name__ == "__main__":
     main()
