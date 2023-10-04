@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 
-if os.getenv("PULSEX_SUBGRAPH_URL"):
+if os.getenv("PULSEX_SUBGRAPH_URL") and os.getenv("FETCH_ADDRESS"):
     fetch_usd_median_feed = DataFeed(
         query=SpotPrice(asset="fetch", currency="usd"),
         source=PulseXSupgraphSource(asset="fetch", currency="usd")
