@@ -115,6 +115,16 @@ def initialize_mock_price_api() -> subprocess.Popen:
 
     return process
 
+def switch_mock_price_git_branch(branch_name: str) -> None:
+    current_dir = Path(__file__).parent.absolute()
+    mock_price_path = get_mock_price_path()
+
+    os.chdir(mock_price_path)
+    subprocess.run(['git', 'checkout', branch_name])
+    os.chdir(current_dir)
+
+    print(f"Mock Price API git branch switched to {branch_name}")
+
 def _configure_telliot_env(env_config: list[str] = None) -> list[str]:
     current_dir = Path(__file__).parent.absolute()
     telliot_path = current_dir.parent.absolute() / 'telliot-feeds'
@@ -236,6 +246,7 @@ def main():
     logger.info(f"Price for {queryId} is {price} USD")
 
     new_price: Decimal = _get_new_price(price)
+    switch_mock_price_git_branch('e2e-submit-price')
     mock_price_env = configure_mock_price_api_env(new_price)
     mock_price_ps = initialize_mock_price_api()
     logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
@@ -246,7 +257,6 @@ def main():
     price: Decimal = contract.get_current_value_as_decimal(queryId)
     logger.info(f"Price after report for {queryId} is {price} USD")
     try:
-        print(abs(price - new_price))
         assert abs(price - new_price) <= Decimal('1e-15')
         logger.info('OK - Submit price test passed (considering 15 decimals)')
     except AssertionError as e:
@@ -254,6 +264,7 @@ def main():
         logger.error(e)
     finally:
         os.killpg(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
+        switch_mock_price_git_branch('dev')
 
 if __name__ == "__main__":
     main()
