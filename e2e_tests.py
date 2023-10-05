@@ -173,6 +173,12 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
     finally:
         _configure_telliot_env(prev_env_config)
 
+def write_price_to_file(price: Decimal) -> None:
+    path = Path(__file__).parent.absolute() / 'current_price.json'
+    with open(path, 'w') as file:
+        file.write(f'{{"current_price": {price}}}')
+    logger.info(f"Current price written to file {path}")
+
 def main():
     parser = argparse.ArgumentParser(
         description="Telliot submit price E2E test",
@@ -259,6 +265,7 @@ def main():
     try:
         assert abs(price - new_price) <= Decimal('1e-15')
         logger.info('OK - Submit price test passed (considering 15 decimals)')
+        write_price_to_file(price)
     except AssertionError as e:
         logger.error('FAIL - Submit price test failed')
         logger.error(e)
