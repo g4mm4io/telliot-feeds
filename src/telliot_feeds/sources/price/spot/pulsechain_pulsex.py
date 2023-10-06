@@ -31,7 +31,7 @@ if os.getenv("PLS_LPS_ORDER") and os.getenv("PLS_CURRENCY_SOURCES"):
     sources_lps_list = os.getenv("PLS_LPS_ORDER").split(',')
 
     for i,s in enumerate(sources_list):
-        pls_lps_order[s] = sources_lps_list[i]
+        pls_lps_order[s] = sources_lps_list[i].lower()
 
 logger = get_logger(__name__)
 
@@ -88,7 +88,7 @@ class PulsechainPulseXService(WebPriceService):
             contract = w3.eth.contract(address=contract_addr, abi=getReservesAbi)
             [reserve0, reserve1, timestamp] = contract.functions.getReserves().call()
             token0, _ = pls_lps_order[currency].split('/')
-            if token0 != "WPLS":
+            if "pls" not in token0.strip():
                 reserve0, reserve1 = reserve1, reserve0
 
             val = get_amount_out(1e18, reserve0, reserve1)
