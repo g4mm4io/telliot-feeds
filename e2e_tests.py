@@ -80,31 +80,50 @@ class Contract:
 def _get_new_price(price: Decimal) -> Decimal:
     return (price * Decimal('1.2')).quantize(Decimal('1e-18'))
 
-def _configure_mock_price_api_env(mock_price_path: Path, new_price: Decimal) -> None:
-    env_file = mock_price_path / '.env'
+def get_mock_price_path() -> Path:
+    current_dir = Path(__file__).parent.absolute()
+    mock_price_path = current_dir.parent.absolute() / 'mock-price-api'
+    return (mock_price_path)
 
-    lines = []
+def configure_mock_price_api_env(new_price: Decimal, env_config: list[str] = None) -> None:
+    env_file = get_mock_price_path() / '.env'
+
+    if env_config != None:
+      with open(env_file, 'w') as file:
+          file.write("".join(env_config))
+      logger.info(f"Mock Price API original env configuration restored")
+      return []
+
+    prevLines = []
     if env_file.exists():
         with open(env_file, 'r') as file:
-            lines = file.readlines()
-            lines = [line for line in lines if not line.startswith('SERVER_PORT') or not line.startswith('PLS_PRICE')]
-            lines = [line if line.endswith('\n') else line + '\n' for line in lines]
+            prevLines = file.readlines()
+            prevLines = [line if line.endswith('\n') else line + '\n' for line in prevLines]
+    lines = prevLines.copy()
     lines += [f'SERVER_PORT={MOCK_PRICE_API_PORT}\n', f'PLS_PRICE={new_price}\n']
     with open(env_file, 'w') as file:
         file.write("".join(lines))
+    return prevLines
 
-def initialize_mock_price_api(price: Decimal) -> subprocess.Popen:
+def initialize_mock_price_api() -> subprocess.Popen:
     current_dir = Path(__file__).parent.absolute()
-    mock_price_path = current_dir.parent.absolute() / 'mock-price-api'
-
-    _configure_mock_price_api_env(mock_price_path, price)
+    mock_price_path = get_mock_price_path()
 
     os.chdir(mock_price_path)
     process = subprocess.Popen(['npm', 'start'], preexec_fn=os.setsid)
     os.chdir(current_dir)
 
-    logger.info(f"MOCK_PRICE_API initialized with price {price}")
     return process
+
+def switch_mock_price_git_branch(branch_name: str) -> None:
+    current_dir = Path(__file__).parent.absolute()
+    mock_price_path = get_mock_price_path()
+
+    os.chdir(mock_price_path)
+    subprocess.run(['git', 'checkout', branch_name])
+    os.chdir(current_dir)
+
+    print(f"Mock Price API git branch switched to {branch_name}")
 
 def _configure_telliot_env(env_config: list[str] = None) -> list[str]:
     current_dir = Path(__file__).parent.absolute()
@@ -153,6 +172,12 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
         logger.error(e)
     finally:
         _configure_telliot_env(prev_env_config)
+
+def write_price_to_file(price: Decimal) -> None:
+    path = Path(__file__).parent.absolute() / 'current_price.json'
+    with open(path, 'w') as file:
+        file.write(f'{{"current_price": {price}}}')
+    logger.info(f"Current price written to file {path}")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -227,20 +252,26 @@ def main():
     logger.info(f"Price for {queryId} is {price} USD")
 
     new_price: Decimal = _get_new_price(price)
-    mock_price_ps = initialize_mock_price_api(new_price)
+    switch_mock_price_git_branch('e2e-submit-price')
+    mock_price_env = configure_mock_price_api_env(new_price)
+    mock_price_ps = initialize_mock_price_api()
+    logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
 
     submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+    configure_mock_price_api_env(0, mock_price_env)
 
     price: Decimal = contract.get_current_value_as_decimal(queryId)
     logger.info(f"Price after report for {queryId} is {price} USD")
     try:
         assert abs(price - new_price) <= Decimal('1e-15')
         logger.info('OK - Submit price test passed (considering 15 decimals)')
+        write_price_to_file(price)
     except AssertionError as e:
         logger.error('FAIL - Submit price test failed')
         logger.error(e)
     finally:
         os.killpg(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
+        switch_mock_price_git_branch('dev')
 
 if __name__ == "__main__":
     main()
