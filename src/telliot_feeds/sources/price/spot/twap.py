@@ -60,14 +60,15 @@ class TWAPSpotPriceService(WebPriceService):
         """
         response = requests.post(url=self.url, json={"query": query_body})
 
-        if response.status_code != 200:
+        if response.status_code != 200 or response.json().get('errors'):
             err_msg = f"""
             Failed to query subgraph {self.url}, status code: {response.status_code}
-            {response.content}
+            Error:
+            {response.json()}
             """
             logger.error(err_msg)
             raise Exception(err_msg)
-
+        
         return response.json()['data']['newReportEntities']
     
     def _get_TWAP_from_reports(self) -> dict[str, float]:
