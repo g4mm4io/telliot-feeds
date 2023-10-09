@@ -17,4 +17,4 @@ WORKDIR /usr/src/app/telliot-feeds
 COPY . .
 RUN pip install -e .
 
-COPY ./podinit.sh .
+COPY ./expect.py .
