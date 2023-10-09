@@ -10,7 +10,8 @@ plsx_usd_feed = DataFeed(
         currency="usd",
         algorithm="weighted_average",
         sources=[
-            PulseX_PLSXDAI_Source(asset="plsx", currency="dai")
+            PulseX_PLSXDAI_Source(asset="plsx", currency="dai"),
+            PulseX_PLSXDAI_Source(asset="plsx", currency="pls"),
         ],
     ),
 )
