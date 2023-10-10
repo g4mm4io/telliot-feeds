@@ -137,6 +137,18 @@ query_catalog.add_entry(
 )
 
 query_catalog.add_entry(
+    tag="pls-usd-spot-twap-lp",
+    title="Pulsechain LiquidLoans feed TWAP LP",
+    q=SpotPrice(asset="pls", currency="usd"),
+)
+
+query_catalog.add_entry(
+    tag="pls-usd-spot-vwap",
+    title="Pulsechain LiquidLoans feed VWAP",
+    q=SpotPrice(asset="pls", currency="usd"),
+)
+
+query_catalog.add_entry(
     tag="plsx-usd-spot",
     title="Pulsechain PulseX feed",
     q=SpotPrice(asset="plsx", currency="usd"),
