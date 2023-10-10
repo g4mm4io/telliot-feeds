@@ -227,7 +227,7 @@ class TWAPLPSpotPriceService(WebPriceService):
                 "Cumulative prices JSON data updated"
             )
 
-            price = float(twap / 1e18)
+            price = float(twap)
             if currency == 'usdc' or currency == 'usdt':
                 price = price * 1e12
 
