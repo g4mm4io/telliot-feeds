@@ -10,6 +10,7 @@ from pathlib import Path
 from decimal import *
 from web3 import Web3
 from telliot_core.directory import contract_directory
+import re
 
 MOCK_PRICE_API_PORT=3001
 
@@ -27,6 +28,7 @@ class Contract:
         self.oracle_address = oracle_address
         self.provider_url = provider_url
         self.oracle = None
+        self.provider = None
 
     def initialize(self):
         try:
@@ -55,6 +57,7 @@ class Contract:
             }
             ]
             """
+            self.provider = w3
             self.oracle = w3.eth.contract(address=self.oracle_address, abi=abi)
             logger.info(f'Oracle contract at address {self.oracle_address} initialized')
         except Exception as e:
@@ -153,8 +156,9 @@ def _configure_telliot_env(env_config: list[str] = None) -> list[str]:
     logger.info(f"TELLIOT env configuration updated")
     return prev_env_config
 
-def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
+def submit_report_with_telliot(account_name: str, stake_amount: str, provider: any) -> None:
     prev_env_config = _configure_telliot_env()
+    report_hash = None
 
     try:
         report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount}'
@@ -174,16 +178,25 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
         report_process.expect(pexpect.EOF)
         report_process.close()
         logger.info("Submit report with telliot OK")
+
+        report_log = report_process.before.decode('utf-8')
+        tx_hashes = re.findall(r'/tx/(\w*)', report_log)
+        print(tx_hashes)
+        print('Report tx hash:', tx_hashes[2])
+
+        report_hash = tx_hashes[2]
+        
     except Exception as e:
         logger.error("Submit report with telliot error:")
         logger.error(e)
     finally:
         _configure_telliot_env(prev_env_config)
+        return report_hash
 
-def write_price_to_file(price: Decimal) -> None:
+def write_price_to_file(price: Decimal, hash: str) -> None:
     path = Path(__file__).parent.absolute() / 'current_price.json'
     with open(path, 'w') as file:
-        file.write(f'{{"current_price": {price}}}')
+      file.write(f'{{"current_price": {price}, "hash": {hash}}}')
     logger.info(f"Current price written to file {path}")
 
 def main():
@@ -264,7 +277,8 @@ def main():
     mock_price_ps = initialize_mock_price_api()
     logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
 
-    submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+    provider = contract.provider
+    report_hash = submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount, provider=provider)
     configure_mock_price_api_env(0, mock_price_env)
 
     price: Decimal = contract.get_current_value_as_decimal(queryId)
@@ -272,7 +286,7 @@ def main():
     try:
         assert abs(price - new_price) <= Decimal('1e-2')
         logger.info(f'OK - Submit price test passed (considering 2 decimals). Difference = {abs(price - new_price)}')
-        write_price_to_file(price)
+        write_price_to_file(price, report_hash)
     except AssertionError as e:
         logger.error(f'FAIL - Submit price test failed. Difference = {abs(price - new_price)}')
         logger.error(e)
