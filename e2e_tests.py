@@ -78,7 +78,7 @@ class Contract:
         return self._bytes_to_decimal(current_value)
 
 def _get_new_price(price: Decimal) -> Decimal:
-    return (price * Decimal('1.2')).quantize(Decimal('1e-18'))
+    return (price * Decimal('1.05')).quantize(Decimal('1e-18'))
 
 def get_mock_price_path() -> Path:
     current_dir = Path(__file__).parent.absolute()
@@ -120,6 +120,11 @@ def switch_mock_price_git_branch(branch_name: str) -> None:
     mock_price_path = get_mock_price_path()
 
     os.chdir(mock_price_path)
+    branches = subprocess.run(['git', 'branch', '-a'], capture_output=True, text=True)
+    if branch_name not in branches.stdout:
+        logger.error(f"Branch {branch_name} does not exist in mock-price-api")
+        sys.exit(1)
+
     subprocess.run(['git', 'checkout', branch_name])
     os.chdir(current_dir)
 
