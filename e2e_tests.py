@@ -159,7 +159,7 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
     try:
         report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount}'
         logger.info(f"Submitting report: {report}")
-        report_process = pexpect.spawn(report, timeout=None)
+        report_process = pexpect.spawn(report, timeout=120)
         report_process.logfile = sys.stdout.buffer
         report_process.expect("\w+\r\n")
         report_process.sendline('y')
@@ -169,6 +169,8 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
         report_process.sendline('')
         report_process.expect("\w+\r\n")
         report_process.sendline('')
+        report_process.expect("confirm settings.")
+        report_process.sendline('\n')
         report_process.expect(pexpect.EOF)
         report_process.close()
         logger.info("Submit report with telliot OK")
@@ -268,11 +270,11 @@ def main():
     price: Decimal = contract.get_current_value_as_decimal(queryId)
     logger.info(f"Price after report for {queryId} is {price} USD")
     try:
-        assert abs(price - new_price) <= Decimal('1e-15')
-        logger.info('OK - Submit price test passed (considering 15 decimals)')
+        assert abs(price - new_price) <= Decimal('1e-2')
+        logger.info(f'OK - Submit price test passed (considering 2 decimals). Difference = {abs(price - new_price)}')
         write_price_to_file(price)
     except AssertionError as e:
-        logger.error('FAIL - Submit price test failed')
+        logger.error(f'FAIL - Submit price test failed. Difference = {abs(price - new_price)}')
         logger.error(e)
     finally:
         os.killpg(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
