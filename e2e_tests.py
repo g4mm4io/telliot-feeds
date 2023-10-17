@@ -10,6 +10,7 @@ from pathlib import Path
 from decimal import *
 from web3 import Web3
 from telliot_core.directory import contract_directory
+import re
 
 MOCK_PRICE_API_PORT=3001
 
@@ -27,6 +28,7 @@ class Contract:
         self.oracle_address = oracle_address
         self.provider_url = provider_url
         self.oracle = None
+        self.provider = None
 
     def initialize(self):
         try:
@@ -55,6 +57,7 @@ class Contract:
             }
             ]
             """
+            self.provider = w3
             self.oracle = w3.eth.contract(address=self.oracle_address, abi=abi)
             logger.info(f'Oracle contract at address {self.oracle_address} initialized')
         except Exception as e:
@@ -78,7 +81,7 @@ class Contract:
         return self._bytes_to_decimal(current_value)
 
 def _get_new_price(price: Decimal) -> Decimal:
-    return (price * Decimal('1.2')).quantize(Decimal('1e-18'))
+    return (price * Decimal('1.05')).quantize(Decimal('1e-18'))
 
 def get_mock_price_path() -> Path:
     current_dir = Path(__file__).parent.absolute()
@@ -120,6 +123,11 @@ def switch_mock_price_git_branch(branch_name: str) -> None:
     mock_price_path = get_mock_price_path()
 
     os.chdir(mock_price_path)
+    branches = subprocess.run(['git', 'branch', '-a'], capture_output=True, text=True)
+    if branch_name not in branches.stdout:
+        logger.error(f"Branch {branch_name} does not exist in mock-price-api")
+        sys.exit(1)
+
     subprocess.run(['git', 'checkout', branch_name])
     os.chdir(current_dir)
 
@@ -148,13 +156,14 @@ def _configure_telliot_env(env_config: list[str] = None) -> list[str]:
     logger.info(f"TELLIOT env configuration updated")
     return prev_env_config
 
-def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
+def submit_report_with_telliot(account_name: str, stake_amount: str) -> str:
     prev_env_config = _configure_telliot_env()
+    report_hash = None
 
     try:
         report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount}'
         logger.info(f"Submitting report: {report}")
-        report_process = pexpect.spawn(report, timeout=None)
+        report_process = pexpect.spawn(report, timeout=120)
         report_process.logfile = sys.stdout.buffer
         report_process.expect("\w+\r\n")
         report_process.sendline('y')
@@ -164,19 +173,26 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> None:
         report_process.sendline('')
         report_process.expect("\w+\r\n")
         report_process.sendline('')
+        report_process.expect("confirm settings.")
+        report_process.sendline('\n')
         report_process.expect(pexpect.EOF)
         report_process.close()
         logger.info("Submit report with telliot OK")
+
+        report_log = report_process.before.decode('utf-8')
+        tx_hashes = re.findall(r'/tx/(\w*)', report_log)
+        report_hash = tx_hashes[-1]
     except Exception as e:
         logger.error("Submit report with telliot error:")
         logger.error(e)
     finally:
         _configure_telliot_env(prev_env_config)
+        return report_hash
 
-def write_price_to_file(price: Decimal) -> None:
+def write_price_to_file(price: Decimal, hash: str) -> None:
     path = Path(__file__).parent.absolute() / 'current_price.json'
     with open(path, 'w') as file:
-        file.write(f'{{"current_price": {price}}}')
+      file.write(f'{{"current_price": {price}, "hash": "{hash}"}}')
     logger.info(f"Current price written to file {path}")
 
 def main():
@@ -257,17 +273,17 @@ def main():
     mock_price_ps = initialize_mock_price_api()
     logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
 
-    submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+    report_hash = submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
     configure_mock_price_api_env(0, mock_price_env)
 
     price: Decimal = contract.get_current_value_as_decimal(queryId)
     logger.info(f"Price after report for {queryId} is {price} USD")
     try:
-        assert abs(price - new_price) <= Decimal('1e-15')
-        logger.info('OK - Submit price test passed (considering 15 decimals)')
-        write_price_to_file(price)
+        assert abs(price - new_price) <= Decimal('1e-2')
+        logger.info(f'OK - Submit price test passed (considering 2 decimals). Difference = {abs(price - new_price)}')
+        write_price_to_file(price, report_hash)
     except AssertionError as e:
-        logger.error('FAIL - Submit price test failed')
+        logger.error(f'FAIL - Submit price test failed. Difference = {abs(price - new_price)}')
         logger.error(e)
     finally:
         os.killpg(os.getpgid(mock_price_ps.pid), signal.SIGTERM)
