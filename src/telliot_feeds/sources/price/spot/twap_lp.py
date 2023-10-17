@@ -73,6 +73,7 @@ class TWAPLPSpotPriceService(WebPriceService):
 
         self.contract_addresses: dict[str, str] = self._get_contract_address()
         self.lps_order: dict[str, str] = self._get_lps_order()
+        self.max_retries = int(os.getenv('MAX_RETRIES', 5))
 
         super().__init__(**kwargs)
 
@@ -101,23 +102,42 @@ class TWAPLPSpotPriceService(WebPriceService):
         return lps_order
     
     def _callGetReserves(self, contract_address: str):
-        try:
-            w3 = Web3(Web3.HTTPProvider(self.url, request_kwargs={'timeout': self.timeout}))
-            contract = w3.eth.contract(address=contract_address, abi=self.ABI)
-            return contract.functions.getReserves().call()
-        except Exception as e:
-            logger.error(f"Failed to call 'getReserves', address {contract_address}")
+        retry_count = 0
+        while retry_count < self.max_retries:
+            try:
+                w3 = Web3(Web3.HTTPProvider(self.url, request_kwargs={'timeout': self.timeout}))
+                contract = w3.eth.contract(address=contract_address, abi=self.ABI)
+                return contract.functions.getReserves().call()
+            except Exception as e:
+                retry_count += 1
+                logger.error(
+                    f"""
+                    Error calling RPC 'getReserves'
+                    {'' if retry_count == self.max_retries else 'Trying again...'}
+                    """
+                )
+        raise Exception(f"Failed to call RPC 'getReserves', address {contract_address}")
 
     def _callPricesCumulativeLast(self, contract_address: str) -> tuple[int]:
-        try:
-            w3 = Web3(Web3.HTTPProvider(self.url, request_kwargs={'timeout': self.timeout}))
-            contract = w3.eth.contract(address=contract_address, abi=self.ABI)
-            price0CumulativeLast = contract.functions.price0CumulativeLast().call()
-            price1CumulativeLast = contract.functions.price1CumulativeLast().call()
-            _, _, _blockTimestampLast = contract.functions.getReserves().call()
-            return price0CumulativeLast, price1CumulativeLast, _blockTimestampLast
-        except Exception as e:
-            logger.error(f"Failed to call contract in '_callPricesCumulativeLast' method, address {contract_address}")
+        retry_count = 0
+        while retry_count < self.max_retries:
+            try:
+                w3 = Web3(Web3.HTTPProvider(self.url, request_kwargs={'timeout': self.timeout}))
+                contract = w3.eth.contract(address=contract_address, abi=self.ABI)
+                price0CumulativeLast = contract.functions.price0CumulativeLast().call()
+                price1CumulativeLast = contract.functions.price1CumulativeLast().call()
+                _, _, _blockTimestampLast = self._callGetReserves(contract_address)
+                return price0CumulativeLast, price1CumulativeLast, _blockTimestampLast
+            except Exception as e:
+                retry_count += 1
+                logger.error(
+                    f"""
+                    Error calling RPC in '_callPricesCumulativeLast' method
+                    {'' if retry_count == self.max_retries else 'Trying again...'}
+                    """
+                )
+                logger.error(e)
+        raise Exception(f"Failed to call RPC in '_callPricesCumulativeLast' method, address {contract_address}")
     
     def _get_pair_json_key(self, currency: str) -> str:
         token0, token1 = self.lps_order[currency].split('/')
@@ -186,29 +206,61 @@ class TWAPLPSpotPriceService(WebPriceService):
             """)
             logger.error(e)
 
-    def poll_to_get_currentPrices(
+    def _get_current_block_timestamp(self):
+        w3 = Web3(Web3.HTTPProvider(self.url))
+        block = w3.eth.getBlock("latest")
+        timestamp = block.timestamp
+        return timestamp % 2**32
+    
+    def _calculate_cumulative_price(
+        self, address: str,
+        price0Cumulative: int,
+        price1Cumulative: int,
+        blockTimestampLast: int
+    ) -> tuple[int]:
+        currentTimesamp = self._get_current_block_timestamp()
+        timeElapsed = currentTimesamp - blockTimestampLast
+        reserve0, reserve1, _ = self._callGetReserves(address)
+        fixed_point_fraction0 = (reserve1 / reserve0) * (2 ** 112)
+        fixed_point_fraction1 = (reserve0 / reserve1) * (2 ** 112)
+        price0Cumulative += int(fixed_point_fraction0) * timeElapsed
+        price1Cumulative += int(fixed_point_fraction1) * timeElapsed
+        return price0Cumulative, price1Cumulative, currentTimesamp
+
+    def get_currentPrices(
         self,
         prevPrice0CumulativeLast: int,
         prevPrice1CumulativeLast: int,
         prevBlockTimestampLast: int,
         currency: str
     ) -> tuple[int]:
-        polling_interval = int(os.getenv('TWAP_TIMESPAN'))
         address = self.contract_addresses[currency]
-        while True:
-            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self._callPricesCumulativeLast(address)
-            if (price0CumulativeLast == prevPrice0CumulativeLast or
-                price1CumulativeLast == prevPrice1CumulativeLast or
-                blockTimestampLast == prevBlockTimestampLast):
-                logger.warning(
+
+        price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self._callPricesCumulativeLast(address)
+
+        if (blockTimestampLast <= prevBlockTimestampLast):
+            logger.info(
                 f"""
-                pricesCumulativeLast or blockTimestampLast not updated yet
-                waiting {polling_interval} (TWAP_TIMESPAN) seconds...
+                BlockTimestampLast <= prevBlockTimestampLast:
+                currentBlockTimestampLas / prevBlockTimestampLast: {blockTimestampLast} / {prevBlockTimestampLast}
+                Updating cumulative prices according to current block time stamp
                 """
-                )
-                time.sleep(polling_interval)
-                continue
-            return price0CumulativeLast, price1CumulativeLast, blockTimestampLast
+            )
+            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self._calculate_cumulative_price(
+                address,
+                price0CumulativeLast,
+                price1CumulativeLast,
+                blockTimestampLast
+            )
+            logger.info(
+                f"""
+                Updated cumulative prices:
+                currentBlockTimestampLas / prevBlockTimestampLast: {blockTimestampLast} / {prevBlockTimestampLast}    
+                currentPrice0 / prevPrice0: {price0CumulativeLast} / {prevPrice0CumulativeLast}
+                currentPrice1 / prevPrice1: {price1CumulativeLast} / {prevPrice1CumulativeLast}
+                """
+            )
+        return price0CumulativeLast, price1CumulativeLast, blockTimestampLast
         
     def calculate_twap(
         self,
@@ -252,7 +304,7 @@ class TWAPLPSpotPriceService(WebPriceService):
                 currency
             )
 
-            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self.poll_to_get_currentPrices(
+            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self.get_currentPrices(
                 prevPrice0CumulativeLast,
                 prevPrice1CumulativeLast,
                 prevBlockTimestampLast,
