@@ -10,6 +10,8 @@ load_dotenv()
 logger = get_logger(__name__)
 
 def get_sources_objs():
+    if not os.getenv("PLS_CURRENCY_SOURCES"):
+        return []
     sources = os.getenv("PLS_CURRENCY_SOURCES")
     sources_list = sources.split(',')
     sources_objs = []

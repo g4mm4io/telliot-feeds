@@ -67,12 +67,9 @@ class TWAPLPSpotPriceService(WebPriceService):
     def __init__(self, **kwargs: Any) -> None:
         kwargs["name"] = "TWAP LP Price Service"
         kwargs["url"] = os.getenv("LP_PULSE_NETWORK_URL", "https://rpc.v4.testnet.pulsechain.com")
-        kwargs["timeout"] = int(os.getenv('TWAP_TIMESPAN'))
+        kwargs["timeout"] = 10.0
 
         self.prevPricesPath: Path = Path('./prevPricesCumulative.json') 
-
-        self.contract_addresses: dict[str, str] = self._get_contract_address()
-        self.lps_order: dict[str, str] = self._get_lps_order()
         self.max_retries = int(os.getenv('MAX_RETRIES', 5))
 
         super().__init__(**kwargs)
@@ -298,6 +295,9 @@ class TWAPLPSpotPriceService(WebPriceService):
         if currency not in ["usdc", "dai", "usdt"]:
             logger.error(f"Currency not supported: {currency}")
             return None, None
+        
+        self.contract_addresses: dict[str, str] = self._get_contract_address()
+        self.lps_order: dict[str, str] = self._get_lps_order()
 
         try:
             prevPrice0CumulativeLast, prevPrice1CumulativeLast, prevBlockTimestampLast = self.get_prev_prices_cumulative(

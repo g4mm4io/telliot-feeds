@@ -27,7 +27,7 @@ class TWAPSpotPriceService(WebPriceService):
         kwargs["name"] = "TWAP Price Service"
         kwargs["url"] = os.getenv("FETCH_FLEX_SUBGRAPH_URL")
 
-        self.timespan = int(os.getenv("TWAP_TIMESPAN"))
+        self.timespan = int(os.getenv("TWAP_TIMESPAN", 3600))
         self.twap: dict[str, dict[Decimal, int]] = defaultdict(lambda: {'total': Decimal('0.0'), 'count': 0})
 
         super().__init__(**kwargs)

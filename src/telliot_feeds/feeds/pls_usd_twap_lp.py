@@ -8,7 +8,10 @@ import os
 load_dotenv()
 logger = get_logger(__name__)
 
-currency = os.getenv("PLS_CURRENCY_SOURCES").split(',')[0]
+def get_currency():
+    if not os.getenv("PLS_CURRENCY_SOURCES"):
+        return ""
+    return os.getenv("PLS_CURRENCY_SOURCES").split(',')[0]
 
 pls_usd_twap_lp_feed = DataFeed(
     query=SpotPrice(
@@ -17,6 +20,6 @@ pls_usd_twap_lp_feed = DataFeed(
      ),
     source=TWAPLPSpotPriceSource(
         asset="pls",
-        currency=currency
+        currency=get_currency()
     )
 )
