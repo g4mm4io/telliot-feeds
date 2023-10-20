@@ -268,7 +268,6 @@ def main():
     logger.info(f"Price for {queryId} is {price} USD")
 
     new_price: Decimal = _get_new_price(price)
-    switch_mock_price_git_branch('e2e-submit-price')
     mock_price_env = configure_mock_price_api_env(new_price)
     mock_price_ps = initialize_mock_price_api()
     logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
