@@ -81,7 +81,7 @@ class Contract:
         return self._bytes_to_decimal(current_value)
 
 def _get_new_price(price: Decimal) -> Decimal:
-    return (price * Decimal('1.05')).quantize(Decimal('1e-18'))
+    return (price * Decimal('1')).quantize(Decimal('1e-18'))
 
 def get_mock_price_path() -> Path:
     current_dir = Path(__file__).parent.absolute()
