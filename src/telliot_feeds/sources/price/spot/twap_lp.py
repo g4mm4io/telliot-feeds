@@ -259,11 +259,12 @@ class TWAPLPSpotPriceService(WebPriceService):
                 """
             )
 
-        if (blockTimestampLast <= prevBlockTimestampLast):
+        blockTimestamp = self._get_current_block_timestamp()
+        if blockTimestamp != blockTimestampLast:
             logger.info(
                 f"""
-                BlockTimestampLast <= prevBlockTimestampLast:
-                currentBlockTimestampLas / prevBlockTimestampLast: {blockTimestampLast} / {prevBlockTimestampLast}
+                blockTimestamp != blockTimestampLast:
+                blockTimestamp / blockTimestampLast: {blockTimestamp} / {blockTimestampLast}
                 Updating cumulative prices according to current block time stamp
                 """
             )
