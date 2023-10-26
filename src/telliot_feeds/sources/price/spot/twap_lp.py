@@ -368,6 +368,12 @@ class TWAPLPSpotPriceService(WebPriceService):
             price = float(twap)
             if currency == 'usdc' or currency == 'usdt':
                 price = price * 1e12
+                logger.info(
+                    f"""
+                    Scaling price for {currency} by 1e12:
+                    {price} * 1e12 = {price * 1e12}
+                    """
+                )
 
             logger.info(f"""
             TWAP LP price for {asset}-{currency}: {price}
