@@ -3,7 +3,7 @@ from decimal import *
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-import time
+import asyncio
 
 from dataclasses import dataclass
 from dataclasses import field
@@ -71,6 +71,7 @@ class TWAPLPSpotPriceService(WebPriceService):
 
         self.prevPricesPath: Path = Path('./prevPricesCumulative.json') 
         self.max_retries = int(os.getenv('MAX_RETRIES', 5))
+        self.period = int(os.getenv('TWAP_TIMESPAN', 3600*12))
 
         super().__init__(**kwargs)
 
@@ -224,7 +225,7 @@ class TWAPLPSpotPriceService(WebPriceService):
         price1Cumulative += int(fixed_point_fraction1) * timeElapsed
         return price0Cumulative, price1Cumulative, currentTimesamp
 
-    def get_currentPrices(
+    async def get_currentPrices(
         self,
         prevPrice0CumulativeLast: int,
         prevPrice1CumulativeLast: int,
@@ -235,11 +236,35 @@ class TWAPLPSpotPriceService(WebPriceService):
 
         price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self._callPricesCumulativeLast(address)
 
-        if (blockTimestampLast <= prevBlockTimestampLast):
+        timeElapsed = self._get_current_block_timestamp() - prevBlockTimestampLast
+
+        if timeElapsed < self.period:
             logger.info(
                 f"""
-                BlockTimestampLast <= prevBlockTimestampLast:
-                currentBlockTimestampLas / prevBlockTimestampLast: {blockTimestampLast} / {prevBlockTimestampLast}
+                PERIOD NOT ELAPSED
+                currentBlockTimestamp - prevBlockTimestampLast = timeElapsed = {timeElapsed}
+                {timeElapsed} < {self.period}
+                time elpased must be >= 'TWAP_TIMESPAN'
+                waiting {self.period - timeElapsed} seconds
+                """
+            )
+            await asyncio.sleep(self.period - timeElapsed)
+            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self._callPricesCumulativeLast(address)
+            logger.info(
+                f"""
+                Updated cumulative prices:
+                currentBlockTimestampLas / prevBlockTimestampLast: {blockTimestampLast} / {prevBlockTimestampLast}    
+                currentPrice0 / prevPrice0: {price0CumulativeLast} / {prevPrice0CumulativeLast}
+                currentPrice1 / prevPrice1: {price1CumulativeLast} / {prevPrice1CumulativeLast}
+                """
+            )
+
+        blockTimestamp = self._get_current_block_timestamp()
+        if blockTimestamp != blockTimestampLast:
+            logger.info(
+                f"""
+                blockTimestamp != blockTimestampLast:
+                blockTimestamp / blockTimestampLast: {blockTimestamp} / {blockTimestampLast}
                 Updating cumulative prices according to current block time stamp
                 """
             )
@@ -304,7 +329,7 @@ class TWAPLPSpotPriceService(WebPriceService):
                 currency
             )
 
-            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = self.get_currentPrices(
+            price0CumulativeLast, price1CumulativeLast, blockTimestampLast = await self.get_currentPrices(
                 prevPrice0CumulativeLast,
                 prevPrice1CumulativeLast,
                 prevBlockTimestampLast,
