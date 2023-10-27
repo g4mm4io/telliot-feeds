@@ -356,7 +356,7 @@ class TWAPLPSpotPriceService(WebPriceService):
                 interval=self.period
             )
             if time_distance_to_twap_service_interval < self.twap_time_safe_distance:
-                logger.info(f"Waiting {self.twap_time_safe_distance:.4f} seconds for TWAP Service complete")
+                logger.info(f"Waiting {self.time_distance_to_twap_service_interval:.4f} seconds for TWAP Service complete")
                 await self.twap_done_event.wait()
             
             self.twap_done_event.clear()
