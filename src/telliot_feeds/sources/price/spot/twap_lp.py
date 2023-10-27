@@ -76,8 +76,8 @@ class TWAPLPSpotPriceService(WebPriceService):
         self.isSourceInitialized = False
 
         self.isTwapServiceActive = False
-        self.twap_done_event = asyncio.Event()
-        self.twap_time_safe_distance = 5
+        self.twap_done_event = None
+        self.twap_time_safe_distance = int(os.getenv('TWAP_TIME_SAFE_DISTANCE', 5))
         self.reporter_start_time = None
 
         super().__init__(**kwargs)
@@ -85,6 +85,7 @@ class TWAPLPSpotPriceService(WebPriceService):
     def handleInitializeSource(self):
         if self.isSourceInitialized: return
         self.isSourceInitialized = True
+        self.twap_done_event = asyncio.Event()
         self.contract_addresses: dict[str, str] = self._get_contract_address()
         self.lps_order: dict[str, str] = self._get_lps_order()
         self.reporter_event_loop = asyncio.get_running_loop()
@@ -357,7 +358,7 @@ class TWAPLPSpotPriceService(WebPriceService):
                 interval=self.period
             )
             if time_distance_to_twap_service_interval < self.twap_time_safe_distance:
-                logger.info(f"Waiting {self.time_distance_to_twap_service_interval:.4f} seconds for TWAP Service complete")
+                logger.info(f"Waiting {time_distance_to_twap_service_interval:.4f} seconds for TWAP Service complete")
                 await self.twap_done_event.wait()
             
             self.twap_done_event.clear()
