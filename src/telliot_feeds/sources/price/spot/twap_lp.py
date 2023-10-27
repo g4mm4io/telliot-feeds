@@ -94,6 +94,7 @@ class TWAPLPSpotPriceService(WebPriceService):
         if self.isTwapServiceActive: return
         self.isTwapServiceActive = True
         asyncio.create_task(self.initializeTwapService(currency))
+        await asyncio.sleep(0)
 
     async def initializeTwapService(self, currency: str):
         logger.info(f"TWAP Service initializing, TWAP_TIMESPAN: {self.period}")
