@@ -258,6 +258,8 @@ def main():
         oracle address: {oracle_address}
     """)
 
+    submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+
     contract = Contract.create(
         oracle_address=oracle_address,
         provider_url=provider_url
