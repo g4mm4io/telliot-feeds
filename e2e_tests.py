@@ -258,7 +258,12 @@ def main():
         oracle address: {oracle_address}
     """)
 
-    submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+    try:
+        submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+    except Exception:
+        pass
+
+    report_hash = submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
 
     contract = Contract.create(
         oracle_address=oracle_address,
@@ -274,7 +279,6 @@ def main():
     mock_price_ps = initialize_mock_price_api()
     logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
 
-    report_hash = submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
     configure_mock_price_api_env(0, mock_price_env)
 
     price: Decimal = contract.get_current_value_as_decimal(queryId)
