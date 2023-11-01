@@ -161,7 +161,7 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> str:
     report_hash = None
 
     try:
-        report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount}'
+        report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount} --max-fee 1'
         logger.info(f"Submitting report: {report}")
         report_process = pexpect.spawn(report, timeout=120)
         report_process.logfile = sys.stdout.buffer
