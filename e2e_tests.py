@@ -161,7 +161,7 @@ def submit_report_with_telliot(account_name: str, stake_amount: str) -> str:
     report_hash = None
 
     try:
-        report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount}'
+        report = f'telliot report -a {account_name} -ncr -qt pls-usd-spot --fetch-flex --submit-once -s {stake_amount} -mf 1 -pf 1'
         logger.info(f"Submitting report: {report}")
         report_process = pexpect.spawn(report, timeout=120)
         report_process.logfile = sys.stdout.buffer
@@ -258,6 +258,13 @@ def main():
         oracle address: {oracle_address}
     """)
 
+    try:
+        submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+    except Exception:
+        pass
+
+    report_hash = submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
+
     contract = Contract.create(
         oracle_address=oracle_address,
         provider_url=provider_url
@@ -272,7 +279,6 @@ def main():
     mock_price_ps = initialize_mock_price_api()
     logger.info(f"MOCK_PRICE_API initialized with price {new_price}")
 
-    report_hash = submit_report_with_telliot(account_name=account_name, stake_amount=stake_amount)
     configure_mock_price_api_env(0, mock_price_env)
 
     price: Decimal = contract.get_current_value_as_decimal(queryId)
